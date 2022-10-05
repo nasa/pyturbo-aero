@@ -6,7 +6,7 @@ stages:
   
 job:
     stage: build
-    image: python:3.6
+    image: python:3.9
     script:
         - sudo yum update -q -y
         - sudo yum install -y python3-pip
