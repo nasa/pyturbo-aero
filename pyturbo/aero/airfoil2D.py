@@ -869,11 +869,16 @@ class airfoil2D():
     
     def plot_derivative2(self,xlim=[0,1],ylim=[-400,400]):
         """Plots the second derivative of the airfoil.
-        Reference:
+
+        References:
+
             https://mathformeremortals.wordpress.com/2013/01/12/a-numerical-second-derivative-from-three-points/
+
         Args:
-            xlim (list, optional): _description_. Defaults to [0,1].
-            ylim (list, optional): _description_. Defaults to [-400,400].
+        
+            xlim (list, optional): Plot x-axis. Defaults to [0,1].
+            ylim (list, optional): Plot y-axis. Defaults to [-400,400].
+
         """
     
         t = np.linspace(0,1,100)

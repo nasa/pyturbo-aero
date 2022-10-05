@@ -2,8 +2,8 @@ from setuptools import setup
 
 
 _config = {
-    "name": "pyturbo",
-    "version":"1.0.9",
+    "name": "pyturbo-aero",
+    "version":"1.0.0",
     "url": "https://gitlab.grc.nasa.gov/lte-turbo/pyturbo",
     "author": "Paht Juangphanich",
     "author_email": "paht.juangphanich@nasa.gov",

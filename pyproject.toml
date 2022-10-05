@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pyturbo-aero"
+version = "1.0.0"
+description = "Plot3D python utilities for reading and writing and also finding connectivity between blocks"
+authors = ["Paht Juangphanich <paht.juangphanich@nasa.gov>"]
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+plotly = "*"
+tqdm = "*"
+scipy = ">1.8.0"
+pandas = ">=1.4"
+numpy = ">1.23.1"
+matplotlib = ">3.2.1"
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=1.1.2"]
+build-backend = "poetry.masonry.api"    

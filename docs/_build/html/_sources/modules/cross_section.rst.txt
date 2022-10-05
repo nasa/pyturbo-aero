@@ -1,7 +1,0 @@
-Heat pipe cross section design 
-================================
-This class is for constructing the outer cross section of the heatpipe, whether that be circular or elliptical or square etc. 
-
-.. automodule:: pyturbo.cooling.cross_section
-    :members:
-    :special-members:

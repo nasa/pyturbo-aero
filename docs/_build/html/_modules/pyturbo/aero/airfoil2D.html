@@ -1,75 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>pyturbo.aero.airfoil2D &mdash; pyturbo 1.0.7 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
+  <title>pyturbo.aero.airfoil2D &mdash; pyturbo 1.0.9 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-
-    
+    <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../../../index.html" class="icon icon-home"> pyturbo
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
-                1.0.7
+                1.0.9
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -77,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">python API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/airfoil2D.html">Airfoil 2D</a></li>
@@ -98,74 +47,35 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/helper.html">PyTurbo.helper</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../../index.html">pyturbo</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../../index.html">Module code</a> &raquo;</li>
-        
       <li>pyturbo.aero.airfoil2D</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
+             
   <h1>Source code for pyturbo.aero.airfoil2D</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span><span class="n">sin</span><span class="p">,</span><span class="n">radians</span><span class="p">,</span><span class="n">degrees</span><span class="p">,</span><span class="n">pi</span><span class="p">,</span><span class="n">atan2</span><span class="p">,</span><span class="n">sqrt</span><span class="p">,</span><span class="n">atan</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize_scalar</span> 
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize_scalar</span>
 <span class="kn">from</span> <span class="nn">..helper</span> <span class="kn">import</span> <span class="n">bezier</span><span class="p">,</span><span class="n">line2D</span><span class="p">,</span><span class="n">ray2D</span><span class="p">,</span><span class="n">arc</span><span class="p">,</span><span class="n">ray2D_intersection</span><span class="p">,</span><span class="n">exp_ratio</span><span class="p">,</span><span class="n">convert_to_ndarray</span><span class="p">,</span><span class="n">derivative</span><span class="p">,</span><span class="n">dist</span><span class="p">,</span><span class="n">pw_bezier2D</span><span class="p">,</span><span class="n">bisect</span>
 <span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">CubicSpline</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -330,7 +240,7 @@
             <span class="k">return</span> <span class="n">err</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_counter_rotation</span><span class="p">):</span>
-            <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">nest_ps_derivative2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span><span class="o">*</span><span class="mi">30</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span> 
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">nest_ps_derivative2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span><span class="o">*</span><span class="mi">30</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">)</span> 
             <span class="n">h</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">x</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">nest_ps_derivative2</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span>
@@ -339,7 +249,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_psBezierY</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psBezierY</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="n">theta_ps</span><span class="p">))</span><span class="o">*</span><span class="n">h</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span> <span class="o">=</span> <span class="n">bezier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezierX</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezierY</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">h</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">nest_ss_derivative2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span><span class="o">*</span><span class="mi">30</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">nest_ss_derivative2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span><span class="o">*</span><span class="mi">30</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">nest_ss_derivative2</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">):</span>
                 <span class="n">h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_le_thickness</span>
 
@@ -503,12 +413,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span> <span class="o">=</span> <span class="n">bezier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezierX</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezierY</span><span class="p">)</span></div>
 
     <span class="c1"># Adds thickness to pressure side</span>
-<div class="viewcode-block" id="airfoil2D.ps_thickness_add"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.ps_thickness_add">[docs]</a>    <span class="k">def</span> <span class="nf">ps_thickness_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">thicknessArray</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">camberPercent</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">expansion_ratio</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
+<div class="viewcode-block" id="airfoil2D.ps_thickness_add"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.ps_thickness_add">[docs]</a>    <span class="k">def</span> <span class="nf">ps_thickness_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">thicknessArray</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">expansion_ratio</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Add thickness to the pressure side </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            thicknessArray (List[float]): thickness along the suction side. Example: [0.2400, 0.2000, 0.1600, 0.1400]</span>
-<span class="sd">            camberPercent (float, optional): this determines where the bezier points that define the suction side should end based on % camber. Defaults to None.</span>
 <span class="sd">            expansion_ratio (float, optional): determines the spacing of the thickness array from leading edge. Defaults to 1.2.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -519,7 +428,7 @@
         <span class="n">ps_height_loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ps_height_loc</span><span class="p">,[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">ps_height_loc</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">PS_thickness</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thicknessArray</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PS_thickness</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">thicknessArray</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t_ps</span> <span class="o">=</span> <span class="n">t</span>
         <span class="n">thicknessArray</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">PS_thickness</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_c</span>
         <span class="c1"># t - array</span>
@@ -898,30 +807,27 @@
 
 <div class="viewcode-block" id="airfoil2D.plot_camber"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.plot_camber">[docs]</a>    <span class="k">def</span> <span class="nf">plot_camber</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the camber of the airfoil</span>
-
+<span class="sd">        </span>
 <span class="sd">        Returns:</span>
-<span class="sd">            plt.figure: matplotlib figure </span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tplot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
         <span class="c1"># plt.ion()</span>
         <span class="n">marker_style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">markerfacecoloralt</span><span class="o">=</span><span class="s1">&#39;tab:red&#39;</span><span class="p">)</span>
 
         <span class="p">[</span><span class="n">xcamber</span><span class="p">,</span> <span class="n">ycamber</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">tplot</span><span class="p">)</span>
-        <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">marker_style</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">fig</span></div>
-
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span><span class="o">**</span><span class="n">marker_style</span><span class="p">)</span>        
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="airfoil2D.plot2D"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.plot2D">[docs]</a>    <span class="k">def</span> <span class="nf">plot2D</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Plots the airfoil</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            plt.figure: matplotlib figure</span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
         <span class="c1"># plt.ion()</span>
@@ -929,15 +835,15 @@
         <span class="p">[</span><span class="n">xPS</span><span class="p">,</span> <span class="n">yPS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="p">[</span><span class="n">xSS</span><span class="p">,</span> <span class="n">ySS</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
 
-        <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">clear</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS</span><span class="p">,</span><span class="n">yPS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS</span><span class="p">,</span><span class="n">yPS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS</span><span class="p">,</span><span class="n">ySS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS</span><span class="p">,</span><span class="n">ySS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span><span class="n">markerfacecolor</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span><span class="n">markersize</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
         <span class="c1"># Plot the line from camber to the control points</span>
         <span class="c1"># suction side</span>
         <span class="k">for</span> <span class="n">indx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ssBezierX</span><span class="p">)):</span>
@@ -945,27 +851,23 @@
             <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssBezierY</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">dist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">)</span>
             <span class="n">min_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">xcamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],[</span><span class="n">y</span><span class="p">,</span><span class="n">ycamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">xcamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],[</span><span class="n">y</span><span class="p">,</span><span class="n">ycamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
         <span class="c1"># pressure side</span>
         <span class="k">for</span> <span class="n">indx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_psBezierX</span><span class="p">)):</span>
             <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psBezierX</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
             <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psBezierY</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
             <span class="n">d</span> <span class="o">=</span> <span class="n">dist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">)</span>
             <span class="n">min_indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">d</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">d</span><span class="p">))</span>
-            <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">xcamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],[</span><span class="n">y</span><span class="p">,</span><span class="n">ycamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">xcamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],[</span><span class="n">y</span><span class="p">,</span><span class="n">ycamber</span><span class="p">[</span><span class="n">min_indx</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">)</span>
         <span class="c1"># Plot the Trailing Edge</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
         <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TE_ps_arc</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span>
 
         <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">TE_ss_arc</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span>
-
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>       
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">fig</span></div>
-
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="airfoil2D.plot2D_channel"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.plot2D_channel">[docs]</a>    <span class="k">def</span> <span class="nf">plot2D_channel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pitchChordRatio</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;plots the 2D airfoil in a channel with another airfoil given a pitch to chord ratio</span>
@@ -1011,51 +913,52 @@
         
         
         <span class="c1"># Plot turbine and pitch</span>
-        <span class="c1"># plt.ion()</span>
-        <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
+        <span class="n">fig</span><span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">clear</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber</span><span class="p">,</span><span class="n">ycamber</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS</span><span class="p">,</span><span class="n">yPS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS</span><span class="p">,</span><span class="n">yPS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS</span><span class="p">,</span><span class="n">ySS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS</span><span class="p">,</span><span class="n">ySS</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber2</span><span class="p">,</span><span class="n">ycamber2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xcamber2</span><span class="p">,</span><span class="n">ycamber2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS2</span><span class="p">,</span><span class="n">yPS2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xPS2</span><span class="p">,</span><span class="n">yPS2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS2</span><span class="p">,</span><span class="n">ySS2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xSS2</span><span class="p">,</span><span class="n">ySS2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>       
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>       
 
         <span class="c1"># Throat</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x_ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x_ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]],[</span><span class="n">y_ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y_ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x_ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">x_ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]],[</span><span class="n">y_ss</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">y_ps</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">x_ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],[</span><span class="n">y_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">y_ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">x_ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],[</span><span class="n">y_ss</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">y_ps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;dashed&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.1</span><span class="p">)</span>
         
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>       
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>       
 
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">xSS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xSS2</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xPS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xPS2</span><span class="p">)]),</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">xSS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xSS2</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xPS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xPS2</span><span class="p">)]))</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">ySS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">ySS2</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">yPS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">yPS2</span><span class="p">)]),</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">ySS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">ySS2</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">yPS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">yPS2</span><span class="p">)]))</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">fig</span></div>
-
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">xSS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xSS2</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xPS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">xPS2</span><span class="p">)]),</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">xSS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xSS2</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xPS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">xPS2</span><span class="p">)]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">ySS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">ySS2</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">yPS</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">yPS2</span><span class="p">)]),</span><span class="mf">1.05</span><span class="o">*</span><span class="nb">max</span><span class="p">([</span><span class="nb">max</span><span class="p">(</span><span class="n">ySS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">ySS2</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">yPS</span><span class="p">),</span><span class="nb">max</span><span class="p">(</span><span class="n">yPS2</span><span class="p">)]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
     
-<div class="viewcode-block" id="airfoil2D.plot_derivative2"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.plot_derivative2">[docs]</a>    <span class="k">def</span> <span class="nf">plot_derivative2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots the second derivative of the airfoil. Second derivative of variable points taken from https://mathformeremortals.wordpress.com/2013/01/12/a-numerical-second-derivative-from-three-points/</span>
+<div class="viewcode-block" id="airfoil2D.plot_derivative2"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.plot_derivative2">[docs]</a>    <span class="k">def</span> <span class="nf">plot_derivative2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xlim</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">ylim</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">400</span><span class="p">,</span><span class="mi">400</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Plots the second derivative of the airfoil.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            matplotlib.figure: matplotlib figure object</span>
-<span class="sd">            </span>
+<span class="sd">        References:</span>
+
+<span class="sd">            https://mathformeremortals.wordpress.com/2013/01/12/a-numerical-second-derivative-from-three-points/</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">        </span>
+<span class="sd">            xlim (list, optional): Plot x-axis. Defaults to [0,1].</span>
+<span class="sd">            ylim (list, optional): Plot y-axis. Defaults to [-400,400].</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
     
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
         <span class="p">[</span><span class="n">xs</span><span class="p">,</span><span class="n">ys</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="p">[</span><span class="n">xp</span><span class="p">,</span><span class="n">yp</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># plot(xs,ys,xp,yp)axis equal</span>
         <span class="n">ds2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
         <span class="n">dp2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> 
         <span class="n">alens</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># len along the ss and ps side</span>
@@ -1076,20 +979,19 @@
         
         <span class="c1"># Suction side</span>
         <span class="c1"># plt.ion()</span>
-        <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alens</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">alens</span><span class="p">),</span><span class="n">ds2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alens</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">alens</span><span class="p">),</span><span class="n">ds2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alenp</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">alenp</span><span class="p">),</span><span class="n">dp2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">alenp</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">alenp</span><span class="p">),</span><span class="n">dp2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;solid&#39;</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="o">-</span><span class="mi">400</span><span class="p">,</span> <span class="mi">400</span><span class="p">])</span>
-        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;d^2y/dx^2 suction side&#39;</span><span class="p">,</span><span class="s1">&#39;d^2y/dx^2 pressure side&#39;</span><span class="p">])</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;s(x)/s&#39;</span><span class="p">)</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;d^2y/dx^2&#39;</span><span class="p">)</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
-        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">fig</span></div>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">)</span>
+        <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;d^2y/dx^2 suction side&#39;</span><span class="p">,</span><span class="s1">&#39;d^2y/dx^2 pressure side&#39;</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;s(x)/s&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;d^2y/dx^2&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="airfoil2D.thickness"><a class="viewcode-back" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D.airfoil2D.thickness">[docs]</a>    <span class="k">def</span> <span class="nf">thickness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1301,46 +1203,30 @@
 </pre></div>
 
            </div>
-           
           </div>
           <footer>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, Paht Juangphanich.
-
-    </p>
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

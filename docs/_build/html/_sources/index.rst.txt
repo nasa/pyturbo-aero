@@ -5,7 +5,7 @@
    
 :gitlab_url: https://gitlab.grc.nasa.gov/lte-turbo/pyturbo/-/tree/master/aero
 
-PLOT3D DOCUMENTATION
+PyTurbo DOCUMENTATION
 ==================================
 
 .. toctree::
