@@ -1,0 +1,16 @@
+PyTurbo.Cooling
+====================
+The following classes addresses the combination of adding heat pipes to airfoils. The basic idea of adding a heat pipe to a 3D Blade design is as follows: Picture designing a heat pipe loop on a paper then wrapping the paper within the airfoil at some offset from the exterior walls.
+
+The Branch class deals with the construction of heatpipe loops in 2D
+:ref: modules/branch
+
+The cross section class
+:ref: modules/crosssection
+Heatpipe
+:ref: modules/heatpipe
+
+
+.. automodule:: pyturbo.cooling
+    :members:
+    :special-members:

@@ -1,0 +1,33 @@
+# This file is a template, and might need editing before it works on your project.
+# Full project: https://gitlab.com/pages/plain-html
+stages:
+  - build
+  - deploy
+  
+job:
+    stage: build
+    image: python:3.6
+    script:
+        - sudo yum update -q -y
+        - sudo yum install -y python3-pip
+        - pip install setuptools
+        - python3 setup.py install
+        - cd docs
+        - make html
+        - cd ../
+    artifacts:
+        untracked: true
+
+pages:
+    stage: deploy
+    script:
+        - mkdir .public
+        - cp -r docs/_build/html/* .public
+        - mv .public public
+    artifacts:
+        paths:
+            - public
+    only:
+        - master
+        - pyturbo
+    tags: [pyturbo]

@@ -1,0 +1,418 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>pyturbo.aero.airfoil3D &mdash; pyturbo 1.0.7 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> pyturbo
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0.7
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/airfoil2D.html">Designing a 2D Airfoil</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/airfoil3D.html">Stacking 2D Airfoils to construct a 3D blade</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/cooling.html">Heat Pipe Cooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes/advance.html">Notes for Advance Users</a></li>
+</ul>
+<p class="caption"><span class="caption-text">python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../aero.html">PyTurbo.Aero</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cooling.html">PyTurbo.Cooling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../helper.html">PyTurbo.helper</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyturbo</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>pyturbo.aero.airfoil3D</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../../_sources/modules/generated/pyturbo.aero.airfoil3D.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pyturbo-aero-airfoil3d">
+<h1>pyturbo.aero.airfoil3D<a class="headerlink" href="#pyturbo-aero-airfoil3d" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="pyturbo.aero.airfoil3D">
+<em class="property">class </em><code class="sig-prename descclassname">pyturbo.aero.</code><code class="sig-name descname">airfoil3D</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">profileArray</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pyturbo.aero.airfoil2D.airfoil2D<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">profile_loc</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">height</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyturbo/aero/airfoil3D.html#airfoil3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyturbo.aero.airfoil3D" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt id="pyturbo.aero.airfoil3D.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">profileArray</span><span class="p">:</span> <span class="n">List<span class="p">[</span>pyturbo.aero.airfoil2D.airfoil2D<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">profile_loc</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">height</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/pyturbo/aero/airfoil3D.html#airfoil3D.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pyturbo.aero.airfoil3D.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a 3D Airfoil</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>profileArray</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyturbo.aero.airfoil2D.html#pyturbo.aero.airfoil2D" title="pyturbo.aero.airfoil2D"><em>airfoil2D</em></a><em>]</em>) – array of airfoil2D profiles</p></li>
+<li><p><strong>profile_loc</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – location of the airfoil2D profiles</p></li>
+<li><p><strong>height</strong> (<em>float</em>) – height of the 3D blade</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__check_camber_intersection__</span></code>(ray, camber_x, …)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__check_ps_ray_intersection__</span></code>(ray, ps_x, ps_y)</p></td>
+<td><p>checks to see if the ray intersects the pressure side</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__check_ss_ray_intersection__</span></code>(ray, ss_x, ss_y)</p></td>
+<td><p>checks to see if the ray intersects the suction side</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delattr__</span></code>(name, /)</p></td>
+<td><p>Implement delattr(self, name).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__dir__</span></code>()</p></td>
+<td><p>Default dir() implementation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__eq__</span></code>(value, /)</p></td>
+<td><p>Return self==value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code>(format_spec, /)</p></td>
+<td><p>Default object formatter.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__ge__</span></code>(value, /)</p></td>
+<td><p>Return self&gt;=value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getattribute__</span></code>(name, /)</p></td>
+<td><p>Return getattr(self, name).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__gt__</span></code>(value, /)</p></td>
+<td><p>Return self&gt;value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__hash__</span></code>()</p></td>
+<td><p>Return hash(self).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init_subclass__</span></code></p></td>
+<td><p>This method is called when a class is subclassed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__le__</span></code>(value, /)</p></td>
+<td><p>Return self&lt;=value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__lt__</span></code>(value, /)</p></td>
+<td><p>Return self&lt;value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__ne__</span></code>(value, /)</p></td>
+<td><p>Return self!=value.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code>(**kwargs)</p></td>
+<td><p>Create and return a new object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code>()</p></td>
+<td><p>Helper for pickle.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code>(protocol, /)</p></td>
+<td><p>Helper for pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setattr__</span></code>(name, value, /)</p></td>
+<td><p>Implement setattr(self, name, value).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code>()</p></td>
+<td><p>Size of object in memory, in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__str__</span></code>()</p></td>
+<td><p>Return str(self).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></p></td>
+<td><p>Abstract classes can override this to customize issubclass().</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_nblades</span></code>(pitchChord, rhub)</p></td>
+<td><p>Calculates the number of blades</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cartesian</span></code>()</p></td>
+<td><p>Converts the default cylindrical coordinates to cartesian system</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">center_le</span></code>()</p></td>
+<td><p>centers the blade by placing leading edge at 0,0</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_cyl_cartesian</span></code>(rth, radius)</p></td>
+<td><p>Convert a single profile from cylindrical to cartesian coordinates.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_blade</span></code>(nProfiles, profile_points, …)</p></td>
+<td><p>Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">export_solidworks</span></code>(name)</p></td>
+<td><p>Export the blades in RTheta,Z,R coordinate format</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip</span></code>()</p></td>
+<td><p>Mirrors the blade by multiplying y direction by -1.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">flip_cw</span></code>()</p></td>
+<td><p>Mirrors the blade by multiplying -1*x direction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_chord</span></code>()</p></td>
+<td><p>Returns the chord, axial chord for all the profiles</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_circumference</span></code>(ss_x, ss_y, ps_x, ps_y)</p></td>
+<td><p>returns the circumferene of a 2D airfoil profile</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cross_section</span></code>(percent_span)</p></td>
+<td><p>Get an arbirtary cross section at percent span.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_cross_section_normal</span></code>(ss_x, ss_y, ps_x, ps_y)</p></td>
+<td><p>Gets the normal of a cross section for a given profile</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_pitch</span></code>(nBlades)</p></td>
+<td><p>Get the pitch distribution for a 3D blade row</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shell_2D</span></code>(percent_span, shell_thickness)</p></td>
+<td><p>Gets the 2D shell for a given % span</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_geometry</span></code>(folder[, npoints, nspan, …])</p></td>
+<td><p>imports geometry from a folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">lean_add</span></code>(leanX, leanZ)</p></td>
+<td><p>Leans the blade towards the suction or pressure side.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot3D</span></code>([only_blade])</p></td>
+<td><p>Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade’s stacking spine</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot3D_ly</span></code>([only_blade])</p></td>
+<td><p>Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade’s stacking spine</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_profile</span></code>(figureNum)</p></td>
+<td><p>Incomplete</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_shell_2D</span></code>(percent_span, shell_thickness)</p></td>
+<td><p>Plots the 2D shell used for placement of heat pipes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">profiles_shift</span></code>()</p></td>
+<td><p>Shift all profiles based on bezier curve that describes the spline of the blade</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate</span></code>(cx, cy[, angle])</p></td>
+<td><p>Rotate all shifted profiles about the leading edge including control profiles</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_zps</span></code>(zmin, zmax)</p></td>
+<td><p>scales the z axis to match the channel height.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_zss</span></code>(zmin, zmax)</p></td>
+<td><p>scales the z axis to match the channel height.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">section_z</span></code>(zStartPercent, zEndPercent)</p></td>
+<td><p>Chops the blade in between 2 spanwise lines.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shift</span></code>(x, y)</p></td>
+<td><p>Moves the blade and recomputes the geometry</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">spanwise_spline_fit</span></code>()</p></td>
+<td><p>Fits the blade with splines that run along the profiles Helps with the wavy design</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">spanwise_spline_fit_shell</span></code>(shell_thickness[, …])</p></td>
+<td><p>Applies a shell in the spanwise direction.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">stack</span></code>([stackType])</p></td>
+<td><p>Defines how the airfoil profiles are stacked</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">sweep</span></code>([sweep_y, sweep_z])</p></td>
+<td><p>Sweep bends the blade towards the leading edge or trailing edge.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">__doc__</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Paht Juangphanich.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

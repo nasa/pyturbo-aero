@@ -1,0 +1,7 @@
+Heat pipe Airfoil
+=============================================
+This code covers the different wrapping methods of heat pipes inside airfoils
+
+.. automodule:: pyturbo.cooling.heatpipe_airfoil
+    :members:
+    :special-members:
