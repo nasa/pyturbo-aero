@@ -6,7 +6,6 @@ Installation from pip
 > `pip install pyturbo-aero`
 
 Installation from source
-> `git clone https://gitlab.grc.nasa.gov/lte-turbo/pyturbo.git`
 > `python setup.py install`
 
 Importing the python package after installing
