@@ -15,8 +15,8 @@ Importing the python package after installing
 [Link to documentation](https://lte-turbo.gitlab.grc.nasa.gov/pyturbo/)
 
 # Tutorial
-- [2D Airfoil Design](tutorials/2D_DesignTutorial.ipynb)
-- [3D Airfoil Design](tutorials/2D_DesignTutorial.ipynb)
+- [2D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/2D_DesignTutorial.ipynb)
+- [3D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/2D_DesignTutorial.ipynb)
 
 # License
 [NASA Open Source Agreement](https://opensource.org/licenses/NASA-1.3)
