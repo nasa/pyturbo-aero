@@ -3,12 +3,14 @@ PyTurbo is a Full 2D to 3D Turbomachinery blade and passage generation tool. Des
 
 ## Installation 
 Installation from pip
-> `pip install pyturbo`
+> `pip install pyturbo-aero`
 
 Installation from source
 > `git clone https://gitlab.grc.nasa.gov/lte-turbo/pyturbo.git`
 > `python setup.py install`
 
+Importing the python package after installing
+> `import pyturbo_aero as pta`
 
 [Link to documentation](https://lte-turbo.gitlab.grc.nasa.gov/pyturbo/)
 
