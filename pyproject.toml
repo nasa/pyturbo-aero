@@ -1,8 +1,11 @@
 [tool.poetry]
-name = "pyturbo-aero"
-version = "1.0.0"
-description = "Plot3D python utilities for reading and writing and also finding connectivity between blocks"
+name = "pyturbo_aero"
+version = "1.0.1"
+description = "PyTurbo_Aero is a Turbomachinery blade design library that lets you create a full 3D blades and passages."
 authors = ["Paht Juangphanich <paht.juangphanich@nasa.gov>"]
+packages = [
+    { include = "pyturbo_aero" }
+]
 
 [tool.poetry.dependencies]
 python = ">=3.7"

@@ -190,3 +190,4 @@ tgs_format.py
 *.vs_conn
 *.q
 *.soln
+.DS_Store
