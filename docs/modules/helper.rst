@@ -1,6 +1,6 @@
 PyTurbo.helper
 ====================
 
-.. automodule:: pyturbo.helper
+.. automodule:: pyturbo_aero.helper
     :members:
     :special-members:

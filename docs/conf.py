@@ -14,19 +14,19 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('_ext'))
 import sphinx_rtd_theme
-import pyturbo
-import pyturbo.aero
-import pyturbo.helper
+import pyturbo_aero
+import pyturbo_aero.aero
+import pyturbo_aero.helper
 
 # -- Project information -----------------------------------------------------
 
-project = 'pyturbo'
+project = 'pyturbo-aero'
 copyright = '2021, Paht Juangphanich'
 author = 'Paht Juangphanich <paht.juangphanich@nasa.gov>'
 
 # The full version, including alpha/beta/rc tags
-version = '1.0.9' 
-release = '1.0.9' 
+version = '1.0.1' 
+release = '1.0.1' 
 
 
 # -- General configuration ---------------------------------------------------
@@ -62,7 +62,7 @@ napoleon_custom_sections = None
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
-srclink_project = 'https://gitlab.grc.nasa.gov/lte-turbo/'
+srclink_project = 'https://github.com/nasa/pyturbo-aero'
 srclink_branch = 'master'
 srclink_src_path = 'docs/'
 
@@ -90,8 +90,8 @@ html_theme_options = {
 }
 
 
-html_static_path = ['_static']
-rst_context = {'pyturbo': pyturbo}
+html_static_path = ['static']
+rst_context = {'pyturbo-aero': pyturbo_aero}
 
 
 def setup(app):

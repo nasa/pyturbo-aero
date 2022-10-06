@@ -17,9 +17,8 @@ PyTurbo DOCUMENTATION
    modules/airfoil2D
    modules/airfoil3D
    modules/channel
-   modules/wavy
    modules/helper
-
+   modules/wavy
 
 
 Indices and tables
