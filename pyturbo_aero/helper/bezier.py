@@ -111,17 +111,24 @@ class bezier():
 
 
     def plot2D(self,equal_space=False):
-        fig = plt.figure(); plt.clf()
-        t = np.linspace(0,1,100)
-        [x,y] = self.get_point(t,equal_space)
-        _, ax1 = plt.subplots()
-        
-        ax1.plot(x, y,'.b')
-        ax1.plot(self.x, self.y,'or')
+        """Creates a 2D Plot of a bezier curve 
 
-        ax1.set_xlabel("x-label")
-        ax1.set_ylabel("y-label")
-        plt.show()
+        Args:            
+            equal_space (bool, optional): Equally spaces the points using arc length. Defaults to False.
+            figure_num (int, optional): if you want plots to be on the same figure. Defaults to None.
+        """
+
+        
+        t = np.linspace(0,1,100)
+        [x,y] = self.get_point(t,equal_space)        
+        plt.plot(x, y,'-b')
+        plt.plot(self.x, self.y,'or')
+
+        plt.xlabel("x-label")
+        plt.ylabel("y-label")
+        plt.axis('scaled')
+
+        
 
     def get_point_dt(self,t):
         """
@@ -315,7 +322,7 @@ class pw_bezier2D:
                 self.bezierArray[i].y[j] = self.bezierArray[i].y[j]+y
             
     
-    def Plot(self):
+    def plot(self):
         for i in range(0,len(self.bezierArray)):
-            self.bezierArray[i].plot()
+            self.bezierArray[i].plot2D()
 
