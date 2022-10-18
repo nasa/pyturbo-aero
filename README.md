@@ -11,7 +11,7 @@ Installation from source
 Importing the python package after installing
 > `import pyturbo_aero as pta`
 
-[Link to documentation](https://lte-turbo.gitlab.grc.nasa.gov/pyturbo/)
+[Link to documentation](https://nasa.github.io/pyturbo-aero/build/html/)
 
 # Tutorial
 - [2D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/2D_DesignTutorial.ipynb)
