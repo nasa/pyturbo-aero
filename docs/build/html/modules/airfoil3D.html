@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Airfoil 3D &mdash; pyturbo-aero 1.0.1 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="2D Passage definition" href="channel.html" />
+    <link rel="prev" title="Airfoil 2D" href="airfoil2D.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> pyturbo-aero
+          </a>
+              <div class="version">
+                1.0.1
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">python API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="airfoil2D.html">Airfoil 2D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Airfoil 3D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="channel.html">2D Passage definition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="channel.html#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="helper.html">PyTurbo.helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="wavy.html">Wavy Airfoil</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">pyturbo-aero</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Airfoil 3D</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/modules/airfoil3D.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-pyturbo_aero.aero.airfoil3D">
+<span id="airfoil-3d"></span><h1>Airfoil 3D<a class="headerlink" href="#module-pyturbo_aero.aero.airfoil3D" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo_aero.aero.airfoil3D.</span></span><span class="sig-name descname"><span class="pre">airfoil3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">profileArray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D" title="pyturbo_aero.aero.airfoil2D.airfoil2D"><span class="pre">airfoil2D</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D" title="Permalink to this definition"></a></dt>
+<dd><p>Defines a 3D Airfoil to be used in a channel</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ps_ray_intersection__">
+<span class="sig-name descname"><span class="pre">__check_ps_ray_intersection__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.__check_ps_ray_intersection__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ps_ray_intersection__" title="Permalink to this definition"></a></dt>
+<dd><p>checks to see if the ray intersects the pressure side</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ss_ray_intersection__">
+<span class="sig-name descname"><span class="pre">__check_ss_ray_intersection__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss_y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.__check_ss_ray_intersection__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ss_ray_intersection__" title="Permalink to this definition"></a></dt>
+<dd><p>checks to see if the ray intersects the suction side</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.calc_nblades">
+<span class="sig-name descname"><span class="pre">calc_nblades</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pitchChord</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.calc_nblades"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.calc_nblades" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the number of blades</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pitchChord</strong> (<em>float</em>) – pitch to chord ratio</p></li>
+<li><p><strong>rhub</strong> (<em>float</em>) – hub radius</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.cartesian">
+<span class="sig-name descname"><span class="pre">cartesian</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.cartesian" title="Permalink to this definition"></a></dt>
+<dd><p>Converts the default cylindrical coordinates to cartesian system</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.center_le">
+<span class="sig-name descname"><span class="pre">center_le</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.center_le"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.center_le" title="Permalink to this definition"></a></dt>
+<dd><p>centers the blade by placing leading edge at 0,0</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.convert_cyl_cartesian">
+<span class="sig-name descname"><span class="pre">convert_cyl_cartesian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.convert_cyl_cartesian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.convert_cyl_cartesian" title="Permalink to this definition"></a></dt>
+<dd><p>Convert a single profile from cylindrical to cartesian coordinates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rth</strong> (<em>np.ndarray</em>) – points in rtheta coordinate system</p></li>
+<li><p><strong>radius</strong> (<em>np.ndarray</em>) – radius values of those points</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>yss</strong> (numpy.ndarray): y direction</p></li>
+<li><p><strong>zss</strong> (numpy.ndarray): z direction</p></li>
+<li><p><strong>thss</strong> (numpy.ndarray): theta direction</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.create_blade">
+<span class="sig-name descname"><span class="pre">create_blade</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nProfiles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">profile_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">te_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.create_blade"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.create_blade" title="Permalink to this definition"></a></dt>
+<dd><p>Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nProfiles</strong> (<em>int</em>) – number of intermeidate profiles to generate</p></li>
+<li><p><strong>profile_points</strong> (<em>int</em>) – number of points per profile. Suction and Pressure side will have this number of points</p></li>
+<li><p><strong>te_points</strong> (<em>int</em>) – Number of trailing edge points</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.export_solidworks">
+<span class="sig-name descname"><span class="pre">export_solidworks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.export_solidworks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.export_solidworks" title="Permalink to this definition"></a></dt>
+<dd><p>Export the blades in RTheta,Z,R coordinate format</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>string</em>) – exported filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.flip">
+<span class="sig-name descname"><span class="pre">flip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.flip" title="Permalink to this definition"></a></dt>
+<dd><p>Mirrors the blade by multiplying y direction by -1. This is assuming axial chord is in the y direction and span is in z</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.flip_cw">
+<span class="sig-name descname"><span class="pre">flip_cw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.flip_cw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.flip_cw" title="Permalink to this definition"></a></dt>
+<dd><p>Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_chord">
+<span class="sig-name descname"><span class="pre">get_chord</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_chord"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_chord" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the chord, axial chord for all the profiles</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_circumference">
+<span class="sig-name descname"><span class="pre">get_circumference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ss_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_circumference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_circumference" title="Permalink to this definition"></a></dt>
+<dd><p>returns the circumferene of a 2D airfoil profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ss_x</strong> (<em>np.ndarray</em>) – suction size x</p></li>
+<li><p><strong>ss_y</strong> (<em>np.ndarray</em>) – suction side y</p></li>
+<li><p><strong>ps_x</strong> (<em>np.ndarray</em>) – pressure side x</p></li>
+<li><p><strong>ps_y</strong> (<em>np.ndarray</em>) – pressure side y</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>ss_len</strong> (float): suction side length</p></li>
+<li><p><strong>ps_len</strong> (float): pressure side length</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section">
+<span class="sig-name descname"><span class="pre">get_cross_section</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent_span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_cross_section"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section" title="Permalink to this definition"></a></dt>
+<dd><p>Get an arbirtary cross section at percent span. Doesn’t factor into account the shift caused by the channel. Assumes the blade hasn’t been placed inside of a channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>percent_span</strong> (<em>float</em>) – percent span to get the cross section</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>xss</strong> (numpy.ndarray): suction side x coordinate</p></li>
+<li><p><strong>yss</strong> (numpy.ndarray): suction side y coordinate</p></li>
+<li><p><strong>zss</strong> (numpy.ndarray): suction side z coordinate</p></li>
+<li><p><strong>xps</strong> (numpy.ndarray): pressure side x coordinate</p></li>
+<li><p><strong>yps</strong> (numpy.ndarray): pressure side y coordinate</p></li>
+<li><p><strong>zps</strong> (numpy.ndarray): pressure side z coordinate</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section_normal">
+<span class="sig-name descname"><span class="pre">get_cross_section_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ss_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ps_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_cross_section_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section_normal" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the normal of a cross section for a given profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ss_x</strong> (<em>np.ndarray</em>) – x - suction side points of a given profile</p></li>
+<li><p><strong>ss_y</strong> (<em>np.ndarray</em>) – y - suction side points of a given profile</p></li>
+<li><p><strong>ps_x</strong> (<em>np.ndarray</em>) – x - pressure side points of a given profile</p></li>
+<li><p><strong>ps_y</strong> (<em>np.ndarray</em>) – y - pressure side points</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>ss_nx</strong> (np.ndarray): normal vector on suction side</p></li>
+<li><p><strong>ss_ny</strong> (np.ndarray): normal vector on suction side</p></li>
+<li><p><strong>ps_nx</strong> (np.ndarray): normal vector on pressure side</p></li>
+<li><p><strong>ps_ny</strong> (np.ndarray): normal vector on pressure side</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_pitch">
+<span class="sig-name descname"><span class="pre">get_pitch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nBlades</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_pitch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_pitch" title="Permalink to this definition"></a></dt>
+<dd><p>Get the pitch distribution for a 3D blade row</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nBlades</strong> (<em>int</em>) – Number of blades</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>s</strong> (numpy.ndarray): pitch distribution</p></li>
+<li><p><strong>s_c</strong> (numpy.ndarray): pitch to chord distribution</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.get_shell_2D">
+<span class="sig-name descname"><span class="pre">get_shell_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent_span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">80</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.get_shell_2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.get_shell_2D" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the 2D shell for a given % span</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percent_span</strong> (<em>float</em>) – where along the span do you want the shell the blade</p></li>
+<li><p><strong>shell_thickness</strong> (<em>float</em>) – offset from the outer wall</p></li>
+<li><p><strong>smooth</strong> (<em>float</em><em>, </em><em>optional</em>) – what percentage of the points do you want to use to smooth the design. Defaults to 0.1.</p></li>
+<li><p><strong>shell_points</strong> (<em>int</em><em>, </em><em>optional</em>) – number of points to describe the shell. Defaults to 80.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<ul class="simple">
+<li><p><strong>ss_x</strong> (numpy.ndarray): suction side tangential (x) coordinates</p></li>
+<li><p><strong>ss_y</strong> (numpy.ndarray): suction side axial (y) coordinates</p></li>
+<li><p><strong>ss_z</strong> (numpy.ndarray): suction size radial (z) coordinates</p></li>
+<li><p><strong>ps_x</strong> (numpy.ndarray): pressure side tangential (x) coordinates</p></li>
+<li><p><strong>ps_y</strong> (numpy.ndarray): pressure side axial (y) coordinates</p></li>
+<li><p><strong>ps_z</strong> (numpy.ndarray): pressure side axial (z) coordinates</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(tuple)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.import_geometry">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">import_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nspan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axial_chord</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ss_ps_split</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.import_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.import_geometry" title="Permalink to this definition"></a></dt>
+<dd><p>imports geometry from a folder. Make sure there are 2 files inside the folder example: airfoil_0.txt and airfoil_1.txt. In this example, these two files represent the hub and tip. You can have as many as you want but 2 is the minimum. Filenames are sorted before import</p>
+<p>airfoil_0 can contain 2 columns x,y or 3 columns x,y,z. Z column isn’t used because you set the span. The span determines the spanwise location of the two airfoils</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folder</strong> (<em>[</em><em>str</em><em>]</em>) – folder containing the airfoils</p></li>
+<li><p><strong>npoints</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of points to scale the points to. Defaults to 100.</p></li>
+<li><p><strong>nspan</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of spanwise profiles to create. Defaults to 2.</p></li>
+<li><p><strong>axial_chord</strong> (<em>int</em><em>, </em><em>optional</em>) – Defines the length of the axial chord. Axial chord within the file will be scaled. Defaults to 1.</p></li>
+<li><p><strong>span</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Spanwise location of the profiles. Defaults to [0,1] for 2 profiles.</p></li>
+<li><p><strong>ss_ps_split</strong> (<em>int</em><em>, </em><em>optional</em>) – determines what index to split the suction and pressure side, default is number of points/2. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>airfoil3D object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference internal" href="#pyturbo_aero.aero.airfoil3D.airfoil3D" title="pyturbo_aero.aero.airfoil3D.airfoil3D">airfoil3D</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.lean_add">
+<span class="sig-name descname"><span class="pre">lean_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">leanX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">leanZ</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.lean_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.lean_add" title="Permalink to this definition"></a></dt>
+<dd><p>Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>leanX</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – lean points</p></li>
+<li><p><strong>leanZ</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – spanwise location of the lean points</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D">
+<span class="sig-name descname"><span class="pre">plot3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_blade</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.plot3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade’s stacking spine</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>only_blade</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only plot the blade, no stacking spine. Defaults to False.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>figure object (fig.show())</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(matplotlib.figure)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D_ly">
+<span class="sig-name descname"><span class="pre">plot3D_ly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_blade</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.plot3D_ly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D_ly" title="Permalink to this definition"></a></dt>
+<dd><p>Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade’s stacking spine</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>only_blade</strong> (<em>bool</em><em>, </em><em>optional</em>) – Only plot the blade, no stacking spine. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.plot_profile">
+<span class="sig-name descname"><span class="pre">plot_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">figureNum</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.plot_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.plot_profile" title="Permalink to this definition"></a></dt>
+<dd><p>Incomplete</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>figureNum</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.plot_shell_2D">
+<span class="sig-name descname"><span class="pre">plot_shell_2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent_span</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shell_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.plot_shell_2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.plot_shell_2D" title="Permalink to this definition"></a></dt>
+<dd><p>Plots the 2D shell used for placement of heat pipes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percent_span</strong> (<em>float</em>) – percent span where shell occurs</p></li>
+<li><p><strong>shell_thickness</strong> (<em>float</em>) – thickness to remove from the blade</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matplotlib figure object</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(matplotlib.figure)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.profiles_shift">
+<span class="sig-name descname"><span class="pre">profiles_shift</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.profiles_shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.profiles_shift" title="Permalink to this definition"></a></dt>
+<dd><p>Shift all profiles based on bezier curve that describes the spline of the blade</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.rotate">
+<span class="sig-name descname"><span class="pre">rotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.rotate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.rotate" title="Permalink to this definition"></a></dt>
+<dd><p>Rotate all shifted profiles about the leading edge including control profiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cx</strong> (<em>float</em>) – rotation point x coordinate</p></li>
+<li><p><strong>cy</strong> (<em>float</em>) – rotation point y coordinate</p></li>
+<li><p><strong>angle</strong> (<em>float</em><em>, </em><em>optional</em>) – clockwise angle to rotate. Defaults to 0.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zps">
+<span class="sig-name descname"><span class="pre">scale_zps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.scale_zps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zps" title="Permalink to this definition"></a></dt>
+<dd><p>scales the z axis to match the channel height. Channel height may be defined as the radius</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zmin</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Array of size n corresponding to minimum radius</p></li>
+<li><p><strong>zmax</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Array of size n corresponding to maximum radius</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zss">
+<span class="sig-name descname"><span class="pre">scale_zss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.scale_zss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zss" title="Permalink to this definition"></a></dt>
+<dd><p>scales the z axis to match the channel height. Channel height may be defined as the radius</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zmin</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Array of size n corresponding to minimum radius</p></li>
+<li><p><strong>zmax</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – Array of size n corresponding to maximum radius</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.section_z">
+<span class="sig-name descname"><span class="pre">section_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zStartPercent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zEndPercent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.section_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.section_z" title="Permalink to this definition"></a></dt>
+<dd><p>Chops the blade in between 2 spanwise lines. Think of it as cutting the blade between (zStartPercent) 10% and (zEndPercent) 50%</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zStartPercent</strong> (<em>float</em>) – bottom % of the blade to cut from</p></li>
+<li><p><strong>zEndPercent</strong> (<em>float</em>) – top % of blade to cut from. stuff in middle is saved</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.shift">
+<span class="sig-name descname"><span class="pre">shift</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.shift"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.shift" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Moves the blade and recomputes the geometry</dt><dd><p>Step 1 - shifts the profiles
+Step 2 - add lean and sweep again
+Step 3 - recompute the geometry if npts != 0</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – shift in x direction</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – shift in y directrion</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit">
+<span class="sig-name descname"><span class="pre">spanwise_spline_fit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.spanwise_spline_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit" title="Permalink to this definition"></a></dt>
+<dd><p>Fits the blade with splines that run along the profiles
+Helps with the wavy design</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit_shell">
+<span class="sig-name descname"><span class="pre">spanwise_spline_fit_shell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shell_thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.spanwise_spline_fit_shell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit_shell" title="Permalink to this definition"></a></dt>
+<dd><p>Applies a shell in the spanwise direction. Creates a new blade inside the current blade. Helps with heat pipe design</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shell_thickness</strong> (<em>float</em>) – how much material to remove from the blade</p></li>
+<li><p><strong>smooth</strong> (<em>float</em><em>, </em><em>optional</em>) – How much smoothing should be performed. Defaults to 0.1.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.stack">
+<span class="sig-name descname"><span class="pre">stack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">stackType</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">stack_type.centroid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.stack"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.stack" title="Permalink to this definition"></a></dt>
+<dd><p>Defines how the airfoil profiles are stacked</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>stackType</strong> (<a class="reference internal" href="#pyturbo_aero.aero.airfoil3D.stack_type" title="pyturbo_aero.aero.airfoil3D.stack_type"><em>stack_type</em></a><em>, </em><em>optional</em>) – Options are centroid, Leading Edge, Trailing Edge. Defaults to stack_type.centroid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.airfoil3D.sweep">
+<span class="sig-name descname"><span class="pre">sweep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sweep_y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweep_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#airfoil3D.sweep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.airfoil3D.sweep" title="Permalink to this definition"></a></dt>
+<dd><p>Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sweep_y</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – adds bezier points to the sweep of the blade. Defaults to [].</p></li>
+<li><p><strong>sweep_z</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – defines where along the span the sweep points should be located. Defaults to [].</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyturbo_aero.aero.airfoil3D.stack_type">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo_aero.aero.airfoil3D.</span></span><span class="sig-name descname"><span class="pre">stack_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/airfoil3D.html#stack_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.airfoil3D.stack_type" title="Permalink to this definition"></a></dt>
+<dd><p>class defining the type of stacking for airfoil2D profiles</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>enum</strong> (<em>enum.Emum</em>) – inherits enum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="airfoil2D.html" class="btn btn-neutral float-left" title="Airfoil 2D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="channel.html" class="btn btn-neutral float-right" title="2D Passage definition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
