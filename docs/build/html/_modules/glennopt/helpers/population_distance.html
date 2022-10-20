@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>glennopt.helpers.population_distance &mdash; GlennOPT 1.4.* documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GlennOPT
+          </a>
+              <div class="version">
+                1.4.*
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-source">Installation via Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/optimizers.html">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GlennOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>glennopt.helpers.population_distance</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for glennopt.helpers.population_distance</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">.mutate</span> <span class="kn">import</span> <span class="n">get_eval_param_matrix</span><span class="p">,</span> <span class="n">get_objective_matrix</span><span class="p">,</span> <span class="n">set_eval_parameters</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<div class="viewcode-block" id="diversity"><a class="viewcode-back" href="../../../modules/helpers.html#glennopt.helpers.population_distance.diversity">[docs]</a><span class="k">def</span> <span class="nf">diversity</span><span class="p">(</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Computes the diversity of a population. Higher diversity value the better.</span>
+
+<span class="sd">    Citations: </span>
+<span class="sd">        J. Hu, J. Zeng, and Y. Tan, ‘‘A diversity-guided particle swarm optimizer for dynamic environments,’’ in Bio-Inspired Computational Intelligence and Applications. Berlin, Germany: Springer, 2007, pp. 239–247</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        individuals (List[Individual]): List of individuals of a population </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: diversity value </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Np</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+    <span class="n">D</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">)</span>
+    <span class="n">x_avg</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">individuals</span><span class="p">]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">Np</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Np</span><span class="p">):</span>        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">individuals</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">eval_parameters</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">D</span><span class="p">):</span>            
+            <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="n">x_avg</span><span class="p">[</span><span class="n">j</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    
+    <span class="n">pop_diversity</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="n">Np</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">L</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pop_diversity</span></div>
+
+<div class="viewcode-block" id="distance"><a class="viewcode-back" href="../../../modules/helpers.html#glennopt.helpers.population_distance.distance">[docs]</a><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span> <span class="n">newIndividuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the distance between individuals</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        individuals (List[Individual]): past list of individuals </span>
+<span class="sd">        newIndividuals (List[Individual]): updated list of individuals </span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: distance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pop</span><span class="p">,</span> <span class="n">_</span> <span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_eval_param_matrix</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+    <span class="n">newPop</span><span class="p">,</span> <span class="n">_</span> <span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_eval_param_matrix</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">)</span>
+    <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">pop</span> <span class="o">-</span> <span class="n">newPop</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>   <span class="c1"># Compute distance</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">dist</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

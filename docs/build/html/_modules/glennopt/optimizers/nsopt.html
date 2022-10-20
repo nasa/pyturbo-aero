@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>glennopt.optimizers.nsopt &mdash; GlennOPT 1.4.* documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GlennOPT
+          </a>
+              <div class="version">
+                1.4.*
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-source">Installation via Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/optimizers.html">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GlennOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>glennopt.optimizers.nsopt</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for glennopt.optimizers.nsopt</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    adjoint - gradient based optimization </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">copy</span><span class="o">,</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span><span class="p">,</span> <span class="n">Bounds</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
+<span class="kn">from</span> <span class="nn">torch.utils.data</span> <span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span> <span class="nn">torch.optim</span> <span class="kn">import</span> <span class="n">AdamW</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">MinMaxScaler</span><span class="p">,</span> <span class="n">StandardScaler</span>
+
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">MultiLayerLinear</span> 
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">diversity</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">set_eval_parameters</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">non_dominated_sorting</span><span class="p">,</span> <span class="n">find_intercepts</span><span class="p">,</span> <span class="n">uniform_reference_points</span><span class="p">,</span> <span class="n">sort_and_select_population</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">compute_mse</span><span class="p">,</span> <span class="n">transform_data</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">.nsga3</span> <span class="kn">import</span> <span class="n">find_intercepts</span>
+<span class="n">individual_list</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]</span>
+
+<div class="viewcode-block" id="surrogate_objective_func"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.surrogate_objective_func">[docs]</a><span class="nd">@torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">surrogate_objective_func</span><span class="p">(</span><span class="n">x0</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">model</span><span class="p">:</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span><span class="n">reference_points</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span><span class="n">dist_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">labels_scaler</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">MinMaxScaler</span><span class="p">],</span> <span class="n">features_scaler</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">MinMaxScaler</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Objective function of adjoint using neural networks. The goal is to use this function to find values of x0 that minimize the distance to the reference point</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x0 (np.ndarray): initial guess</span>
+<span class="sd">        model (nn.Module): neural network model used for prediction</span>
+<span class="sd">        reference_points (List[np.ndarray]): array of reference points along the pareto front</span>
+<span class="sd">        intercepts (np.ndarray)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): sum of all the fitnesses. This is the value to be minimized</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x0_2</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">features_scaler</span><span class="p">)):</span>
+        <span class="n">x0_2</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="o">=</span> <span class="n">features_scaler</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">x0_2</span><span class="p">[</span><span class="n">l</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+
+    <span class="n">x0_2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">x0_2</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">fitnesses</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x0_2</span><span class="p">)</span>
+    <span class="n">fitnesses</span> <span class="o">=</span> <span class="n">fitnesses</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>    
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">labels_scaler</span><span class="p">)):</span>        
+        <span class="n">fitnesses</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_scaler</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">inverse_transform</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">reference_points</span><span class="p">[</span><span class="n">dist_index</span><span class="p">][</span><span class="n">f</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">[</span><span class="n">f</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="NSOPT"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT">[docs]</a><span class="k">class</span> <span class="nc">NSOPT</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">eval_command</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;python evaluation.py&quot;</span><span class="p">,</span> <span class="n">eval_folder</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Evaluation&quot;</span><span class="p">,</span> <span class="n">optimization_folder</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">single_folder_eval</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_input_file</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">linear_network</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">,</span><span class="mi">64</span><span class="p">],</span><span class="n">epochs</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">train_test_split</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="n">pareto_resolution</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">min_method</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;Powell&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;NSOPT - Non-dominated Sorting Machine Learning Optimization Strategy for multi-objective applications.</span>
+<span class="sd">            This strategy uses machine learning to build a surrogate model and scipy.optimizer.minimize to search for the values of $\vec{x}$ minimizes all objectives. The results will be a pareto front or surface or whatever that is in higher dimensions. </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            eval_command (str, optional): This is the evaluation command that will be called inside the Individual&#39;s folder. Defaults to &quot;python evaluation.py&quot;.</span>
+<span class="sd">            eval_folder (str, optional): Folder that contains the executable files that are copied into each separate evaluation. Defaults to &quot;Evaluation&quot;.</span>
+<span class="sd">            optimization_folder (str, optional): Folder where the optimization and doe work should be stored in. Defaults to None.</span>
+<span class="sd">            single_folder_eval (bool, optional): Evaluate within a single folder and not make a bunch of folders . Defaults to False.</span>
+<span class="sd">            overwrite_input_file (bool, optional): whether or not to overwrite the input file with new data when restarting a simulation. Defaults to False.</span>
+<span class="sd">            linear_network (list, optional): Size of MultiLinear network. Defaults to [64,64,64,64].</span>
+<span class="sd">            epochs (int, optional): Number of epochs to train neural network for. Defaults to 200</span>
+<span class="sd">            train_test_split (float, optional): Number of datapoints to be assigned to train and test. Defaults to 0.8.</span>
+<span class="sd">            pareto_resolution (int, optional): indicates how many points to use to search for the pareto. This is also the population size. </span>
+<span class="sd">            min_method (str, optional): minimization method from https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html. Defaults to &#39;Powell&#39;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;NSOPT&quot;</span><span class="p">,</span><span class="n">eval_command</span><span class="o">=</span><span class="n">eval_command</span><span class="p">,</span><span class="n">eval_folder</span><span class="o">=</span><span class="n">eval_folder</span><span class="p">,</span> <span class="n">opt_folder</span><span class="o">=</span><span class="n">optimization_folder</span><span class="p">,</span><span class="n">single_folder_eval</span><span class="o">=</span><span class="n">single_folder_eval</span><span class="p">,</span><span class="n">overwrite_input_file</span><span class="o">=</span><span class="n">overwrite_input_file</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">individuals</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">linear_network</span> <span class="o">=</span> <span class="n">linear_network</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_test_split</span> <span class="o">=</span> <span class="n">train_test_split</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span> <span class="o">=</span> <span class="n">pareto_resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min_method</span> <span class="o">=</span> <span class="n">min_method</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_scalers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_scalers</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features_str</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="NSOPT.train"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span><span class="n">retrain</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trains the neural network to predict the output given an input </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individuals (List[Individual]): List of individuals to train the neural network</span>
+<span class="sd">            retrain (bool, Optional): (True) retrains the existing model on new data. (False) create a new model for every population. Setting it to false means training takes longer but the model is more accurate because it renormalizes the inputs and outputs. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple[float float]: Train Loss and test loss </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># * Normalizing the Data</span>
+        <span class="k">if</span> <span class="n">retrain</span><span class="p">:</span> <span class="c1"># If we simply train it with more data then there&#39;s no reason create new normalization scalers</span>
+            <span class="n">normalized_individuals</span><span class="p">,</span> <span class="n">label_scalers</span><span class="p">,</span> <span class="n">feature_scalers</span><span class="p">,</span> <span class="n">labels_str</span><span class="p">,</span> <span class="n">features_str</span> <span class="o">=</span> <span class="n">transform_data</span><span class="p">(</span><span class="n">individuals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">label_scalers</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_scalers</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">normalized_individuals</span><span class="p">,</span> <span class="n">label_scalers</span><span class="p">,</span> <span class="n">feature_scalers</span><span class="p">,</span> <span class="n">labels_str</span><span class="p">,</span> <span class="n">features_str</span> <span class="o">=</span> <span class="n">transform_data</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_scalers</span> <span class="o">=</span> <span class="n">label_scalers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feature_scalers</span> <span class="o">=</span> <span class="n">feature_scalers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_str</span> <span class="o">=</span> <span class="n">labels_str</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">features_str</span> <span class="o">=</span> <span class="n">features_str</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">objectives</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">normalized_individuals</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">features</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">as_tensor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">normalized_individuals</span><span class="p">]),</span><span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        
+        <span class="c1"># Transform</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">features</span><span class="p">,</span><span class="n">labels</span><span class="p">))</span>
+        <span class="n">test_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">))</span>
+        <span class="n">train_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-</span> <span class="n">test_size</span><span class="p">)</span>
+        <span class="n">train_dataset</span><span class="p">,</span> <span class="n">test_dataset</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">,</span><span class="n">train_size</span><span class="o">=</span><span class="n">train_size</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">train_dl</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">test_dl</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">test_dataset</span><span class="p">,</span><span class="n">batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span><span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># * Defining the Model        </span>
+        <span class="n">n_inputs</span> <span class="o">=</span> <span class="n">features</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">n_outputs</span> <span class="o">=</span> <span class="n">labels</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">retrain</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">MultiLayerLinear</span><span class="p">(</span><span class="n">n_inputs</span><span class="p">,</span><span class="n">n_outputs</span><span class="p">,</span><span class="n">h_sizes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">linear_network</span><span class="p">)</span>
+            <span class="c1"># self.optimizer = LBFGS(self.model.parameters(), lr=0.0001,history_size=100, max_eval=int(20*1.25), max_iter=20)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">AdamW</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span> <span class="o">=</span> <span class="n">n_inputs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span> <span class="o">=</span> <span class="n">n_outputs</span> 
+
+        <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">epochs</span><span class="p">):</span>
+            <span class="n">train_running_loss</span> <span class="o">=</span> <span class="mi">0</span> 
+            <span class="n">n_train</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">train_dl</span><span class="p">):</span>
+                <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span> <span class="c1"># Zero gradients, backward pass, and update weights</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+                <span class="c1"># calculate the loss again for monitoring</span>
+                <span class="n">train_running_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">n_train</span> <span class="o">+=</span> <span class="n">batch_size</span>
+            
+            <span class="n">test_loss</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">n_test</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_dl</span><span class="p">):</span>
+                <span class="n">batch_size</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">y_pred</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                <span class="n">test_loss</span> <span class="o">+=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="n">n_test</span> <span class="o">+=</span> <span class="n">batch_size</span>
+            <span class="n">train_running_loss</span> <span class="o">/=</span> <span class="n">n_train</span>
+            <span class="n">test_loss</span> <span class="o">/=</span> <span class="n">n_test</span>
+        <span class="k">return</span> <span class="n">train_running_loss</span><span class="p">,</span> <span class="n">test_loss</span></div>
+
+<div class="viewcode-block" id="NSOPT.optimize_from_population"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.optimize_from_population">[docs]</a>    <span class="k">def</span> <span class="nf">optimize_from_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pop_start</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">n_generations</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts the optimization by reading the values of a population. This can be a DOE or a previous evaluation </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pop_start (int): pop_start=-1 for DOE. Reads the population folder and starts at pop_start+1</span>
+<span class="sd">            n_generations (int): Number of generations to iterate for </span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># * Read in all the results of the DOE, this should be done by a single thread</span>
+        <span class="c1"># Check restart file, if not read the population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_history_file</span><span class="p">()</span>
+        <span class="n">ref_points</span> <span class="o">=</span> <span class="n">uniform_reference_points</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">),</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="c1"># the -1 is there so that the number of reference points matches the number of individuals</span>
+
+        <span class="n">all_individuals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span> 
+
+        <span class="n">newIndividuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_calculation_folder</span><span class="p">()</span> <span class="c1"># Use all individuals, there&#39;s no restart file</span>
+        <span class="n">newIndividuals</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">newIndividuals</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>  <span class="c1"># Flattens the list of lists</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span><span class="o">.</span><span class="n">min_value</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+        <span class="n">ub</span> <span class="o">=</span> <span class="p">[</span><span class="n">ep</span><span class="o">.</span><span class="n">max_value</span> <span class="k">for</span> <span class="n">ep</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+        <span class="n">bounds</span> <span class="o">=</span> <span class="n">Bounds</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span><span class="n">ub</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">)</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Number of individuals in the restart file is less than the population size.&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; lower the population size or increase the DOE count(if restarting from a DOE)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Do this before going into the train loop. This part of the code should happen after a new population is evaluated </span>
+        <span class="n">individuals</span><span class="p">,</span><span class="n">best_point</span><span class="p">,</span> <span class="n">worst_point</span><span class="p">,</span> <span class="n">extreme_points</span> <span class="o">=</span> <span class="n">sort_and_select_population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">newIndividuals</span><span class="p">,</span><span class="n">reference_points</span><span class="o">=</span><span class="n">ref_points</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">)</span>
+        
+        <span class="n">all_individuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">))</span>
+        <span class="n">newIndividuals</span><span class="o">=</span><span class="n">individuals</span>
+
+        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop_start</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">pop_start</span><span class="o">+</span><span class="n">n_generations</span><span class="p">):</span>  <span class="c1"># Population Loop </span>
+            <span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">                Train a Neural network on Individuals. Initially this is all the individuals</span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="n">train_loss</span><span class="p">,</span> <span class="n">test_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">all_individuals</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>   
+            <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">({</span><span class="s1">&#39;pop&#39;</span><span class="p">:</span><span class="n">pop</span><span class="p">,</span><span class="s1">&#39;state_dict&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                        <span class="s1">&#39;optimizer&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+                        <span class="s1">&#39;n_inputs&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">,</span>
+                        <span class="s1">&#39;n_outputs&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="p">},</span><span class="s1">&#39;ml_model.pt&#39;</span><span class="p">)</span>   <span class="c1"># This saved file can be used later when you want to plot for any input or output</span>
+            <span class="n">label_scalers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">label_scalers</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_str</span><span class="p">]</span>
+            <span class="n">feature_scalers</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">feature_scalers</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_str</span><span class="p">]</span>
+            <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">                Run parts of NSGA3 code to find intercepts </span>
+<span class="sd">            &#39;&#39;&#39;</span>
+            <span class="n">pareto_fronts</span> <span class="o">=</span> <span class="n">non_dominated_sorting</span><span class="p">(</span><span class="n">individuals</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">)</span>
+            <span class="n">fitnesses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">objectives</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">pareto_fronts</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">f</span><span class="p">])</span>
+            <span class="n">fitnesses</span> <span class="o">*=</span> <span class="o">-</span><span class="mi">1</span>            
+
+            <span class="n">front_worst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fitnesses</span><span class="p">[:</span><span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">pareto_fronts</span><span class="p">),:],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">intercepts</span> <span class="o">=</span> <span class="n">find_intercepts</span><span class="p">(</span><span class="n">extreme_points</span><span class="p">,</span><span class="n">best_point</span><span class="p">,</span><span class="n">worst_point</span><span class="p">,</span><span class="n">front_worst</span><span class="p">)</span>
+
+            <span class="n">features</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ind</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="n">individuals</span><span class="p">])</span>       <span class="c1"># Normalized Features</span>
+            <span class="n">newIndividuals</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="c1"># surrogate_objective_func(res.x,self.model,ref_points,intercepts,o, best_point,label_scalers,feature_scalers)</span>
+            <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">):</span>
+                <span class="n">x0</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">features</span><span class="p">))]</span>
+                <span class="c1"># least_squares(surrogate_objective_func,x0,jac=)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span><span class="n">surrogate_objective_func</span><span class="p">,</span><span class="n">x0</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">min_method</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span><span class="n">ref_points</span><span class="p">,</span><span class="n">o</span><span class="p">,</span><span class="n">label_scalers</span><span class="p">,</span><span class="n">feature_scalers</span><span class="p">))</span>
+                <span class="n">surrogate_objective_func</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span><span class="n">ref_points</span><span class="p">,</span><span class="n">o</span><span class="p">,</span><span class="n">label_scalers</span><span class="p">,</span><span class="n">feature_scalers</span><span class="p">)</span>                
+                <span class="n">newIndividuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">Individual</span><span class="p">(</span><span class="n">eval_parameters</span><span class="o">=</span><span class="n">set_eval_parameters</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="p">)),</span>
+                        <span class="n">objectives</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">),</span><span class="n">performance_parameters</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">))</span>
+                        <span class="p">)</span>
+            <span class="c1"># newIndividuals = inverse_transform_data(self.label_scalers,self.feature_scalers,newIndividuals)</span>
+            <span class="c1"># Evaluate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_population</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">,</span><span class="n">pop</span><span class="p">)</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_population</span><span class="p">(</span><span class="n">pop</span><span class="p">)</span>
+            <span class="n">mse</span> <span class="o">=</span> <span class="n">compute_mse</span><span class="p">(</span><span class="n">individuals</span><span class="p">,</span><span class="n">newIndividuals</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;POP </span><span class="si">{</span><span class="n">pop</span><span class="si">}</span><span class="s2"> mse </span><span class="si">{</span><span class="n">mse</span><span class="si">:</span><span class="s2">03e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Sort and select</span>
+            <span class="n">pop_diversity</span> <span class="o">=</span> <span class="n">diversity</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">)</span>       <span class="c1"># Calculate diversity </span>
+            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">individuals</span><span class="p">,</span><span class="n">newIndividuals</span><span class="p">)</span> <span class="c1"># Calculate population distance between past and future</span>
+            <span class="n">all_individuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">))</span>
+            <span class="n">newIndividuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>              
+            
+            <span class="n">individuals</span><span class="p">,</span><span class="n">best_point</span><span class="p">,</span> <span class="n">worst_point</span><span class="p">,</span> <span class="n">extreme_points</span> <span class="o">=</span> <span class="n">sort_and_select_population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">newIndividuals</span><span class="p">,</span><span class="n">reference_points</span><span class="o">=</span><span class="n">ref_points</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_restart_file</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">)</span>        <span class="c1"># Keep the last designs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_history_file</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span><span class="n">individuals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pop_diversity</span><span class="p">,</span><span class="n">pop_dist</span><span class="p">,</span><span class="n">train_loss</span><span class="p">,</span><span class="n">test_loss</span><span class="p">,</span><span class="n">mse</span><span class="p">)</span>
+
+            <span class="c1"># if pop %4 ==0:</span>
+            <span class="c1">#     all_individuals,_, _, _ = sort_and_select_population(individuals=all_individuals,reference_points=ref_points, pop_size=self.pareto_resolution*4)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span><span class="p">:</span>
+                <span class="c1"># Delete the population folder</span>
+                <span class="n">population_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="n">pop</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">population_folder</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">population_folder</span><span class="p">)</span>            </div>
+
+<div class="viewcode-block" id="NSOPT.add_eval_parameters"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.add_eval_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">eval_params</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Add evaluation parameters. This is part of the initialization    </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            eval_params (List[Parameter]): Add in a list of evaluation parameters </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="o">=</span> <span class="n">eval_params</span> <span class="c1"># Sets base class variable</span></div>
+
+<div class="viewcode-block" id="NSOPT.add_objectives"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.add_objectives">[docs]</a>    <span class="k">def</span> <span class="nf">add_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">objectives</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Add the objectives </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            objectives (List[Parameter]): List of objectives </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="n">objectives</span> <span class="c1"># Sets base class variable</span></div>
+
+<div class="viewcode-block" id="NSOPT.add_performance_parameters"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.add_performance_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">add_performance_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">performance_params</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add performance parameters </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            performance_params (List[Parameter], optional): List of performance parameters. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span> <span class="o">=</span> <span class="n">performance_params</span> <span class="c1"># Sets base class variable </span></div>
+    
+<div class="viewcode-block" id="NSOPT.start_doe"><a class="viewcode-back" href="../../../modules/nsopt.html#glennopt.optimizers.nsopt.NSOPT.start_doe">[docs]</a>    <span class="k">def</span> <span class="nf">start_doe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">doe_individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">doe_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts a design of experiments. This generates the parameters for the individuals to be evaluated and executes each case. If the DOE has already started and there is an output file for an individual then the individual won&#39;t be evaluated    </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            doe_individuals (List[Individual], optional): List of individuals to evaluate. Defaults to None.</span>
+<span class="sd">            doe_size (int, optional): Number of individuals to evaluate in the design of experiments. This is only used if doe_individuals is None. Defaults to 128.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">doe_individuals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">doe_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">doe_size</span><span class="p">):</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">eval_param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+                    <span class="n">eval_param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">eval_param</span><span class="o">.</span><span class="n">min_value</span><span class="p">,</span><span class="n">eval_param</span><span class="o">.</span><span class="n">max_value</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">doe_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Individual</span><span class="p">(</span><span class="n">eval_parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">performance_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">))</span>
+     
+        <span class="c1"># * Begin the evaluation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">doe_individuals</span><span class="p">,</span><span class="n">population_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># * Read the DOE</span>
+        <span class="n">individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_population</span><span class="p">(</span><span class="n">population_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_restart_file</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span><span class="p">:</span> 
+            <span class="c1"># Delete the population folder</span>
+            <span class="n">population_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">population_folder</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">population_folder</span><span class="p">)</span></div></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

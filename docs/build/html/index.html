@@ -4,9 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyTurbo DOCUMENTATION &mdash; pyturbo-aero 1.0.1 documentation</title>
+  <title>GlennOPT Documentation &mdash; GlennOPT 1.4.* documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/style.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,13 +15,12 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/sphinx_highlight.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Airfoil 2D" href="modules/airfoil2D.html" /> 
+    <link rel="next" title="Installation" href="notes/installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -28,10 +28,10 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="#" class="icon icon-home"> pyturbo-aero
+            <a href="#" class="icon icon-home"> GlennOPT
           </a>
               <div class="version">
-                1.0.1
+                1.4.*
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -41,24 +41,41 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">python API</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/airfoil2D.html">Airfoil 2D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes/installation.html#installation-via-source">Installation via Source</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/airfoil3D.html">Airfoil 3D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/optimizers.html">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/channel.html">2D Passage definition</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/channel.html#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/helper.html">PyTurbo.helper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/wavy.html">Wavy Airfoil</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
 </ul>
 </li>
 </ul>
@@ -69,7 +86,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">pyturbo-aero</a>
+          <a href="#">GlennOPT</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -77,10 +94,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home"></a> &raquo;</li>
-      <li>PyTurbo DOCUMENTATION</li>
+      <li>GlennOPT Documentation</li>
       <li class="wy-breadcrumbs-aside">
-              <!-- User defined GitLab URL -->
-              <a href="https://gitlab.grc.nasa.gov/lte-turbo/pyturbo/-/tree/master/aero" class="fa fa-gitlab"> Edit on GitLab</a>
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -88,34 +104,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyturbo-documentation">
-<h1>PyTurbo DOCUMENTATION<a class="headerlink" href="#pyturbo-documentation" title="Permalink to this heading"></a></h1>
+  <section id="glennopt-documentation">
+<h1>GlennOPT Documentation<a class="headerlink" href="#glennopt-documentation" title="Permalink to this headline"></a></h1>
+<p>GlennOPT is a general purpose multi-objective optimizer for computer simulations locally or on the super computer. One of the biggest problems when simulating many designs on a super computer are the unexpected problems that occur such as unexpected server crashes, out of storage, updates that stop the job from executing.</p>
+<p>GlennOPT is designed with this in mind. When an optimization crashes, you can restart GlennOPT and it will scan the execution folder either the DOE or POP folders and any simulation that did not yield an <cite>output.txt</cite> file will be restarted from it’s local evaluation script.</p>
+<p>The number of files that GlennOPT produces is quite significant. It saves a copy of every single execution of the objective function. This is useful for generating data for machine learning. While many of these evaluations may not yield an optimized result, some may even fail. These extra data is useful for debugging/understanding the trends of your design space.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GlennOPT does not solve CFD. It cannot provide direct gradients that relate your objective to the design parameters. The best method for doing this would be to use one of the surrogate models such as <cite>NSOPT</cite> and specify a minimization method from scipy that an estimate gradients
+<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html</a></p>
+</div>
+</section>
+<section id="background">
+<h1>Background<a class="headerlink" href="#background" title="Permalink to this headline"></a></h1>
+<section id="individual">
+<h2>Individual<a class="headerlink" href="#individual" title="Permalink to this headline"></a></h2>
+<p>In this documentation and the code you will hear a lot about <cite>Individual</cite>. This represents your design parameters for a single evaluation. So lets take a simple function <span class="math notranslate nohighlight">\(f(x) = x_1 + x_2 + (x_3)^2\)</span> the <span class="math notranslate nohighlight">\(x\)</span> in <span class="math notranslate nohighlight">\(f(x)\)</span> is a vector containing <span class="math notranslate nohighlight">\(x_1\)</span>, <span class="math notranslate nohighlight">\(x_2\)</span>, <span class="math notranslate nohighlight">\(x_3\)</span>. This vector of <span class="math notranslate nohighlight">\(x\)</span> is the evaluation parameters of an individual. An individual in GlennOPT is a class containing the evaluation parameters, performance parameters, objective values, and constraints.</p>
+<p>Say your objectives include these two functions <span class="math notranslate nohighlight">\(f_1(x) and :math:f_2(x)\)</span> where x is a vector shared between these functions. The individual will contain f_1 and f_2. If you have other performance parameter such as Pressure(x) and Speed(x) these can also be tracked within an individual.</p>
+<p>When evaluating using GlennOPT, you specify how many individuals per population and how many populations to run for. Think of it as keeping track of people - you have a population of the group and the number of generations which you are recording data for. The individual represents a single person and all the properties and objectives.</p>
+<p>Now that you have a rough background, please check out the tutorials and documentation on single and multi-objective.</p>
+</section>
+<section id="optimization-folder-structure">
+<h2>Optimization Folder Structure<a class="headerlink" href="#optimization-folder-structure" title="Permalink to this headline"></a></h2>
+<p>It is reccomended to keep the following folder structure when performing the optimization. The calculation folder will be created automatically by glennopt. However you need to put</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Calculation</span> <span class="p">(</span><span class="n">Created</span> <span class="n">automatically</span><span class="p">)</span>
+   <span class="o">-</span><span class="n">DOE</span>
+      <span class="o">-</span><span class="n">IND000</span>
+         <span class="o">-</span><span class="n">Evaluation</span><span class="o">.</span><span class="n">py</span> <span class="p">(</span><span class="n">copied</span> <span class="kn">from</span> <span class="nn">Data</span> <span class="n">folder</span><span class="p">)</span>
+         <span class="o">-</span><span class="nb">input</span><span class="o">.</span><span class="n">dat</span> <span class="p">(</span><span class="n">contains</span> <span class="n">your</span> <span class="n">evaluation</span> <span class="n">parameters</span> <span class="n">that</span> <span class="n">goes</span> <span class="n">into</span> <span class="n">your</span> <span class="n">optimization</span> <span class="n">function</span><span class="p">)</span>
+   <span class="o">-</span><span class="n">POP000</span>
+   <span class="o">...</span>
+   <span class="o">-</span><span class="n">POP010</span>
+<span class="n">Data</span>
+   <span class="o">-</span><span class="n">Evaluation</span><span class="o">.</span><span class="n">py</span> <span class="p">(</span><span class="n">Called</span> <span class="n">by</span> <span class="n">the</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">this</span> <span class="n">can</span> <span class="n">be</span> <span class="n">your</span> <span class="n">optimization</span> <span class="n">function</span><span class="p">)</span>
+<span class="n">optimization_setup</span><span class="o">.</span><span class="n">py</span> <span class="p">(</span><span class="n">starts</span> <span class="n">the</span> <span class="n">optimization</span><span class="p">)</span>
+</pre></div>
+</div>
+<section id="note-about-nas-nasa-advance-super-computer-or-any-torque-slurm-queuing-system">
+<h3>Note about NAS (NASA Advance Super Computer) or any Torque/SLURM queuing system<a class="headerlink" href="#note-about-nas-nasa-advance-super-computer-or-any-torque-slurm-queuing-system" title="Permalink to this headline"></a></h3>
+<p>When executing on NAS it was found to be best to launch simulations directly from GlennOPT and have GlennOPT wait for the output.txt results. Think of doing a <cite>qsub</cite> to launch glennopt and then having glennopt do <cite>qsub</cite> to launch other executions. This is better when debugging failed simulations.</p>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">python API</span></p>
+<p class="caption" role="heading"><span class="caption-text">Notes</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/airfoil2D.html">Airfoil 2D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/optimizers.html">Optimizers</a></li>
 </ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules/airfoil3D.html">Airfoil 3D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules/channel.html">2D Passage definition</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/channel.html#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="modules/helper.html">PyTurbo.helper</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/wavy.html">Wavy Airfoil</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
-</ul>
-</li>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="modules/base.html">GlennOPT base classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/helpers.html">GlennOPT Helpers</a></li>
 </ul>
 </div>
 </section>
+</section>
+</section>
 <section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline"></a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
@@ -127,7 +177,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules/airfoil2D.html" class="btn btn-neutral float-right" title="Airfoil 2D" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="notes/installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

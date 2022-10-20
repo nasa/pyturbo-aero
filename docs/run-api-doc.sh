@@ -1,2 +1,2 @@
-sphinx-apidoc -o . ../plot3d
+sphinx-apidoc -o . ../glennopt
 make html

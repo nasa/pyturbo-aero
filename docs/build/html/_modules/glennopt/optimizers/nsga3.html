@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>glennopt.optimizers.nsga3 &mdash; GlennOPT 1.4.* documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GlennOPT
+          </a>
+              <div class="version">
+                1.4.*
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-source">Installation via Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/optimizers.html">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GlennOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>glennopt.optimizers.nsga3</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for glennopt.optimizers.nsga3</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    NSGA3 - Non-dominated sorting genetic algorithm</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span><span class="o">,</span> <span class="nn">copy</span><span class="o">,</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">seed</span><span class="p">,</span> <span class="n">gauss</span><span class="p">,</span><span class="n">random</span><span class="p">,</span><span class="n">uniform</span><span class="p">,</span><span class="n">randint</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">diversity</span><span class="p">,</span> <span class="n">distance</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">non_dominated_sorting</span><span class="p">,</span> <span class="n">find_extreme_points</span><span class="p">,</span> <span class="n">find_intercepts</span><span class="p">,</span> <span class="n">associate_to_niche</span><span class="p">,</span> <span class="n">niching</span><span class="p">,</span> <span class="n">uniform_reference_points</span><span class="p">,</span> <span class="n">sort_and_select_population</span>
+<span class="kn">from</span> <span class="nn">..base</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Individual</span><span class="p">,</span> <span class="n">Optimizer</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">de_best_1_bin</span><span class="p">,</span><span class="n">de_rand_1_bin</span><span class="p">,</span> <span class="n">mutation_parameters</span><span class="p">,</span> <span class="n">de_mutation_type</span><span class="p">,</span> <span class="n">simple</span><span class="p">,</span><span class="n">de_rand_1_bin_spawn</span><span class="p">,</span><span class="n">de_dmp</span><span class="p">,</span> <span class="n">get_eval_param_matrix</span><span class="p">,</span> <span class="n">get_objective_matrix</span><span class="p">,</span> <span class="n">set_eval_parameters</span>
+
+<span class="n">individual_list</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]</span>
+
+<div class="viewcode-block" id="NSGA3"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3">[docs]</a><span class="k">class</span> <span class="nc">NSGA3</span><span class="p">(</span><span class="n">Optimizer</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">eval_command</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;python evaluation.py&quot;</span><span class="p">,</span> <span class="n">eval_folder</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Evaluation&quot;</span><span class="p">,</span><span class="n">pop_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">optimization_folder</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">single_folder_eval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_input_file</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">pareto_resolution</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            NSGA-3 multi-dimensional optimizer. This version has been tweaked to include restart capabilities. It can also keep track of additional parameters that can be considered part of the constraints.</span>
+
+<span class="sd">            Each evaluation can occur in a separate folder (simulations) or without folders (analytical)</span>
+<span class="sd">            https://www.egr.msu.edu/~kdeb/papers/k2012009.pdf</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            eval_command (str, optional): Command that will be executed in the evaluation folder. Defaults to &quot;python evaluation.py&quot;.</span>
+<span class="sd">            eval_folder (str, optional): folder to be copied into each individual evaluation directory. If this is null, the population directory isn&#39;t created and neither are the individual directories. Defaults to &quot;Evaluation&quot;.</span>
+<span class="sd">            pop_size (int, optional): number of populations to evaluate from the starting population. Defaults to 128.</span>
+<span class="sd">            optimization_folder (str, optional): Folder where the optimization and doe work should be stored in. Defaults to None.</span>
+<span class="sd">            single_folder_eval (bool, optional): where optimization should start. Defaults to False.</span>
+<span class="sd">            overwrite_input_file(bool, optional): Specifies whether or not to overwrite the input file when restarting a simulation. Defaults to False.</span>
+<span class="sd">            pareto_resolution (int, optional): This specifies the number of reference points on the pareto front, 4 is good for 2 objectives. This number should increase if more objectives are needed. 2^n objectives something like that would work. </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;nsga3&quot;</span><span class="p">,</span><span class="n">eval_command</span><span class="o">=</span><span class="n">eval_command</span><span class="p">,</span><span class="n">eval_folder</span><span class="o">=</span><span class="n">eval_folder</span><span class="p">,</span> <span class="n">opt_folder</span><span class="o">=</span><span class="n">optimization_folder</span><span class="p">,</span><span class="n">single_folder_eval</span><span class="o">=</span><span class="n">single_folder_eval</span><span class="p">,</span><span class="n">overwrite_input_file</span><span class="o">=</span><span class="n">overwrite_input_file</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span> <span class="o">=</span> <span class="n">pop_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">individuals</span> <span class="o">=</span> <span class="kc">None</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span> <span class="o">=</span> <span class="n">pareto_resolution</span>       
+        <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_params</span> <span class="o">=</span> <span class="n">mutation_parameters</span><span class="p">()</span>
+        
+        
+<div class="viewcode-block" id="NSGA3.add_eval_parameters"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.add_eval_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">add_eval_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">eval_params</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Add evaluation parameters. This is part of the initialization    </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            eval_params (List[Parameter]): Add in a list of evaluation parameters </span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="o">=</span> <span class="n">eval_params</span> <span class="c1"># Sets base class variable</span></div>
+
+<div class="viewcode-block" id="NSGA3.add_objectives"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.add_objectives">[docs]</a>    <span class="k">def</span> <span class="nf">add_objectives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">objectives</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Add the objectives </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            objectives (List[Parameter]): [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="n">objectives</span> <span class="c1"># Sets base class variable</span></div>
+
+<div class="viewcode-block" id="NSGA3.add_performance_parameters"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.add_performance_parameters">[docs]</a>    <span class="k">def</span> <span class="nf">add_performance_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">performance_params</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add performance parameters </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            performance_params (List[Parameter], optional): [description]. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span> <span class="o">=</span> <span class="n">performance_params</span> <span class="c1"># Sets base class variable</span></div>
+      
+    
+    <span class="c1"># * Mutation Properties</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mutation_params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get Mutation parameters</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            mutation_parameters: parameter class describes the mutation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_params</span>
+
+    <span class="nd">@mutation_params</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mutation_params</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">v</span><span class="p">:</span><span class="n">mutation_parameters</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setter for mutation parameters </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            v (mutation_parameters): class describing the mutation parameter s</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__mutation_params</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="c1"># * </span>
+
+<div class="viewcode-block" id="NSGA3.start_doe"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.start_doe">[docs]</a>    <span class="k">def</span> <span class="nf">start_doe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">doe_individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">doe_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">128</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Starts a design of experiments. This generates the parameters for the individuals to be evaluated and executes each case. If the DOE has already started and there is an output file for an individual then the individual won&#39;t be evaluated    </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            doe_individuals (List[Individual], optional): List of individuals. Defaults to None.</span>
+<span class="sd">            doe_size (int, optional): [description]. Defaults to 128.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">doe_individuals</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">doe_individuals</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">doe_size</span><span class="p">):</span>
+                <span class="n">parameters</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">eval_param</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+                    <span class="n">eval_param</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">eval_param</span><span class="o">.</span><span class="n">min_value</span><span class="p">,</span><span class="n">eval_param</span><span class="o">.</span><span class="n">max_value</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">doe_individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Individual</span><span class="p">(</span><span class="n">eval_parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">performance_parameters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">))</span>
+     
+        <span class="c1"># * Begin the evaluation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">doe_individuals</span><span class="p">,</span><span class="n">population_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># * Read the DOE</span>
+        <span class="n">individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_population</span><span class="p">(</span><span class="n">population_number</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">append_restart_file</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span><span class="p">:</span> 
+            <span class="c1"># Delete the population folder</span>
+            <span class="n">population_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">population_folder</span><span class="p">):</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">population_folder</span><span class="p">)</span></div>
+
+       
+
+<div class="viewcode-block" id="NSGA3.optimize_from_population"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.optimize_from_population">[docs]</a>    <span class="k">def</span> <span class="nf">optimize_from_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pop_start</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">n_generations</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads the values of a population, this can be a DOE or a previous evaluation</span>
+<span class="sd">            Starts the optimization </span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                pop_start (-1 for DOE), reads the population folder and starts at pop_start+1</span>
+<span class="sd">                n_generations - number of generations to run for</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># * Read in all the results of the DOE, this should be done by a single thread</span>
+        <span class="c1"># Check restart file, if not read the population</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_history_file</span><span class="p">()</span>
+        <span class="n">individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_restart_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>                               
+            <span class="n">individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_calculation_folder</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Number of individuals in the restart file is less than the population size.&quot;</span>
+                <span class="o">+</span> <span class="s2">&quot; lower the population size or increase the DOE count(if restarting from a DOE)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Crossover and Mutate the doe individuals to generate the next individuals used in the population</span>
+        <span class="c1"># Sort the population into [fill in here]</span>
+        <span class="n">ref_points</span> <span class="o">=</span> <span class="n">uniform_reference_points</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">),</span> <span class="n">p</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pareto_resolution</span><span class="p">,</span> <span class="n">scaling</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">individuals</span><span class="p">,</span><span class="n">best_point</span><span class="p">,</span> <span class="n">worst_point</span><span class="p">,</span> <span class="n">extreme_points</span> <span class="o">=</span> <span class="n">sort_and_select_population</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">reference_points</span><span class="o">=</span><span class="n">ref_points</span><span class="p">,</span> <span class="n">pop_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__optimize__</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">n_generations</span><span class="o">=</span><span class="n">n_generations</span><span class="p">,</span><span class="n">pop_start</span><span class="o">=</span><span class="n">pop_start</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">reference_points</span><span class="o">=</span><span class="n">ref_points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NSGA3.__optimize__"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.__optimize__">[docs]</a>    <span class="k">def</span> <span class="nf">__optimize__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span><span class="n">individual_list</span><span class="p">,</span><span class="n">n_generations</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">pop_start</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">reference_points</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; NSGA-III main loop</span>
+<span class="sd">            Note: This function will read given starting population&#39;s results in, perform necessary crossover and mutation to generate enough individuals for the next iteration (self.pop_size)</span>
+
+<span class="sd">            Inputs:</span>
+<span class="sd">                individuals - list of individuals to evaluate</span>
+<span class="sd">                n_generations - number of generations to loop through</span>
+<span class="sd">                pop_start - starting population number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">nIndividuals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+         
+        <span class="c1"># * Loop through all individuals</span>
+        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">pop_start</span><span class="p">,</span><span class="n">pop_start</span><span class="o">+</span><span class="n">n_generations</span><span class="p">):</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__crossover_mutate__</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+
+            <span class="c1"># Evaluate</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_population</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">,</span><span class="n">pop_start</span><span class="p">)</span>            
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_population</span><span class="p">(</span><span class="n">pop_start</span><span class="p">)</span>
+            <span class="c1"># Sort and select</span>
+            <span class="n">pop_diversity</span> <span class="o">=</span> <span class="n">diversity</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">)</span>       <span class="c1"># Calculate diversity </span>
+            <span class="n">pop_dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">individuals</span><span class="p">,</span><span class="n">newIndividuals</span><span class="p">)</span> <span class="c1"># Calculate population distance between past and future</span>
+            <span class="n">newIndividuals</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span> <span class="c1"># add the previous population to the pool                                    </span>
+            <span class="n">individuals</span><span class="p">,</span><span class="n">best_point</span><span class="p">,</span> <span class="n">worst_point</span><span class="p">,</span> <span class="n">extreme_points</span> <span class="o">=</span> <span class="n">sort_and_select_population</span><span class="p">(</span><span class="n">newIndividuals</span><span class="p">,</span><span class="n">reference_points</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_restart_file</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>        <span class="c1"># Keep the last designs</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_history_file</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span><span class="n">individuals</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">pop_diversity</span><span class="p">,</span><span class="n">pop_dist</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span><span class="p">:</span>
+                <span class="c1"># Delete the population folder</span>
+                <span class="n">population_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="n">pop_start</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">population_folder</span><span class="p">):</span>
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">population_folder</span><span class="p">)</span>
+            <span class="n">pop_start</span><span class="o">+=</span><span class="mi">1</span> <span class="c1"># increment the population</span></div>
+        <span class="c1"># * End Loop through all individuals</span>
+    
+    
+    
+    
+
+<div class="viewcode-block" id="NSGA3.__crossover_mutate__"><a class="viewcode-back" href="../../../modules/nsga3.html#glennopt.optimizers.nsga3.NSGA3.__crossover_mutate__">[docs]</a>    <span class="k">def</span> <span class="nf">__crossover_mutate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;[summary]</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individuals (List[Individual]): [description]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            [type]: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nIndividuals</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span>
+        <span class="n">num_params</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">)</span>        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">mutation_type</span> <span class="o">==</span> <span class="n">de_mutation_type</span><span class="o">.</span><span class="n">de_best_1_bin</span><span class="p">:</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="n">de_best_1_bin</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span>
+                <span class="n">eval_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span><span class="n">performance_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">,</span>
+                <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">mutation_type</span> <span class="o">==</span> <span class="n">de_mutation_type</span><span class="o">.</span><span class="n">de_rand_1_bin</span><span class="p">:</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="n">de_rand_1_bin</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span>
+                <span class="n">eval_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span><span class="n">performance_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">,</span>
+                <span class="n">F</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">F</span><span class="p">,</span><span class="n">C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">mutation_type</span> <span class="o">==</span> <span class="n">de_mutation_type</span><span class="o">.</span><span class="n">de_dmp</span><span class="p">:</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="n">de_dmp</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span>
+                <span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span> <span class="n">eval_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span> <span class="n">performance_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>               <span class="c1"># self.mutation_params.mutation_type == de_mutation_type.simple</span>
+            <span class="n">nCrossover</span> <span class="o">=</span>  <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">nMutation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pop_size</span><span class="o">-</span><span class="n">nCrossover</span>
+            <span class="n">newIndividuals</span> <span class="o">=</span> <span class="n">simple</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">nCrossover</span><span class="o">=</span><span class="n">nCrossover</span><span class="p">,</span><span class="n">nMutation</span><span class="o">=</span><span class="n">nMutation</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span><span class="n">eval_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span><span class="n">performance_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">,</span><span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">mu</span><span class="p">,</span><span class="n">sigma</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mutation_params</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newIndividuals</span></div></div>
+    
+    
+    
+    
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

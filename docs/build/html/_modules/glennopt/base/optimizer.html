@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>glennopt.base.optimizer &mdash; GlennOPT 1.4.* documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> GlennOPT
+          </a>
+              <div class="version">
+                1.4.*
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/installation.html#installation-via-source">Installation via Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../notes/optimizers.html">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">GlennOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>glennopt.base.optimizer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for glennopt.base.optimizer</h1><div class="highlight"><pre>
+<span></span><span class="c1">#/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Optimizer - A base abstract class where all optimizers will inherit from. This class is never to be instantiated directly </span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Python Modules</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">name</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">glob</span><span class="o">,</span> <span class="nn">copy</span><span class="o">,</span> <span class="nn">signal</span><span class="o">,</span> <span class="nn">platform</span><span class="o">,</span> <span class="nn">ctypes</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span><span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    External Modules</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.cm</span> <span class="k">as</span> <span class="nn">cm</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.individual</span> <span class="kn">import</span> <span class="n">Individual</span>
+<span class="kn">from</span> <span class="nn">.parameter</span> <span class="kn">import</span> <span class="n">Parameter</span>
+<span class="kn">from</span> <span class="nn">..helpers</span> <span class="kn">import</span> <span class="n">copy_helper</span><span class="p">,</span> <span class="n">parallel_settings</span><span class="p">,</span> <span class="n">convert_to_ndarray</span><span class="p">,</span> <span class="n">check_if_duplicates</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+
+<div class="viewcode-block" id="Optimizer"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer">[docs]</a><span class="k">class</span> <span class="nc">Optimizer</span><span class="p">:</span> 
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Base class for starting an optimization</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">eval_command</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">eval_folder</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span><span class="n">opt_folder</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eval_parameters</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span><span class="o">=</span><span class="p">[],</span> <span class="n">objectives</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">performance_parameters</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">single_folder_eval</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite_input_file</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the optimizer. This is typically inherited by a particular type of optimizer like NSGA (multi-objective differential evolution) or SODE (single objective differential evolution). Any new optimization strategy should inherit from this class.</span>
+<span class="sd">        This class handles most of the heavy work of evaluation and reading the results.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name (str): name of the optimizer</span>
+<span class="sd">            eval_command (str): This is the location of the evaluation script. Optimizer will call this script and read output.txt containing the values of the objectives and any performance parameters, see examples. </span>
+<span class="sd">            eval_folder (str, optional): If specified, the evaluation folder will be copied for each execution. Defaults to None.</span>
+<span class="sd">            opt_folder (str, optional): Working directory where you want to start the optimization (calculatio folder will be created here). Defaults to None.</span>
+<span class="sd">            eval_parameters (List[Parameter], optional): This is the list of x1-xn that feeds into your execution code. Defaults to [].</span>
+<span class="sd">            objectives (List[Parameter], optional): The objectives you want to keep track of and the value for when they fail. Defaults to [].</span>
+<span class="sd">            performance_parameters (List[Parameter], optional): Number of parameters. Defaults to [].</span>
+<span class="sd">            single_folder_eval (bool, optional): Saves space by deleting the population folder when completed. by default this is false. Defaults to False.</span>
+<span class="sd">            overwrite_input_file(bool, optional): Specifies whether or not to overwrite the input file when restarting a simulation. Defaults to False.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: Invalid relative path could not be found for eval script</span>
+<span class="sd">            Exception: Invalid relative path could not be found for eval folder</span>
+<span class="sd">            Exception: Invalid absolute path could not be found for eval script</span>
+<span class="sd">            Exception: Invalid absolute path could not be found for eval folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>        
+        <span class="k">assert</span> <span class="n">opt_folder</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">opt_folder</span><span class="p">,</span><span class="s1">&#39;log.dat&#39;</span><span class="p">),</span>  <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">)):</span>
+            <span class="n">eval_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="n">eval_folder</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid relative path could not be found for eval folder </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Invalid absolute path could not be found for eval folder </span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eval_folder</span><span class="p">))</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_folder</span> <span class="o">=</span> <span class="n">eval_folder</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_command</span> <span class="o">=</span> <span class="n">eval_command</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">opt_folder</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span> <span class="o">=</span> <span class="n">opt_folder</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>        
+        
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">population_track</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_input_file</span> <span class="o">=</span> <span class="n">overwrite_input_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_file</span> <span class="o">=</span> <span class="s1">&#39;input.dat&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="s1">&#39;output.txt&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__use_calculation_folders</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Optimization variables to track</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="o">=</span> <span class="n">eval_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="n">objectives</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span> <span class="o">=</span> <span class="n">performance_parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parallel_settings</span> <span class="o">=</span> <span class="n">parallel_settings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Cache storage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span> <span class="o">=</span> <span class="p">{}</span> <span class="c1"># Appends individuals to pandas dataframe each dictionar contains the population number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span> <span class="o">=</span> <span class="n">single_folder_eval</span>
+
+        
+        <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
+        <span class="n">eval_parameter_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+        <span class="n">performance_parameter_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">check_if_duplicates</span><span class="p">(</span><span class="n">objective_names</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Objective names have to be unique&quot;</span>
+        <span class="k">assert</span> <span class="n">check_if_duplicates</span><span class="p">(</span><span class="n">eval_parameter_names</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Evaluation Parameter names have to be unique&quot;</span>
+        <span class="k">assert</span> <span class="n">check_if_duplicates</span><span class="p">(</span><span class="n">performance_parameter_names</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">&quot;Performance Parameter names have to be unique&quot;</span>
+
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">use_calculation_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Allows the optimizer to define calculation folders for each call.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True = use calcuation folder  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__use_calculation_folder</span>
+
+    <span class="nd">@use_calculation_folder</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">use_calculation_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">b</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Allows the optimizer to define calculation folders for each call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            b (bool): True = use calcuation folder. Defaults to True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__use_calculation_folder</span><span class="o">=</span><span class="n">b</span>
+
+<div class="viewcode-block" id="Optimizer.change_working_dir"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.change_working_dir">[docs]</a>    <span class="k">def</span> <span class="nf">change_working_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">new_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes the current working directory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_dir (str): path to new directory </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span> <span class="o">=</span> <span class="n">new_dir</span></div>
+    
+<div class="viewcode-block" id="Optimizer.get_current_directory"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.get_current_directory">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;returns the current working directory</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: Path to current directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span></div>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">parallel_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the parallel settings dataclass </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            parallel_settings: parallel settings class object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parallel_settings</span>
+
+    <span class="nd">@parallel_settings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">parallel_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="p">:</span><span class="n">parallel_settings</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the parallel settings</span>
+<span class="sd">            This also reads the master machine file if exists and splits up the cores per execution.</span>
+<span class="sd">            Machine file is basically the computer name followed by an index. See an example below:</span>
+<span class="sd">                paht-ryzen0</span>
+<span class="sd">                paht-ryzen1</span>
+<span class="sd">                paht-ryzen2</span>
+<span class="sd">                paht-ryzen3</span>
+<span class="sd">                steve-intel0</span>
+<span class="sd">                steve-intel1</span>
+<span class="sd">                steve-intel2</span>
+<span class="sd">                steve-intel3</span>
+<span class="sd">                </span>
+<span class="sd">        Args:</span>
+<span class="sd">            settings (parallel_settings): dataclass representing the parallel settings to use</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parallel_settings</span> <span class="o">=</span> <span class="n">settings</span>
+        <span class="c1"># Check for machine file</span>
+        <span class="n">machinefile</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="n">settings</span><span class="o">.</span><span class="n">machine_filename</span><span class="p">)</span>        
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">machinefile</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">machinefile</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span>
+                <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parallel_settings</span><span class="o">.</span><span class="n">cores_per_execution</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parallel_settings</span><span class="o">.</span><span class="n">cores_per_execution</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">temp</span><span class="p">))</span>   <span class="c1"># Splits up the machine file</span>
+                            <span class="n">temp</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    
+
+<div class="viewcode-block" id="Optimizer.__create_input_file__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__create_input_file__">[docs]</a>    <span class="k">def</span> <span class="nf">__create_input_file__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates an input file &#39;inputs.txt&#39; which the evaluation script reads. Will only  create if inputs.txt does not already exist</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individual (Individual): Individual&#39;s evaluation parameters are read x[1-N] are printed to an evaluation script</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">write_input</span><span class="p">():</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">eval_params</span> <span class="o">=</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_eval_parameter_list</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_params</span><span class="p">)):</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> = </span><span class="si">{1}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eval_params</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">eval_params</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">overwrite_input_file</span><span class="p">:</span>
+            <span class="n">write_input</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>       <span class="c1"># input file does not exists</span>
+            <span class="n">write_input</span><span class="p">()</span></div>
+       
+<div class="viewcode-block" id="Optimizer.__read_output_file__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__read_output_file__">[docs]</a>    <span class="k">def</span> <span class="nf">__read_output_file__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Individual</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reads the output file i.e. output.txt line by line and parses it for objectives and parameters</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individual (Individual): Individual object that is read and parameters are set </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Individual: [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Read the output file</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">)):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">split_val</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="n">split_val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">split_val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">set_objective</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+                    <span class="n">individual</span><span class="o">.</span><span class="n">set_performance_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>   <span class="c1"># no output.txt found, something bad happened</span>
+            <span class="k">for</span> <span class="n">objective</span> <span class="ow">in</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_objectives_list</span><span class="p">():</span>                
+                <span class="n">individual</span><span class="o">.</span><span class="n">set_objective</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">objective</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="n">objective</span><span class="o">.</span><span class="n">value_if_failed</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_performance_parameters_list</span><span class="p">():</span>
+                <span class="n">individual</span><span class="o">.</span><span class="n">set_performance_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="n">param</span><span class="o">.</span><span class="n">value_if_failed</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">individual</span></div>
+    
+<div class="viewcode-block" id="Optimizer.__read_input_file__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__read_input_file__">[docs]</a>    <span class="k">def</span> <span class="nf">__read_input_file__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Individual</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reads the input file i.e. input.dat line by line and parses it for evaluation parameters</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individual (Individual): Individual object that will be set</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Individual: returns an individual with updated values </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Read the input file</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">split_val</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;=&#39;</span><span class="p">)</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">split_val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">split_val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                <span class="n">individual</span><span class="o">.</span><span class="n">set_eval_parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="o">=</span><span class="n">val</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">individual</span></div>
+    
+<div class="viewcode-block" id="Optimizer.__check_population_folder__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__check_population_folder__">[docs]</a>    <span class="k">def</span> <span class="nf">__check_population_folder__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population_number</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Formats the population folder</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            population_number (int, optional): Population Number for example 20. Defaults to 0.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: relative path to the population folder </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">population_number</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span> <span class="c1">#  Check current directory for calculation folder</span>
+            <span class="n">population_folder</span> <span class="o">=</span> <span class="s2">&quot;Calculation/DOE&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">population_folder</span> <span class="o">=</span> <span class="s2">&quot;Calculation/POP</span><span class="si">{:03d}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">population_number</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">population_folder</span></div>
+
+
+<div class="viewcode-block" id="Optimizer.read_population"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.read_population">[docs]</a>    <span class="k">def</span> <span class="nf">read_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">population_number</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Reads the output file in the population/DOE folder</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            population_number (int, optional): Which population we are evaluating. Defaults to 0.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: Restart population was not found</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Individual]: list of individuals within the population</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">population_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="n">population_number</span><span class="p">)</span>
+        <span class="n">pop_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="n">population_folder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pop_path</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Restart population was not found&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ind_directories</span> <span class="o">=</span> <span class="p">[</span><span class="n">dI</span> <span class="k">for</span> <span class="n">dI</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">pop_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pop_path</span><span class="p">,</span><span class="n">dI</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;IND&#39;</span> <span class="ow">in</span> <span class="n">dI</span><span class="p">)]</span>
+        
+        <span class="n">ind_directories</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ind_directories</span><span class="p">)</span>
+        
+        <span class="n">individuals</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">ind_dir</span> <span class="ow">in</span> <span class="n">ind_directories</span><span class="p">:</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">objectives</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">),</span><span class="n">eval_parameters</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">),</span><span class="n">performance_parameters</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">))</span>
+            <span class="n">ind</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">ind_dir</span>
+            <span class="n">ind</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">population_number</span>
+            <span class="n">current_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="n">ind_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pop_path</span><span class="p">,</span><span class="n">ind_dir</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">ind_dir</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_output_file__</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__read_input_file__</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+            <span class="n">individuals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">current_directory</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">individuals</span></div>
+
+<div class="viewcode-block" id="Optimizer.__select_cores_per_execution__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__select_cores_per_execution__">[docs]</a>    <span class="k">def</span> <span class="nf">__select_cores_per_execution__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pid_list</span><span class="p">:</span><span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the index of cores_per_execution that is not being used </span>
+<span class="sd">            Used to find out which process id has been freed </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pid_list (list): list of process ids from pOpen</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: index of process id that is no longer being used. </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pid_list</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="n">c_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span><span class="p">))</span>
+        <span class="n">c_range_used</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s1">&#39;cores_per_execution_indx&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">pid_list</span><span class="p">]</span>
+        <span class="n">available_indicies</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">c_range</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">c_range_used</span><span class="p">]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">available_indicies</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">available_indicies</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>             </div>
+
+<div class="viewcode-block" id="Optimizer.evaluate_population"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.evaluate_population">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_population</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">],</span><span class="n">population_number</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates a population of individuals, checks to see if the population exists in the directory. If it already exists, do nothing, read the results, evaluate if there is no output file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individuals (List[Individual]): List of individuals to evaluate </span>
+<span class="sd">            population_number (int, optional): population corresponding to the set of individuals. Defaults to 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">population_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="n">population_number</span><span class="p">)</span>
+
+        <span class="n">pop_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="n">population_folder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">pop_path</span><span class="p">)):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">pop_path</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>     <span class="c1"># Determine whether to use machine file or not</span>
+            <span class="n">n_evalulations</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span><span class="p">)</span>
+            <span class="n">use_cores</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_evalulations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parallel_settings</span><span class="o">.</span><span class="n">concurrent_executions</span>
+            <span class="n">use_cores</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">pid_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>   <span class="c1"># keep track of the process id and start time        </span>
+        <span class="n">eval_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1"># c is the counter for cores per interation [[&#39;paht_cpu1&#39;,&#39;paht_cpu1&#39;,&#39;paht_cpu1&#39;],[&#39;paht_cpu2&#39;,&#39;paht_cpu2&#39;,&#39;paht_cpu2&#39;]]</span>
+        <span class="c1"># Evaluate each individual</span>
+        <span class="k">for</span> <span class="n">ind_indx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">individuals</span><span class="p">)):</span>            
+            <span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;IND</span><span class="si">{:03d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ind_indx</span><span class="p">)</span>
+            <span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="n">population_number</span>
+            <span class="n">ind_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pop_path</span><span class="p">,</span> <span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ind_dir</span><span class="p">)):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">ind_dir</span><span class="p">)</span>
+            <span class="c1"># Check if eval folder exists</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_folder</span><span class="p">):</span>
+                <span class="c1"># Evaluate Individual (calls method in base class)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">use_cores</span><span class="p">):</span>
+                    <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__select_cores_per_execution__</span><span class="p">(</span><span class="n">pid_list</span><span class="p">)</span>
+                    <span class="n">pid</span><span class="p">,</span><span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate_individual__</span><span class="p">(</span><span class="n">individual</span><span class="o">=</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">],</span><span class="n">individual_directory</span><span class="o">=</span><span class="n">ind_dir</span><span class="p">,</span><span class="n">cores_per_execution</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cores_per_evalulation</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+                    <span class="n">pid_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;pid&#39;</span><span class="p">:</span><span class="n">pid</span><span class="p">,</span><span class="s1">&#39;start_time&#39;</span><span class="p">:</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">(),</span><span class="s1">&#39;cores_per_execution_indx&#39;</span><span class="p">:</span><span class="n">c</span><span class="p">,</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="n">p</span><span class="p">,</span><span class="s1">&#39;pop&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">population</span><span class="p">),</span><span class="s1">&#39;ind&#39;</span><span class="p">:</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+                <span class="k">else</span><span class="p">:</span>                    
+                    <span class="n">pid</span><span class="p">,</span><span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__evaluate_individual__</span><span class="p">(</span><span class="n">individual</span><span class="o">=</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">],</span><span class="n">individual_directory</span><span class="o">=</span><span class="n">ind_dir</span><span class="p">)</span>
+                    <span class="n">pid_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;pid&#39;</span><span class="p">:</span><span class="n">pid</span><span class="p">,</span><span class="s1">&#39;start_time&#39;</span><span class="p">:</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">(),</span><span class="s1">&#39;proc&#39;</span><span class="p">:</span><span class="n">p</span><span class="p">,</span><span class="s1">&#39;pop&#39;</span><span class="p">:</span><span class="nb">str</span><span class="p">(</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">population</span><span class="p">),</span><span class="s1">&#39;ind&#39;</span><span class="p">:</span><span class="n">individuals</span><span class="p">[</span><span class="n">ind_indx</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">})</span>
+                
+                <span class="k">while</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pid_list</span><span class="p">)</span><span class="o">==</span><span class="n">n_evalulations</span><span class="p">):</span> <span class="c1"># Pause any new executions once we reach maximum number of evaluations </span>
+                    <span class="n">inActive_pids</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+                    <span class="c1"># Loop to check if PID is still active and execution time is less than timeout                    </span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pid_list</span><span class="p">)):</span>
+                        <span class="n">pid</span> <span class="o">=</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;pid&#39;</span><span class="p">];</span> <span class="n">p</span> <span class="o">=</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;proc&#39;</span><span class="p">];</span> <span class="n">pop</span> <span class="o">=</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;pop&#39;</span><span class="p">];</span> <span class="n">ind_name</span> <span class="o">=</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;ind&#39;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__check_process_running__</span><span class="p">(</span><span class="n">p</span><span class="p">):</span> <span class="c1"># If PID is running check if it exceeded the execution time</span>
+                            <span class="n">start_time</span> <span class="o">=</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;start_time&#39;</span><span class="p">]</span>
+                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span> <span class="c1"># Check every &quot;x&quot; seconds</span>
+                            <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span><span class="p">)</span><span class="o">/</span><span class="mi">60</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">parallel_settings</span><span class="o">.</span><span class="n">execution_timeout</span><span class="p">:</span>
+                                <span class="k">try</span><span class="p">:</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">__write_proc_log__</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">pop</span><span class="p">,</span><span class="n">ind_name</span><span class="p">)</span>
+                                    <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">SIGTERM</span><span class="p">)</span>
+                                <span class="k">except</span><span class="p">:</span>
+                                    <span class="k">pass</span>
+                                <span class="n">inActive_pids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span> <span class="c1"># PID isn&#39;t running, remove it</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">__write_proc_log__</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">pop</span><span class="p">,</span><span class="n">ind_name</span><span class="p">)</span>
+                            <span class="n">inActive_pids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    
+                    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">inActive_pids</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="c1"># removing the inactive PIDs from the list </span>
+                        <span class="k">del</span> <span class="n">pid_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>  
+                    
+            <span class="k">else</span><span class="p">:</span> <span class="c1"># TODO execute individual without creating a bunch of directories. Maybe create execution directories and delete them</span>
+                <span class="n">output</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">check_output</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_command</span><span class="p">])</span>
+                <span class="c1"># Append output to results, need to check first how the output is structured</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Optimizer.__check_process_running__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__check_process_running__">[docs]</a>    <span class="k">def</span> <span class="nf">__check_process_running__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">:</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Checks if a process id is running. This checks by using the poll method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p (subprocess.Popen): Popen class </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if process id is still running </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">poll</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">poll</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Optimizer.__check_PID_running__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__check_PID_running__">[docs]</a>    <span class="k">def</span> <span class="nf">__check_PID_running__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pid</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Checks if process id is running. this checks by trying to kill the process. if there&#39;s an error then it&#39;s running</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pid (int): integer corresponding to the process id </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: true if process is still running</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Linux&#39;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">kill</span><span class="p">(</span><span class="n">pid</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">pid</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>               <span class="c1"># In case code terminates</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;Windows&#39;</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pid</span> <span class="ow">in</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">pid</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">psutil</span><span class="o">.</span><span class="n">process_iter</span><span class="p">())</span></div>
+            
+    
+    
+<div class="viewcode-block" id="Optimizer.__evaluate_individual__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__evaluate_individual__">[docs]</a>    <span class="k">def</span> <span class="nf">__evaluate_individual__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individual</span><span class="p">:</span><span class="n">Individual</span><span class="p">,</span><span class="n">individual_directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">cores_per_execution</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="p">[])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Evaluates the individual by copying the evaluation folder into the individual&#39;s directory</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individual (Individual): [description]</span>
+<span class="sd">            individual_directory (str): [description]</span>
+<span class="sd">            cores_per_execution (list, optional): [description]. Defaults to [].</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
+
+<span class="sd">                **pid** (int): process id</span>
+<span class="sd">                **process** (subprocess.Popen): logging message string </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for output.txt</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">individual_directory</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">))):</span> <span class="c1"># This prevents an evaluation if there is already an output</span>
+            <span class="n">copy_helper</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_folder</span><span class="p">,</span><span class="n">individual_directory</span><span class="p">)</span>
+            <span class="n">cur_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">individual_directory</span><span class="p">)</span>            
+            <span class="c1"># Create the input file</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__create_input_file__</span><span class="p">(</span><span class="n">individual</span><span class="p">)</span>
+            <span class="c1"># Create local machine file            </span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cores_per_execution</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>                
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parallel_settings</span><span class="o">.</span><span class="n">machine_filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cores_per_execution</span><span class="p">))</span>
+                    
+            <span class="c1"># Evaluate</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">evaluation_command</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">),</span><span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span> <span class="c1"># Note: evaluation_command has to read the local machine file. This is not my problem            </span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cur_dir</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">pid</span><span class="p">,</span> <span class="n">p</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Optimizer.__write_proc_log__"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.__write_proc_log__">[docs]</a>    <span class="k">def</span> <span class="nf">__write_proc_log__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">:</span><span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">,</span><span class="n">pop</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">ind_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write the log for each process </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            p (subprocess.Popen): the Popen object </span>
+<span class="sd">            pop (int): population as a ninteger </span>
+<span class="sd">            ind_name (str): name of the individual </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>     
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">stdout</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;POP </span><span class="si">{0}</span><span class="s1"> Indivudual: </span><span class="si">{1}</span><span class="s1"> Message: </span><span class="si">{2}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop</span><span class="p">,</span><span class="n">ind_name</span><span class="p">,</span><span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span></div>
+        
+<div class="viewcode-block" id="Optimizer.load_history_file"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.load_history_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_history_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads the history file if exists </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s2">&quot;history.csv&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)):</span>
+            <span class="n">df_temp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)</span>
+            <span class="c1"># Check for matching columns</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Unnamed: 0&#39;</span><span class="p">,</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span><span class="s1">&#39;Best Individual&#39;</span><span class="p">]</span>
+            <span class="n">eval_param_names</span> <span class="o">=</span>  <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+            <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
+            <span class="n">perf_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">]</span>
+            
+            <span class="n">headers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">eval_param_names</span><span class="p">)</span>
+            <span class="n">headers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">objective_names</span><span class="p">)</span>
+            <span class="n">headers</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">perf_param_names</span><span class="p">)</span>
+            <span class="n">headers</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;pop_diversity&#39;</span><span class="p">,</span><span class="s1">&#39;pop_avg_distance&#39;</span><span class="p">])</span>
+            
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">df_temp</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span> <span class="ow">and</span> <span class="n">headers</span> <span class="o">==</span> <span class="nb">list</span><span class="p">(</span><span class="n">df_temp</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">df_temp</span>
+            <span class="k">else</span><span class="p">:</span>   <span class="c1"># if the number of parameters change then start from a new file </span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Optimizer.append_history_file"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.append_history_file">[docs]</a>    <span class="k">def</span> <span class="nf">append_history_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pop</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">best_ind</span><span class="p">:</span><span class="n">Individual</span><span class="p">,</span><span class="n">diversity</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">distance</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">train_loss</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">test_loss</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">mse</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Writes a history.csv file containing the best design(s) this function is called by the inheriting class</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pop (int): Population index</span>
+<span class="sd">            best_ind (Individual): best performing individual </span>
+<span class="sd">            diversity (float): diversity of the population </span>
+<span class="sd">            distance (float): average distance between individuals of the population</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">eval_params</span> <span class="o">=</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">eval_parameters</span>
+        <span class="n">eval_param_names</span> <span class="o">=</span>  <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">get_eval_parameter_list</span><span class="p">()]</span>
+        
+        <span class="n">objectives</span> <span class="o">=</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">objectives</span>
+        <span class="n">objective_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">get_objectives_list</span><span class="p">()]</span>
+        
+        <span class="n">perf_param</span> <span class="o">=</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">performance_parameters</span>
+        <span class="n">perf_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">best_ind</span><span class="o">.</span><span class="n">get_performance_parameters_list</span><span class="p">()]</span>
+        
+        <span class="n">header</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Population&#39;</span><span class="p">,</span> <span class="s1">&#39;Best Individual&#39;</span><span class="p">]</span>
+        <span class="n">pop_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__check_population_folder__</span><span class="p">(</span><span class="n">best_ind</span><span class="o">.</span><span class="n">population</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Calculation/&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">pop</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{:s}</span><span class="s1">_</span><span class="si">{:s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop_dir</span><span class="p">,</span><span class="n">best_ind</span><span class="o">.</span><span class="n">name</span><span class="p">)]</span>
+        
+        <span class="k">def</span> <span class="nf">write_arrays</span><span class="p">(</span><span class="n">names</span><span class="p">,</span><span class="n">vals</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span><span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">names</span><span class="p">,</span><span class="n">vals</span><span class="p">):</span>
+                <span class="n">header</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+
+        <span class="n">write_arrays</span><span class="p">(</span><span class="n">eval_param_names</span><span class="p">,</span><span class="n">eval_params</span><span class="p">)</span>
+        <span class="n">write_arrays</span><span class="p">(</span><span class="n">objective_names</span><span class="p">,</span><span class="n">objectives</span><span class="p">)</span>
+        <span class="n">write_arrays</span><span class="p">(</span><span class="n">perf_param_names</span><span class="p">,</span><span class="n">perf_param</span><span class="p">)</span>
+        
+        <span class="n">header</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s1">&#39;pop_diversity&#39;</span><span class="p">,</span><span class="s1">&#39;pop_avg_distance&#39;</span><span class="p">,</span><span class="s1">&#39;train_loss&#39;</span><span class="p">,</span><span class="s1">&#39;test_loss&#39;</span><span class="p">,</span><span class="s1">&#39;actual_mse_loss&#39;</span><span class="p">])</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">diversity</span><span class="p">,</span><span class="n">distance</span><span class="p">,</span><span class="n">train_loss</span><span class="p">,</span><span class="n">test_loss</span><span class="p">,</span><span class="n">mse</span><span class="p">])</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)):</span>                        
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">data</span><span class="p">)),</span><span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">data</span><span class="p">)),</span><span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__history_filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Optimizer.append_restart_file"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.append_restart_file">[docs]</a>    <span class="k">def</span> <span class="nf">append_restart_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Appends self.population_track to a restart file, these are the individuals matter and can be restarted from. Instead of restarting from a population, lets restart from the best individuals </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individuals (List[Individual]): list of individuals, this can be any size. these individuals will be added to the restart file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">individuals</span><span class="o">=</span><span class="n">individuals</span><span class="p">,</span><span class="n">bReturnPandas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;restart_file.csv&#39;</span><span class="p">))</span></div>
+
+   
+<div class="viewcode-block" id="Optimizer.read_restart_file"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.read_restart_file">[docs]</a>    <span class="k">def</span> <span class="nf">read_restart_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Appends self.population_track to a restart file, these are the individuals matter and can be restarted from. Instead of restarting from a population, lets restart from the best individuals </span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: Error about restart file not being the same. this can happen if you add evaluation parameters or performance parameters. Make sure number of columns match the number of parameters. You can add null or dummy values. </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Individual]: individual list or empty list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">restart_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;restart_file.csv&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">restart_file</span><span class="p">):</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">restart_file</span><span class="p">)</span>
+            <span class="n">df_columns</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+            <span class="n">n_eval</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">)</span>
+            <span class="n">n_obj</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">)</span>
+            <span class="n">n_perf</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">df_columns</span><span class="p">)</span><span class="o">-</span><span class="mi">3</span><span class="p">)</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n_eval</span><span class="o">+</span><span class="n">n_obj</span><span class="o">+</span><span class="n">n_perf</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;this is not the right restart file. number of columns does not match the sum of evaluation, objective, and performance parameters&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">individual_list</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="mi">3</span> <span class="c1"># this is the column where data starts</span>
+                <span class="k">for</span> <span class="n">index</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">ind</span> <span class="o">=</span> <span class="n">Individual</span><span class="p">(</span><span class="n">eval_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">,</span><span class="n">objectives</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">,</span><span class="n">performance_parameters</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">)</span>
+                    <span class="n">ind</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;individual&#39;</span><span class="p">]</span>
+                    <span class="n">ind</span><span class="o">.</span><span class="n">population</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;population&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;DOE&#39;</span><span class="p">,</span><span class="s1">&#39;-1&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;POP&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+                    <span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">set_eval_parameter</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+                    <span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">set_objective</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
+                    <span class="p">[</span><span class="n">ind</span><span class="o">.</span><span class="n">set_performance_parameter</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">row</span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">name</span><span class="p">])</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">]</span>                    
+                    <span class="n">individual_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">ind</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">individual_list</span>
+        
+        <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="Optimizer.to_pandas"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.to_pandas">[docs]</a>    <span class="k">def</span> <span class="nf">to_pandas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">individuals</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Parameter</span><span class="p">],</span><span class="n">pop_number</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">bReturnPandas</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Exports the results to a pandas file </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            individuals (List[Parameter]): [description]</span>
+<span class="sd">            pop_number (int, optional): [description]. Defaults to 0.</span>
+<span class="sd">            bReturnPandas (bool, optional): [description]. Defaults to False.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            pd.DataFrame: dataframe object with all the optimization results </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">add_value_to_dict</span><span class="p">(</span><span class="n">dict_obj</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">):</span>
+            <span class="n">indx</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">dict_obj</span><span class="p">):</span>
+                <span class="n">key</span> <span class="o">=</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">indx</span><span class="p">)</span>
+                <span class="n">indx</span><span class="o">+=</span><span class="mi">1</span>
+            <span class="n">dict_obj</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+            <span class="k">return</span> <span class="n">dict_obj</span>
+        
+        <span class="c1"># Create data as a dict of names, the only thing that will break this is if the dictionary has repeated keys</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">individual</span> <span class="ow">in</span> <span class="n">individuals</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">population</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span>
+                <span class="n">Population_Name</span> <span class="o">=</span> <span class="s1">&#39;DOE&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">Population_Name</span> <span class="o">=</span> <span class="s1">&#39;POP</span><span class="si">{0:03d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">individual</span><span class="o">.</span><span class="n">population</span><span class="p">)</span>
+            
+            <span class="n">temp_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">add_value_to_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">,</span><span class="s1">&#39;population&#39;</span><span class="p">,</span><span class="n">Population_Name</span><span class="p">)</span> <span class="c1"># name of the population IND000 for example</span>
+            <span class="n">add_value_to_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">,</span><span class="s1">&#39;individual&#39;</span><span class="p">,</span><span class="n">individual</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="c1"># name of the individual IND000 for example</span>
+            
+            <span class="k">for</span> <span class="n">eval_param</span> <span class="ow">in</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_eval_parameter_list</span><span class="p">():</span>            
+                <span class="n">add_value_to_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">,</span><span class="n">eval_param</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">eval_param</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">objective</span> <span class="ow">in</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_objectives_list</span><span class="p">():</span>
+                <span class="n">add_value_to_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">,</span><span class="n">objective</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">objective</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">perf_param</span> <span class="ow">in</span> <span class="n">individual</span><span class="o">.</span><span class="n">get_performance_parameters_list</span><span class="p">():</span>
+                <span class="n">add_value_to_dict</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">,</span><span class="n">perf_param</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="n">perf_param</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+                
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_dict</span><span class="p">)</span> <span class="c1"># TODO Check if this is duplicated, if so then probably needs to be copied</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">bReturnPandas</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">pop_number</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="s1">&#39;DOE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="s1">&#39;POP</span><span class="si">{0:03d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pop_number</span><span class="p">)]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Optimizer.to_tecplot"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.to_tecplot">[docs]</a>    <span class="k">def</span> <span class="nf">to_tecplot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Converts the dataframe to a tecplot file (.tec)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">firstKey</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">))</span>
+        <span class="n">firstPandas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="n">firstKey</span><span class="p">]</span>
+
+        <span class="c1"># header</span>
+        <span class="n">variables</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">firstPandas</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="n">variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">col</span><span class="p">))</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="s1">&#39;VARIABLES = &#39;</span> <span class="o">+</span> <span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+
+        <span class="c1"># zones</span>
+        
+        <span class="n">zones</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">zone_str</span> <span class="o">=</span> <span class="s1">&#39;ZONE T = </span><span class="se">\&quot;</span><span class="si">{0}</span><span class="se">\&quot;\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="o">+</span><span class="s2">&quot;_&quot;</span><span class="o">+</span><span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;individual&#39;</span><span class="p">])</span>
+            <span class="n">data_str</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">col</span><span class="o">==</span><span class="s1">&#39;population&#39;</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;DOE&quot;</span><span class="p">:</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;POP&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)))</span>
+                    <span class="k">elif</span> <span class="n">col</span><span class="o">==</span><span class="s2">&quot;individual&quot;</span><span class="p">:</span>
+                        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;IND&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">])</span><span class="o">==</span> <span class="nb">float</span><span class="p">:</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{:.6E}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">]))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+                <span class="n">zones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">zone_str</span><span class="p">)</span>
+                <span class="n">zones</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        
+        <span class="c1"># write to .tec file</span>
+        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+        <span class="n">db_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;database.tec&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">db_filename</span><span class="p">,</span><span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># write headers</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">head</span><span class="p">)</span>
+            <span class="c1"># write zones</span>
+            <span class="k">for</span> <span class="n">zone</span> <span class="ow">in</span> <span class="n">zones</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span></div>
+    
+<div class="viewcode-block" id="Optimizer.create_restart"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.create_restart">[docs]</a>    <span class="k">def</span> <span class="nf">create_restart</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a restart file containing all individuals of all populations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+    
+        <span class="n">pop_individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_calculation_folder</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">individuals</span> <span class="ow">in</span> <span class="n">pop_individuals</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">append_restart_file</span><span class="p">(</span><span class="n">individuals</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Optimizer.plot_2D"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.plot_2D">[docs]</a>    <span class="k">def</span> <span class="nf">plot_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">obj1_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">obj2_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">xlim</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">ylim</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Creates a 2D plot scatter plot of all the individuals for the two objectives specified</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj1_name (str): name of the x-axis</span>
+<span class="sd">            obj2_name (str): name of the y-axis</span>
+<span class="sd">            xlim (list, optional): xbounds example [-1,2]. Defaults to None.</span>
+<span class="sd">            ylim (list, optional): ybounds example [-5,5]. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">rainbow</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>        
+        <span class="n">indx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">legend_labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Scan the pandas file, grab objectives for each population</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">obj1_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">obj2_data</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">c</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">indx</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">obj1_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">obj1_name</span><span class="p">])</span>
+                <span class="n">obj2_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">obj2_name</span><span class="p">])</span>
+            <span class="c1"># Plot the gathered data</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">obj1_data</span><span class="p">,</span> <span class="n">obj2_data</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">legend_labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">indx</span><span class="o">+=</span><span class="mi">1</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">obj1_name</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">obj2_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">xlim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">ylim</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">legend_labels</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+ 
+<div class="viewcode-block" id="Optimizer.read_calculation_folder"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.read_calculation_folder">[docs]</a>    <span class="k">def</span> <span class="nf">read_calculation_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Individual</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Reads the entire calculation folder to a dataframe and returns all the individuals as an array</span>
+<span class="sd">            this can be useful for restarting a population</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception: [description]</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Individual]: list of all individuals for all populations (could be used as a restart)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">pop_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span><span class="p">,</span><span class="s1">&#39;Calculation&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">list_subfolders</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;POP&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;DOE&#39;</span><span class="p">,</span><span class="s1">&#39;-1&#39;</span><span class="p">))</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">pop_path</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid directory found. Make sure directories are either DOE or POP001&quot;</span><span class="p">)</span>
+        
+        <span class="n">individual_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pop_indx</span> <span class="ow">in</span> <span class="n">list_subfolders</span><span class="p">:</span>
+            <span class="n">individuals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_population</span><span class="p">(</span><span class="n">pop_indx</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_pandas</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">individuals</span><span class="p">),</span><span class="n">pop_indx</span><span class="p">)</span>
+            <span class="n">individual_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">individuals</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">individual_list</span></div>
+
+
+<div class="viewcode-block" id="Optimizer.to_dict"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Export the settings used to create the optimizer to dict. Also exports the optimization results if performed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            dict: list of all the settings, could be used for creating an optimization object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;eval_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_folder</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;opt_folder&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;single_folder_eval&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;eval_parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span><span class="p">]</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;objectives&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">o</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">]</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;perf_parameters&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_calculation_folder</span><span class="p">()</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">results</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pandas_cache</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;results&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">results</span>
+        <span class="k">return</span> <span class="n">settings</span></div>
+    
+<div class="viewcode-block" id="Optimizer.from_dict"><a class="viewcode-back" href="../../../modules/base.html#glennopt.base.optimizer.Optimizer.from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">settings</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reads the dictionary file and creates the base object</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings (dict): dictionary created by to_dict()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">evaluation_folder</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;eval_folder&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimization_folder</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;opt_folder&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">single_folder_eval</span> <span class="o">=</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;single_folder_eval&#39;</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">eval_parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;eval_parameters&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">objectives</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;objectives&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">performance_parameters</span> <span class="o">=</span> <span class="p">[</span><span class="n">Parameter</span><span class="p">()</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;perf_parameters&#39;</span><span class="p">]]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_calculation_folder</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

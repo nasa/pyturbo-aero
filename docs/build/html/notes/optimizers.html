@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optimizers &mdash; GlennOPT 1.4.* documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/style.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GlennOPT base classes" href="../modules/base.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> GlennOPT
+          </a>
+              <div class="version">
+                1.4.*
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-via-pip">Installation via Pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-via-source">Installation via Source</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Optimizers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules/base.html">GlennOPT base classes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules/helpers.html">GlennOPT Helpers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">GlennOPT</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Optimizers</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/notes/optimizers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="optimizers">
+<h1>Optimizers<a class="headerlink" href="#optimizers" title="Permalink to this headline"></a></h1>
+<section id="sode-single-objective-differential-evolution">
+<h2>SODE - Single Objective Differential Evolution<a class="headerlink" href="#sode-single-objective-differential-evolution" title="Permalink to this headline"></a></h2>
+<p>Single objective differential evolution works by generating a random set of individuals (design of experiments) that sample your domain. So if your domain is x1 = [-4,4], x2 = [-10,10], and x3=[0,5]. Each individual will be a vector of [x1,x2,x3] with randomly generated values between the bounds for x1, x2, and x3. There’s many different ways to produce a design of experinents, but the goal is to sample the space and see what’s best performing. The best performing individuals are then mutated and crossover with each other to produce the next set. The next set is then evaluated for it’s performance and the best are selected for mutation and crossover.</p>
+<p>The image below illusrates and example of the cycle.</p>
+<a class="reference internal image-reference" href="../_images/sode_overview.png"><img alt="../_images/sode_overview.png" src="../_images/sode_overview.png" style="width: 600px;" /></a>
+<p>Storn, R., &amp; Price, K. (1997). Differential evolution–a simple and efficient heuristic for global optimization over continuous spaces. Journal of global optimization, 11(4), 341-359.</p>
+</section>
+<section id="nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">
+<h2>NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm<a class="headerlink" href="#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm" title="Permalink to this headline"></a></h2>
+<p>When doing multi-objective optimization, instead of finding a single value that is your minimum, you have a minimums for all your objectives and the points in between represent a compromise between your objectives. Drawing a line through these points is the pareto front.</p>
+<p>An expansion of single objective differential evolution can be carried out to multiple dimensions using a sorting algorithm. The top row of the figure is similar to what you would see for single objective differential evolution. However the bottom shows a sorting strategy called Non-Dominated Sorting. This method is used to filter out designs that minimize all the objectives by ranking them. However you can end up with crowding which is when designs are clustered together near each other. This isn’t good for diversity and can lead to optimizers being stuck in local minimas. Which is why the authors do a point selection based on the closesness to a normalized pareto front.</p>
+<a class="reference internal image-reference" href="../_images/nsga3_overview.png"><img alt="../_images/nsga3_overview.png" src="../_images/nsga3_overview.png" style="width: 600px;" /></a>
+<p>Yuan, Y., Xu, H., &amp; Wang, B. (2014, July). An improved NSGA-III procedure for evolutionary many-objective optimization. In Proceedings of the 2014 annual conference on genetic and evolutionary computation (pp. 661-668).</p>
+</section>
+<section id="nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">
+<h2>NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate<a class="headerlink" href="#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate" title="Permalink to this headline"></a></h2>
+<p>An expansion on the NSGA-III algorithm by incorporating a machine learning surrogate model. This surrogate model estimates the values of your objectives in the design space. NSGA is used to predict the performance inside an internal loop. The results are then evaluated by the objective function. Doing it this way minimizes the actual execution of the objective function. If your objective function is CFD, this can save some time. However there are many downsides towards doing this way. One of those is overfitting of the neural network. This can lead to inaccurate solutions near the pareto front. Over evaluation of the neural network can lead to clusterings near local minimas.</p>
+<a class="reference internal image-reference" href="../_images/nsga_surrogate_overview.png"><img alt="../_images/nsga_surrogate_overview.png" src="../_images/nsga_surrogate_overview.png" style="width: 600px;" /></a>
+</section>
+<section id="nsopt-non-dominated-sorting-optimization-using-scipy">
+<h2>NSOPT - Non-Dominated sorting optimization using Scipy<a class="headerlink" href="#nsopt-non-dominated-sorting-optimization-using-scipy" title="Permalink to this headline"></a></h2>
+<p>This method uses parts of NSGA3 to construct objective functions that use scipy to search for designs that can find the pareto. A weighted summation method is used to construct the various objective functions and scipy.minimize is the searching stratregy for the pareto front. One of the downsides towards using a weighted sum is it’s poor ability to search for non-convex pareto fronts. This strategy is interesting because it has the capability to use gradient based minimization methods from scipy. More improvements will be made in the future to improve pareto front search capabilities.</p>
+<a class="reference internal image-reference" href="../_images/nsopt_overview.png"><img alt="../_images/nsopt_overview.png" src="../_images/nsopt_overview.png" style="width: 600px;" /></a>
+<p>Weighted sum: <a class="reference external" href="https://www.sciencedirect.com/topics/computer-science/weighted-sum-method">https://www.sciencedirect.com/topics/computer-science/weighted-sum-method</a>
+Weight sum limitations: <a class="reference external" href="https://youtu.be/yc9NwvlpEpI?t=1945">https://youtu.be/yc9NwvlpEpI?t=1945</a>
+Scipy minimize methods: <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html</a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../modules/base.html" class="btn btn-neutral float-right" title="GlennOPT base classes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Paht Juangphanich.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

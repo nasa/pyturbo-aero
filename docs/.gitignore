@@ -1,7 +1,5 @@
 # sphinx build folder
-
-*.doctree
-*.pickle
+doctrees
 
 # Compiled source #
 ###################
