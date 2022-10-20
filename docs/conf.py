@@ -12,18 +12,21 @@
 #
 import os
 import sys
-import glennopt
+sys.path.insert(0, os.path.abspath('_ext'))
 import sphinx_rtd_theme
+import pyturbo_aero
+import pyturbo_aero.aero
+import pyturbo_aero.helper
 
 # -- Project information -----------------------------------------------------
 
-project = 'GlennOPT'
+project = 'pyturbo-aero'
 copyright = '2021, Paht Juangphanich'
 author = 'Paht Juangphanich <paht.juangphanich@nasa.gov>'
 
 # The full version, including alpha/beta/rc tags
-version = '1.4.*' # glennopt.__version__
-release = '1.4.*' # glennopt.__version__
+version = '1.0.1' 
+release = '1.0.1' 
 
 
 # -- General configuration ---------------------------------------------------
@@ -57,7 +60,11 @@ napoleon_use_keyword = True
 napoleon_custom_sections = None
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['templates']
+templates_path = ['_templates']
+
+srclink_project = 'https://github.com/nasa/pyturbo-aero'
+srclink_branch = 'master'
+srclink_src_path = 'docs/'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -82,11 +89,9 @@ html_theme_options = {
     'navigation_depth': 2,
 }
 
-html_static_path = ['_static']
-html_css_files = [
-    'css/style.css',
-]
-rst_context = {'glennopt': glennopt}
+
+html_static_path = ['static']
+rst_context = {'pyturbo-aero': pyturbo_aero}
 
 
 def setup(app):

@@ -3,10 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Search &mdash; GlennOPT 1.4.* documentation</title>
+  <title>Search &mdash; pyturbo-aero 1.0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/style.css" type="text/css" />
     
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -15,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <script src="_static/searchtools.js"></script>
     <script src="_static/language_data.js"></script>
@@ -28,10 +29,10 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> GlennOPT
+            <a href="index.html" class="icon icon-home"> pyturbo-aero
           </a>
               <div class="version">
-                1.4.*
+                1.0.1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="#" method="get">
@@ -41,41 +42,24 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Notes</span></p>
+              <p class="caption" role="heading"><span class="caption-text">python API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="notes/installation.html">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notes/installation.html#installation-via-pip">Installation via Pip</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes/installation.html#installation-via-source">Installation via Source</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/airfoil2D.html">Airfoil 2D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="notes/optimizers.html">Optimizers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#sode-single-objective-differential-evolution">SODE - Single Objective Differential Evolution</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsga3-nsga-iii-non-dominated-sorting-genetic-algorithm">NSGA3 / NSGA-III- Non-Dominated Sorting Genetic Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsga3-ml-non-dominated-sorting-genetic-algorithm-with-machine-learning-surrogate">NSGA3_ML - Non-Dominated Sorting Genetic Algorithm with Machine Learning Surrogate</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes/optimizers.html#nsopt-non-dominated-sorting-optimization-using-scipy">NSOPT - Non-Dominated sorting optimization using Scipy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/airfoil3D.html">Airfoil 3D</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
 </ul>
 </li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Package Reference</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="modules/base.html">GlennOPT base classes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.individual">Individual Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.optimizer">Optimizer Base Class</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/base.html#module-glennopt.base.parameter">Parameter Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/channel.html">2D Passage definition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/channel.html#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="modules/sode.html">Single Objective Differential Evolution (SODE)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/nsga3.html">Non-dominated sorting genetic algorithm (NSGA-III)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/nsga3_ml.html">Non-dominated sorting genetic algorithm (NSGA-III) with Machine Learning Surrogate</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/nsopt.html">Non-dominated sorting optmization with Scipy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules/helpers.html">GlennOPT Helpers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.convert_to_ndarray">Converting to Numpy Array</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.copy">Copy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.mutate">Mutations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.non_dominated_sorting">Non Dominated Sorting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.parallel_settings">Parallel Settings</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.population_distance">Population Distance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="modules/helpers.html#module-glennopt.helpers.post_processing">Post Processing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/helper.html">PyTurbo.helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules/wavy.html">Wavy Airfoil</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="modules/wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -86,7 +70,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">GlennOPT</a>
+          <a href="index.html">pyturbo-aero</a>
       </nav>
 
       <div class="wy-nav-content">
