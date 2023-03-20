@@ -15,7 +15,7 @@ Importing the python package after installing
 
 # Tutorial
 - [2D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/2D_DesignTutorial.ipynb)
-- [3D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/2D_DesignTutorial.ipynb)
+- [3D Airfoil Design](https://colab.research.google.com/github/nasa/pyturbo-aero/blob/main/tutorials/3D_DesignTutorial.ipynb)
 
 # License
 [NASA Open Source Agreement](https://opensource.org/licenses/NASA-1.3)
