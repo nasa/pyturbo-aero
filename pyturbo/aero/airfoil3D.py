@@ -28,8 +28,88 @@ class stack_type(enum.Enum):
 
 
 
-
 class airfoil3D():
+    '''
+        Properties
+    '''
+    profileArray: List[airfoil2D]
+    profileSpan: List[float] 
+    span:float 
+    IsSplineFitted: bool
+    IsSplineFittedShell: bool 
+    
+    stackType:stack_type 
+    '''Bezier X,Y,Z are for the stacking line of the blade'''
+    bezierX: List[float]    
+    bezierY: List[float]
+    bezierZ: List[float]
+
+    te_center_x: np.ndarray     # Center of trailing edge for each span profile
+    te_center_y: np.ndarray 
+    b3: bezier3                 # 3D Bezier curve that defines the stacking
+    bImportedBlade: bool
+
+    sweepY: np.ndarray          # Array defining the sweep and lean points. 
+    sweepZ: np.ndarray          # 
+
+    leanX: np.ndarray
+    leanY: np.ndarray
+
+    nte: int                    # Number of points defining the trailing edge
+    npts: int                   # Number of points defining the suction and pressure side
+    nspan: int                  # Number of cross sections along the span
+    
+    '''Profile points: these are the 2D Profiles that you passed into the constructor'''
+    spline_xpss: np.ndarray     # Profile Suction side 
+    spline_ypss: np.ndarray
+    spline_zpp: np.ndarray
+
+    spline_xpps: np.ndarray     # Profile Pressure side
+    spline_ypps: np.ndarray
+
+    '''3D Blade points: Final blade points after lean and sweep are accounted for'''
+    spline_xss: List[PchipInterpolator]      # Suction side list of curves
+    spline_yss: List[PchipInterpolator]
+    spline_zss: List[PchipInterpolator]
+
+    spline_xps: List[PchipInterpolator]      # Pressure side: list of curves 
+    spline_yps: List[PchipInterpolator]
+    spline_zps: List[PchipInterpolator]
+
+    spline_te_xss: np.ndarray   # Trailing edge suction side points
+    spline_te_yss: np.ndarray
+
+    spline_te_xps: np.ndarray   # Trailing edge pressure side points 
+    spline_te_yps: np.ndarray
+
+    xss: np.ndarray             # Blade cross sections defined without Lean or Sweep
+    yss: np.ndarray             
+    te_ss_x: np.ndarray
+    te_ss_y: np.ndarray
+    
+    xps: np.ndarray
+    yps: np.ndarray
+    te_ps_x: np.ndarray
+    te_ps_y: np.ndarray
+
+    control_x_ss: np.ndarray    # Location of the stacking line control points
+    control_y_ss: np.ndarray
+    control_x_ps: np.ndarray    
+    control_y_ps: np.ndarray
+    c_te_x_ss: np.ndarray
+    c_te_y_ss: np.ndarray
+    c_te_x_ps: np.ndarray
+    c_te_y_ps: np.ndarray
+
+    shft_xss: np.ndarray        # Suction side Final points with lean and sweep
+    shft_yss: np.ndarray        # These are the points that are exported
+    shft_zss: np.ndarray
+
+    shft_xps: np.ndarray        # Pressure side Final points with lean and sweep
+    shft_yps: np.ndarray        # These are the points that are exported
+    shft_zps: np.ndarray
+
+
     """Defines a 3D Airfoil to be used in a channel
     """
     def __init__(self, profileArray: List[airfoil2D], profile_loc: List[float], height: float):
@@ -61,8 +141,6 @@ class airfoil3D():
             if (stackType == stack_type.leading_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(0)
-                self.bx = hx
-                self.by = hy  # set the base centroid
                 self.bezierX.append(hx)
                 self.bezierY.append(hy)
                 self.bezierZ.append(0)
@@ -89,8 +167,6 @@ class airfoil3D():
             elif (stackType == stack_type.trailing_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(1)
-                self.bx = hx
-                self.by = hy  # set the base centroid
                 self.bezierX.append(hx)
                 self.bezierY.append(hy)
                 self.bezierZ.append(0)
@@ -116,7 +192,6 @@ class airfoil3D():
 
             elif (stackType == stack_type.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
-                self.bx = hx; self.by = hy  # set the base centroid
                 self.bezierX.append(hx)
                 self.bezierY.append(hy)
                 self.bezierZ.append(0)
@@ -166,8 +241,8 @@ class airfoil3D():
         i1 = np.setxor1d(self.sweepZ, self.bezierZ) # tells what items in leanZ do not exist in bezierZ
         i1 = np.where(self.sweepZ == i1) # get the index
         self.bezierZ = np.append(self.bezierZ, self.sweepZ[i1])
-        self.bezierY = np.append(self.bezierY, self.sweepY[i1]*self.span+self.by)
-        xx = self.sweepZ; xx[i1] = self.bx
+        self.bezierY = np.append(self.bezierY, self.sweepY[i1]*self.span+self.bezierY[0])
+        xx = self.sweepZ; xx[i1] = self.bezierX[0]
         self.bezierX = np.append(self.bezierX, xx[i1])
 
 
@@ -204,8 +279,8 @@ class airfoil3D():
         i1 = np.setxor1d(leanZ,self.bezierZ)
         i1 = np.where(leanZ == i1) # get the index
         self.bezierZ = np.append(self.bezierZ, leanZ[i1])
-        self.bezierX = np.append(self.bezierX, self.leanX[i1]*self.span+self.bx)
-        yy = leanZ; yy[i1] = self.by #TODO Need to check this
+        self.bezierX = np.append(self.bezierX, self.leanX[i1]*self.span+self.bezierX[0])
+        yy = leanZ; yy[i1] = self.bezierY[0] #TODO Need to check this
         self.bezierY = np.append(self.bezierY, yy[i1])
 
         # Sort
@@ -234,11 +309,11 @@ class airfoil3D():
         t_te = np.linspace(0,1,self.nte) # use 20 points for the trailing edge
         n_profiles = len(self.profileArray)
         # x,y,z profiles - stores the x,y,z coordinate for each profile for a given time
-        self.spline_xpp = np.zeros((self.npts,n_profiles))
-        self.spline_ypp = np.zeros((self.npts,n_profiles))
-        self.spline_zpp = np.zeros((self.npts,n_profiles))
         self.spline_xpps = np.zeros((self.npts,n_profiles))
-        self.spline_ypps = np.zeros((self.npts,n_profiles)) 
+        self.spline_ypps = np.zeros((self.npts,n_profiles))
+        self.spline_zpp = np.zeros((self.npts,n_profiles))
+        self.spline_xpss = np.zeros((self.npts,n_profiles))
+        self.spline_ypss = np.zeros((self.npts,n_profiles)) 
         self.spline_te_xss = np.zeros((self.nte,n_profiles)) # trailing edge points fixed at 100
         self.spline_te_yss = np.zeros((self.nte,n_profiles))
         self.spline_te_xps = np.zeros((self.nte,n_profiles))
@@ -262,17 +337,17 @@ class airfoil3D():
         for j in range(n_profiles):
             # [tmpXps[:,j], tmpYps[:,j]] = self.profileArray[j]._psBezier.get_point(t)
             # [tmpXss[:,j], tmpYss[:,j]] = self.profileArray[j]._ssBezier.get_point(t)
-            [self.spline_xpp[:,j], self.spline_ypp[:,j]] = self.profileArray[j]._psBezier.get_point(t,equal_space=True)
-            [self.spline_xpps[:,j], self.spline_ypps[:,j]] = self.profileArray[j]._ssBezier.get_point(t,equal_space=True)
+            [self.spline_xpps[:,j], self.spline_ypps[:,j]] = self.profileArray[j]._psBezier.get_point(t,equal_space=True)
+            [self.spline_xpss[:,j], self.spline_ypss[:,j]] = self.profileArray[j]._ssBezier.get_point(t,equal_space=True)
             self.spline_zpp[:,j] = self.profileSpan[j]*self.span              # Span
         
             
         for i in range(self.npts): 
-            self.xps[:,i]= csapi(self.spline_zpp[i,:],self.spline_xpp[i,:],self.zz) # Natural spline
-            self.yps[:,i]= csapi(self.spline_zpp[i,:],self.spline_ypp[i,:],self.zz)
+            self.xps[:,i]= csapi(self.spline_zpp[i,:],self.spline_xpps[i,:],self.zz) # Natural spline
+            self.yps[:,i]= csapi(self.spline_zpp[i,:],self.spline_ypps[i,:],self.zz)
             
-            self.xss[:,i]= csapi(self.spline_zpp[i,:],self.spline_xpps[i,:],self.zz)
-            self.yss[:,i]= csapi(self.spline_zpp[i,:],self.spline_ypps[i,:],self.zz)
+            self.xss[:,i]= csapi(self.spline_zpp[i,:],self.spline_xpss[i,:],self.zz)
+            self.yss[:,i]= csapi(self.spline_zpp[i,:],self.spline_ypss[i,:],self.zz)
         
 
         spline_zpp_te = np.zeros((self.nte,n_profiles))
