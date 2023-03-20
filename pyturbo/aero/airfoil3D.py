@@ -428,7 +428,6 @@ class airfoil3D():
         if (self.IsSplineFittedShell):
             for i in range(nzz): # number of profile sections created from bezier curve + spline
                 self.shell_zss[:,i] = z[:,i]
-
     
     def scale_zps(self,zmin:List[float],zmax:List[float]):
         """scales the z axis to match the channel height. Channel height may be defined as the radius
@@ -450,7 +449,6 @@ class airfoil3D():
         if (self.IsSplineFittedShell):
             for i in range(nzz): # number of profile sections created from bezier curve + spline
                 self.shell_zps[:,i] = z[:,i]
-
     
     def flip_cw(self):
         """Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z
