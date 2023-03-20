@@ -109,6 +109,14 @@ class airfoil3D():
     shft_yps: np.ndarray        # These are the points that are exported
     shft_zps: np.ndarray
 
+    '''Shell'''    
+    shell_xss: List[PchipInterpolator]  # curves defining the shelled geometry
+    shell_yss: List[PchipInterpolator]  
+    shell_zss: List[PchipInterpolator]
+
+    shell_xps: List[PchipInterpolator]
+    shell_yps: List[PchipInterpolator]
+    shell_zps: List[PchipInterpolator] 
 
     """Defines a 3D Airfoil to be used in a channel
     """
@@ -608,6 +616,7 @@ class airfoil3D():
             Creates a 3D plot of the blade using plotly
             Trailing edge center line is also plotted along with the blade's stacking spine
         '''
+    
     def plot3D_ly(self,only_blade=False):
         """Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade's stacking spine
 
@@ -1388,7 +1397,6 @@ class airfoil3D():
         self.te_center_y = self.te_center_y - yc
         self.zz = self.zz - xc
         
-
     def plot_shell_2D(self,percent_span:float,shell_thickness:float):
         """Plots the 2D shell used for placement of heat pipes
 
@@ -1430,3 +1438,7 @@ class airfoil3D():
         ss_len = np.sum(np.sqrt(np.diff(ss_x)*np.diff(ss_x) + np.diff(ss_y)*np.diff(ss_y)))
         ps_len = np.sum(np.sqrt(np.diff(ps_x)*np.diff(ps_x) + np.diff(ps_y)*np.diff(ps_y)))
         return ss_len,ps_len
+
+    def export_stl(self):
+        self.shft_xps
+        
