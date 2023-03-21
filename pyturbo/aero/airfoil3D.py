@@ -14,6 +14,7 @@ from scipy.interpolate import PchipInterpolator
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from tqdm import trange
+from stl import mesh
 
 
 class stack_type(enum.Enum):
@@ -1439,9 +1440,12 @@ class airfoil3D():
         ps_len = np.sum(np.sqrt(np.diff(ps_x)*np.diff(ps_x) + np.diff(ps_y)*np.diff(ps_y)))
         return ss_len,ps_len
 
-    def export_stl(self):
-        from stl import mesh
-      
+    def export_stl(self,filename:str="blade.stl"):
+        """Exports the finished blade to STL
+
+        Args:
+            filename (str, optional): Name of the STL file . Defaults to "blade.stl".
+        """
         x = np.concatenate([self.shft_xss, np.flip(self.shft_xps[:,1:-1],axis=1)],axis=1)
         y = np.concatenate([self.shft_yss, np.flip(self.shft_yps[:,1:-1],axis=1)],axis=1)
         z = np.concatenate([self.shft_zss, np.flip(self.shft_zps[:,1:-1],axis=1)],axis=1)
@@ -1514,6 +1518,6 @@ class airfoil3D():
             for j in range(3):
                 blade.vectors[i][j] = vertices[f[j],:]
 
-# Write the mesh to file "cube.stl"
-        blade.save('blade.stl')
-        print("check")
+        
+        blade.save(filename)
+        
