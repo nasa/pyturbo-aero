@@ -1440,5 +1440,80 @@ class airfoil3D():
         return ss_len,ps_len
 
     def export_stl(self):
-        self.shft_xps
+        from stl import mesh
+      
+        x = np.concatenate([self.shft_xss, np.flip(self.shft_xps[:,1:-1],axis=1)],axis=1)
+        y = np.concatenate([self.shft_yss, np.flip(self.shft_yps[:,1:-1],axis=1)],axis=1)
+        z = np.concatenate([self.shft_zss, np.flip(self.shft_zps[:,1:-1],axis=1)],axis=1)
+
+        # Create triangles
+        nspan = x.shape[0] # number of spans 
+        nv = x.shape[1]*nspan # number of verticies
+        faces = list()
         
+        # Bottom triangles
+        i=0 # span 0
+        for j in range(int(x.shape[1]/2)):
+            v1 = j
+            v2 = j+1 
+            v3 = x.shape[1] - (j+1) 
+            faces.append([v3,v2,v1])
+          
+            v1 = j + 1
+            v2 = x.shape[1] - (j+2)
+            v3 = x.shape[1] - (j+1) 
+            faces.append([v3,v2,v1])
+
+        # Construct side wall triangles
+        for i in range(1,x.shape[0]): # Spans
+            for j in range(x.shape[1]): # points for each span                 
+                # Blue triangle
+                v1 = (i-1)*x.shape[1]+(j-1)
+                v2 = (i-1)*x.shape[1]+j
+                v3 = i*x.shape[1] + j-1
+                faces.append([v1,v2,v3])
+
+                # red triangle
+                v1 = (i-1)*x.shape[1]+j 
+                v2 = i*x.shape[1] + j
+                v3 = i*x.shape[1] + j-1 
+                faces.append([v1,v2,v3])
+                if j == x.shape[1]-1 and i<x.shape[0]-1:
+                    # Blue triangle
+                    v1 = (i-1)*x.shape[1]+(x.shape[1]-1)
+                    v2 = (i-1)*x.shape[1]+j-1
+                    v3 = i*x.shape[1] + x.shape[1]-1
+                    faces.append([v1,v2,v3])
+
+                    # red triangle
+                    v1 = (i-1)*x.shape[1]+x.shape[1] 
+                    v2 = i*x.shape[1] + x.shape[1]
+                    v3 = i*x.shape[1] + x.shape[1]-1 
+                    faces.append([v1,v2,v3])
+        # Top triangles 
+        for j in range(int(x.shape[1]/2)):
+            v1 = j
+            v2 = j+1 
+            v3 = x.shape[1] - (j+1) 
+            faces.append([v1+(nspan-1)*x.shape[1],v2+(nspan-1)*x.shape[1],v3+(nspan-1)*x.shape[1]])
+   
+            v1 = j + 1
+            v2 = x.shape[1] - (j+2)
+            v3 = x.shape[1] - (j+1) 
+            faces.append([v1+(nspan-1)*x.shape[1],v2+(nspan-1)*x.shape[1],v3+(nspan-1)*x.shape[1]])
+
+        
+        x = x.flatten()
+        y = y.flatten()
+        z = z.flatten()
+        
+        vertices = np.array([x,y,z]).transpose()
+        faces = np.array(faces)
+        blade = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
+        for i, f in enumerate(faces):
+            for j in range(3):
+                blade.vectors[i][j] = vertices[f[j],:]
+
+# Write the mesh to file "cube.stl"
+        blade.save('blade.stl')
+        print("check")
