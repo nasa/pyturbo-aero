@@ -8,7 +8,7 @@ _config = {
     "author": "Paht Juangphanich",
     "author_email": "paht.juangphanich@nasa.gov",
     "packages":["pyturbo","pyturbo.helper","pyturbo.aero"],
-    "install_requires":['plotly','tqdm','scipy','pandas','numpy','matplotlib'],
+    "install_requires":['plotly','tqdm','scipy','pandas','numpy','matplotlib','numpy-stl'],
     'license':"GNU GPLv3"
 }
 
