@@ -15,14 +15,18 @@ from .convert_to_ndarray import convert_to_ndarray
 # https://stackabuse.com/pythons-classmethod-and-staticmethod-explained/
 
 class bezier():
+    n:int           # Number of control points
+    c:np.ndarray    # bezier coefficients
+    x:np.ndarray    # x-control points
+    y:np.ndarray    # y-control points
+
+
     def __init__(self, x,y):
         self.n = len(x)
         self.c = np.zeros(self.n) 
-        self.x = x
-        self.y = y
-        self.dx = x[-1]-x[0]
-        self.dy = y[-1]-y[0]
-        self.t = []
+        self.x = convert_to_ndarray(x)
+        self.y = convert_to_ndarray(y)
+
         for i in range(0,self.n):
             self.c[i] = comb(self.n-1, i, exact=False) # use floating point
 
@@ -97,15 +101,11 @@ class bezier():
                 tempy += u*self.y[j]
                 
             Bx[i],By[i] = tempx,tempy
-        self.t = t
 
         if (equal_space and len(Bx)>2):
             Bx,By = self.equal_space(t,Bx,By)
             return Bx,By
-        elif (len(Bx)==1):
-            return Bx[0], By[0] # if it's just one point return floats
         return Bx,By
-
 
     def plot2D(self,equal_space=False):
         """Creates a 2D Plot of a bezier curve 
@@ -124,8 +124,6 @@ class bezier():
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
-
-        
 
     def get_point_dt(self,t):
         """
@@ -158,6 +156,19 @@ class bezier():
             Bx[i] = tempx
             By[i] = tempy
         return Bx,By
+
+    def rotate(self,angle:float):
+        """Rotate 
+
+        Args:
+            angle (float): _description_
+        """
+        angle = np.radians(angle)
+        rot_matrix = np.array([[math.cos(angle) -math.sin(angle)],[math.sin(angle), math.cos(angle)]])
+        ans = (rot_matrix*self.x.transpose()).transpose()
+        self.x = ans[:,0]
+        self.y = ans[:,1]
+
 
 class bezier3:
     def __init__(self,x,y,z):
@@ -305,30 +316,30 @@ class pw_bezier2D:
                 - *y* (np.ndarray): y-coordinates
 
         """
-        t = convert_to_ndarray(t)
-
-        t.sort();  
         n = len(self.bezierArray); 
-        x = np.zeros(int(len(t)*n-n))
-        y = np.zeros(int(len(t)*n-n))
+        x = np.zeros(len(t)+(n-1)*(len(t)-1))
+        y = np.zeros(len(t)+(n-1)*(len(t)-1))
         t_start=0; lenT = len(t)
-
         for i in range(0,n): # loop for each bezier curve
             [xx,yy] = self.bezierArray[i].get_point(t)
-            if (i<n):
-                x[t_start:t_start+lenT-1] = xx[0:-1]
-                y[t_start:t_start+lenT-1] = yy[0:-1]
-                t_start = t_start+lenT-1
+            if i == 0:
+                x[0:lenT] = xx
+                y[0:lenT] = yy
+                t_start += lenT
             else:
-                x[t_start:] = xx
-                y[t_start:] = yy
-        
-        
-        if (equal_space and len(Bx)>2):
-            Bx,By = self.__equal_space__(t,Bx,By)
-            return Bx,By
-        elif (len(Bx)==1):
-            return Bx[0], By[0] # if it's just one point return floats
+                x[t_start:t_start+lenT-1] = xx[1:]
+                y[t_start:t_start+lenT-1] = yy[1:]
+                t_start += lenT-1
+            
+
+        if len(t)>0:
+            t = np.linspace(0,1,len(x))
+            x = sp_intp.interp1d(t,x)(np.linspace(0,1,lenT))
+            y = sp_intp.interp1d(t,y)(np.linspace(0,1,lenT))
+            return x,y
+
+        if (equal_space and len(x)>2):
+            x,y = self.__equal_space__(t,x,y)
         return x,y
 
     def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray):

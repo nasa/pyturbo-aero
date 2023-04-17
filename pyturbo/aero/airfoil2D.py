@@ -274,8 +274,7 @@ class airfoil2D():
         self.ssBezierX[-1] = x_wedge_ss
         self.ssBezierY[-1] = y_wedge_ss
         b = bezier(self.ssBezierX,self.ssBezierY)
-        self.ssBezier = b
-        
+        self.ssBezier = b      
     
     def ss_thickness_add(self,thicknessArray:List[float],camberPercent:float=None,thickness_loc:List[float]=None,expansion_ratio:float=1.2):
         """Adds thickness to the suction side by specifying bezier control points 
@@ -398,7 +397,6 @@ class airfoil2D():
             
         self.psBezier = bezier(self.psBezierX,self.psBezierY)
 
-
     def add_pitch(self,x_pitch:float):
         """Adds extra pitch by shifting the turbine blade over by a x direction
 
@@ -447,7 +445,6 @@ class airfoil2D():
         self.TE_ps_arc.y = self.TE_ps_arc.y + y
         self.TE_ss_arc.x = self.TE_ss_arc.x + x
         self.TE_ss_arc.y = self.TE_ss_arc.y + y
-
 
     def get_centroid(self):
         """Returns the centroid of the airfoil
@@ -642,7 +639,6 @@ class airfoil2D():
         bs = bezier(self.ssBezierX,self.ssBezierY)
         self.ssBezier = pw_bezier2D([bs,bl])
     
-
     # FlowGuidance2
     # Use if SS is defined from 0 to a camber percent
     def flow_guidance2(self,n:int=8):
@@ -672,7 +668,6 @@ class airfoil2D():
 
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
 
- 
     def flow_guidance3(self,s_c:float,n:int):
         """Straightens out the suction side. Computes the intersection point of the throat and draws a line, adds bezier points along the line
 
@@ -919,8 +914,6 @@ class airfoil2D():
         plt.ylabel('d^2y/dx^2')
         plt.show()
 
-
-
     def thickness(self):
         """Calculates the location and value of maximum thickness along with average thickness
 
@@ -954,18 +947,6 @@ class airfoil2D():
         # Find avg thickness
         avg_thickness = np.mean(d)
         return indx, max_thickness, avg_thickness
-        # Find avg thickness
-        
-        # Debug plot
-    #             close all
-    #             self.Plot2D[0]
-    #             figure(1)
-    #             hold on
-    #             for i=1:len(t)
-    #                 plot([xss(i) xx_ps(i)],[yss(i) yy_ps(i)],'k')
-    #             end
-    #             hold off
-    #             [val indx] = max(d)
 
     def channel_get(self,s_c):        
         """Gets adjacent airfoil 
