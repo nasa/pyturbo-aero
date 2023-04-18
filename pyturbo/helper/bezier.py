@@ -316,7 +316,8 @@ class pw_bezier2D:
                 - *y* (np.ndarray): y-coordinates
 
         """
-        n = len(self.bezierArray); 
+        n = len(self.bezierArray)
+        t = convert_to_ndarray(t) 
         x = np.zeros(len(t)+(n-1)*(len(t)-1))
         y = np.zeros(len(t)+(n-1)*(len(t)-1))
         t_start=0; lenT = len(t)
