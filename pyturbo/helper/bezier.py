@@ -173,12 +173,49 @@ class bezier():
 class bezier3:
     def __init__(self,x,y,z):
         self.n = len(x)
-        self.x = x
-        self.y = y
-        self.z = z
+        self.x = convert_to_ndarray(x)
+        self.y = convert_to_ndarray(y)
+        self.z = convert_to_ndarray(z)
         self.c = np.zeros(self.n)
         for i in range(self.n):
             self.c[i] = comb(self.n-1, i, exact=False) # use floating point
+    
+    def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray,z:np.ndarray):
+        """Equally space points along a bezier curve using arc length
+            
+        Args:
+            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)
+            x (np.ndarray): x-coordinate as numpy array
+            y (np.ndarray): y-coordinates as numpy array
+            z (np.ndarray): z-coordinates as numpy array
+
+        Returns:
+            (Tuple): containing
+                - *x* (np.ndarray): new values of x that are equally spaced 
+                - *y* (np.ndarray): new values of y that are equally spaced 
+
+        """
+        arcL = arclen3(x,y,z)
+        mean_old = np.mean(arcL)
+        mean_err = 1
+        while (mean_err>1.0E-3):
+            target_len = np.sum(arcL)/len(t) # we want equal length
+            csum = np.cumsum(arcL)
+            f = sp_intp.PchipInterpolator(t,csum)
+            t_start = np.min(t)   
+            t_end = np.max(t)
+            for i in range(0,t.size-2):
+                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
+                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
+                t[i+1] = temp.x
+                t_start = t[i+1]
+
+            x,y,z = self.get_point(t,equal_space=False)
+            arcL = arclen3(x,y,z)
+            mean_new = np.mean(arcL)
+            mean_err = abs(mean_old-mean_new)/abs(mean_new)
+            mean_old = mean_new
+        return x,y,z
     
     def get_point(self,t,equal_space = True):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
@@ -208,7 +245,7 @@ class bezier3:
         self.t = t
 
         if (equal_space and len(Bx)>2):
-            Bx,By,Bz = equal_space(t,Bx,By,Bz)
+            Bx,By,Bz = self.__equal_space__(t,Bx,By,Bz)
             return Bx,By,Bz
         elif (len(Bx)==1):
             return Bx[0], By[0],Bz[0] # if it's just one point return floats
