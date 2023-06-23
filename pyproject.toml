@@ -15,6 +15,8 @@ scipy = ">1.8.0"
 pandas = ">=1.4"
 numpy = ">1.23.1"
 matplotlib = ">3.2.1"
+numpy-stl = "*"
+
 [tool.poetry.dev-dependencies]
 
 [build-system]
