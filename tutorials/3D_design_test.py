@@ -17,7 +17,7 @@ stator_hub.le_thickness_match()
 stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 
 stator_hub.flow_guidance2(10)
-
+stator_hub.plot2D()
 stator_mid = airfoil2D(alpha1=10,alpha2=72,axial_chord=0.038,stagger=45) # This creates the camberline
 # Building Leading Edge
 stator_mid.le_thickness_add(0.06)
