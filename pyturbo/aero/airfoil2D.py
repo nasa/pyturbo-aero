@@ -772,14 +772,14 @@ class airfoil2D():
             x = self.ssBezierX[indx]
             y = self.ssBezierY[indx]
             d = dist(x,y,xcamber,ycamber)
-            min_indx = np.where(d == np.amin(d))
+            min_indx = np.where(d == np.amin(d))[0][0]
             plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
         # pressure side
         for indx in range(0,len(self.psBezierX)):
             x = self.psBezierX[indx]
             y = self.psBezierY[indx]
             d = dist(x,y,xcamber,ycamber)
-            min_indx = np.where(d == np.amin(d))
+            min_indx = np.where(d == np.amin(d))[0][0]
             plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
         # Plot the Trailing Edge
         t = np.linspace(0,1,20)
