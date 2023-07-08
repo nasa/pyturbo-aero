@@ -150,39 +150,39 @@ class airfoil3D():
             if (stackType == stack_type.leading_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(0)
-                self.bezierX.append(hx)
-                self.bezierY.append(hy)
+                self.bezierX.append(hx[0])
+                self.bezierY.append(hy[0])
                 self.bezierZ.append(0)
 
                 [hx_te, hy_te] = hub.camberBezier.get_point(1)
-                self.te_center_x[0] = hx_te
-                self.te_center_y[0] = hy_te
+                self.te_center_x[0] = hx_te[0]
+                self.te_center_y[0] = hy_te[0]
 
                 for i in range(1, len(self.profileArray)):
                     [x, y] = self.profileArray[i].camberBezier.get_point(0)
-                    dx = hx-x
-                    dy = hy-y
+                    dx = hx[0]-x[0]
+                    dy = hy[0]-y[0]
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    self.bezierX.append(hx)
-                    self.bezierY.append(hy)
+                    self.bezierX.append(hx[0])
+                    self.bezierY.append(hy[0])
                     self.bezierZ.append(self.profileSpan[i]*self.span)
 
                     [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
                         1)
-                    self.te_center_x[i] = hx_te
-                    self.te_center_y[i] = hy_te
+                    self.te_center_x[i] = hx_te[0]
+                    self.te_center_y[i] = hy_te[0]
             # Stack the airfoils about TE
             elif (stackType == stack_type.trailing_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(1)
-                self.bezierX.append(hx)
-                self.bezierY.append(hy)
+                self.bezierX.append(hx[0])
+                self.bezierY.append(hy[0])
                 self.bezierZ.append(0)
 
                 [hx_te, hy_te] = hub.camberBezier.get_point(1)
-                self.te_center_x[0] = hx_te
-                self.te_center_y[0] = hy_te
+                self.te_center_x[0] = hx_te[0]
+                self.te_center_y[0] = hy_te[0]
 
                 for i in range(1, len(self.profileArray)):
                     [x, y] = self.profileArray[i].camberBezier.get_point(1)
@@ -190,39 +190,39 @@ class airfoil3D():
                     dy = 0
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    self.bezierX.append(hx)
-                    self.bezierY.append(hy)
+                    self.bezierX.append(hx[0])
+                    self.bezierY.append(hy[0])
                     self.bezierZ.append(self.profileSpan[i]*self.span)
 
                     [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
                         1)
-                    self.te_center_x[i] = hx_te
-                    self.te_center_y[i] = hy_te
+                    self.te_center_x[i] = hx_te[0]
+                    self.te_center_y[i] = hy_te[0]
 
             elif (stackType == stack_type.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
-                self.bezierX.append(hx)
-                self.bezierY.append(hy)
+                self.bezierX.append(hx[0])
+                self.bezierY.append(hy[0])
                 self.bezierZ.append(0)
 
                 [hx_te, hy_te] = self.profileArray[0].camberBezier.get_point(1)
-                self.te_center_x[0] = hx_te
-                self.te_center_y[0] = hy_te
+                self.te_center_x[0] = hx_te[0]
+                self.te_center_y[0] = hy_te[0]
 
                 for i in range(1, len(self.profileArray)):
                     [x, y] = self.profileArray[i].get_centroid()
-                    dx = hx-x
-                    dy = hy-y
+                    dx = hx[0]-x[0]
+                    dy = hy[0]-y[0]
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    self.bezierX.append(hx)
-                    self.bezierY.append(hy)
+                    self.bezierX.append(hx[0])
+                    self.bezierY.append(hy[0])
                     self.bezierZ.append(self.profileSpan[i]*self.span)
 
                     [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
                         1)
-                    self.te_center_x[i] = hx_te
-                    self.te_center_y[i] = hy_te
+                    self.te_center_x[i] = hx_te[0]
+                    self.te_center_y[i] = hy_te[0]
 
             self.bezierX = convert_to_ndarray(self.bezierX)
             self.bezierY = convert_to_ndarray(self.bezierY)
@@ -248,12 +248,12 @@ class airfoil3D():
 
         # add sweep where z does not exist 
         i1 = np.setxor1d(self.sweepZ, self.bezierZ) # tells what items in leanZ do not exist in bezierZ
-        i1 = np.where(self.sweepZ == i1) # get the index
-        self.bezierZ = np.append(self.bezierZ, self.sweepZ[i1])
-        self.bezierY = np.append(self.bezierY, self.sweepY[i1]*self.span+self.bezierY[0])
-        xx = self.sweepZ; xx[i1] = self.bezierX[0]
-        self.bezierX = np.append(self.bezierX, xx[i1])
-
+        if i1.size >0:
+            i1 = np.where(self.sweepZ == i1) # get the index
+            self.bezierZ = np.append(self.bezierZ, self.sweepZ[i1])
+            self.bezierY = np.append(self.bezierY, self.sweepY[i1]*self.span+self.bezierY[0])
+            xx = self.sweepZ; xx[i1] = self.bezierX[0]
+            self.bezierX = np.append(self.bezierX, xx[i1])
 
         # SORT
         # A = sortrows([self.bezierZ' self.bezierX' self.bezierY'])
@@ -265,7 +265,7 @@ class airfoil3D():
         if (self.bImportedBlade): # imported blade doesn't have 2D airfoil profiles defined, just points
             self.profiles_shift()
 
-    def lean_add(self,leanX:List[float],leanZ:List[float]):
+    def lean(self,leanX:List[float],leanZ:List[float]):
         """Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.
 
         Args:
@@ -286,11 +286,12 @@ class airfoil3D():
         #  Add Lean where Z does not exist
         # [~,i1] = setxor(leanZ,self.bezierZ); %  MATLAB CODE tells what items in leanZ do not exist in bezierZ
         i1 = np.setxor1d(leanZ,self.bezierZ)
-        i1 = np.where(leanZ == i1) # get the index
-        self.bezierZ = np.append(self.bezierZ, leanZ[i1])
-        self.bezierX = np.append(self.bezierX, self.leanX[i1]*self.span+self.bezierX[0])
-        yy = leanZ; yy[i1] = self.bezierY[0] #TODO Need to check this
-        self.bezierY = np.append(self.bezierY, yy[i1])
+        if i1.size >0:
+            i1 = np.where(leanZ == i1) # get the index
+            self.bezierZ = np.append(self.bezierZ, leanZ[i1])
+            self.bezierX = np.append(self.bezierX, self.leanX[i1]*self.span+self.bezierX[0])
+            yy = leanZ; yy[i1] = self.bezierY[0] #TODO Need to check this
+            self.bezierY = np.append(self.bezierY, yy[i1])
 
         # Sort
         indx = np.argsort(self.bezierZ)
@@ -346,8 +347,8 @@ class airfoil3D():
         for j in range(n_profiles):
             # [tmpXps[:,j], tmpYps[:,j]] = self.profileArray[j]._psBezier.get_point(t)
             # [tmpXss[:,j], tmpYss[:,j]] = self.profileArray[j]._ssBezier.get_point(t)
-            [self.spline_xpps[:,j], self.spline_ypps[:,j]] = self.profileArray[j]._psBezier.get_point(t,equal_space=True)
-            [self.spline_xpss[:,j], self.spline_ypss[:,j]] = self.profileArray[j]._ssBezier.get_point(t,equal_space=True)
+            [self.spline_xpps[:,j], self.spline_ypps[:,j]] = self.profileArray[j].psBezier.get_point(t,equal_space=True)
+            [self.spline_xpss[:,j], self.spline_ypss[:,j]] = self.profileArray[j].ssBezier.get_point(t,equal_space=True)
             self.spline_zpp[:,j] = self.profileSpan[j]*self.span              # Span
         
             
@@ -390,8 +391,8 @@ class airfoil3D():
         self.c_te_y_ss = np.zeros((self.nte,n_profiles))
         
         for i in range(n_profiles):                
-            [self.control_x_ps[:,i], self.control_y_ps[:,i]] = self.profileArray[i]._psBezier.get_point(t)
-            [self.control_x_ss[:,i], self.control_y_ss[:,i]] = self.profileArray[i]._ssBezier.get_point(t)
+            [self.control_x_ps[:,i], self.control_y_ps[:,i]] = self.profileArray[i].psBezier.get_point(t)
+            [self.control_x_ss[:,i], self.control_y_ss[:,i]] = self.profileArray[i].ssBezier.get_point(t)
             # add trailing edge
             [self.c_te_x_ps[:,i], self.c_te_y_ps[:,i]] = self.profileArray[i].TE_ps_arc.get_point(t_te)
             [self.c_te_x_ss[:,i], self.c_te_y_ss[:,i]] = self.profileArray[i].TE_ss_arc.get_point(t_te)

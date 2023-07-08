@@ -235,10 +235,10 @@ class airfoil2D():
         #xo = -yo*yc/xc
         
         # mc = (yo-y_wedge_ps)/(xo-x_wedge_ps) # Check
-        self.psBezierX[-2] = xo # set the last bezier point on the pressure side such that it matches the slope of the TE Arc
-        self.psBezierY[-2] = yo
-        self.psBezierX[-1] = x_wedge_ps
-        self.psBezierY[-1] = y_wedge_ps
+        self.psBezierX[-2] = xo[0] # set the last bezier point on the pressure side such that it matches the slope of the TE Arc
+        self.psBezierY[-2] = yo[0]
+        self.psBezierX[-1] = x_wedge_ps[0]
+        self.psBezierY[-1] = y_wedge_ps[0]
         b = bezier(self.psBezierX,self.psBezierY) # Extends the bezier curve
         self.psBezier = b
         
@@ -269,10 +269,10 @@ class airfoil2D():
         xo = (y_wedge_ss-yc-m*x_wedge_ss+m2*xc)/(m2-m) # interception of the 2nd to last point
         yo = y_wedge_ss-m*(x_wedge_ss-xo)
         # mc = (yo-y_wedge_ss)/(xo-x_wedge_ss) # Check
-        self.ssBezierX[-2] = xo
-        self.ssBezierY[-2] = yo
-        self.ssBezierX[-1] = x_wedge_ss
-        self.ssBezierY[-1] = y_wedge_ss
+        self.ssBezierX[-2] = xo[0]
+        self.ssBezierY[-2] = yo[0]
+        self.ssBezierX[-1] = x_wedge_ss[0]
+        self.ssBezierY[-1] = y_wedge_ss[0]
         b = bezier(self.ssBezierX,self.ssBezierY)
         self.ssBezier = b      
     
@@ -333,8 +333,8 @@ class airfoil2D():
                 t_ray = thicknessArray[i]
                 xn = x-cos(radians(theta))*t_ray
                 yn = y-sin(radians(theta))*t_ray
-                self.ssBezierX.append(xn)
-                self.ssBezierY.append(yn)
+                self.ssBezierX.append(xn[0])
+                self.ssBezierY.append(yn[0])
 
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
 
@@ -392,8 +392,8 @@ class airfoil2D():
                 t_ray = thicknessArray[i-1]
                 xn = x+cos(radians(theta))*t_ray
                 yn = y+sin(radians(theta))*t_ray
-                self.psBezierX.append(xn)
-                self.psBezierY.append(yn)
+                self.psBezierX.append(xn[0])
+                self.psBezierY.append(yn[0])
             
         self.psBezier = bezier(self.psBezierX,self.psBezierY)
 
