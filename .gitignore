@@ -190,3 +190,6 @@ tgs_format.py
 *.q
 *.soln
 .DS_Store
+
+# folders 
+solidwork_curves.txt/
