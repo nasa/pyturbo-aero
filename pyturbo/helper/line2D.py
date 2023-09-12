@@ -64,11 +64,23 @@ class line2D():
         self.y[1]=self.y[0]+len*self.dy
         self = line2D(self.x,self.y)
 
-            
+    
+    def __eq__(self,line2):
+        """Check if two lines are equal
+
+        Args:
+            line2 (line2D): second line
+        """
+        if (self.x == line2.x and self.y == line2.y):
+            return True
+        elif (self.x == np.flip(line2.x) and self.y == np.flip(line2.y)):
+            return True
+        else:
+            return False
     
     def set_length(self,len):
-        self.x[1]=self.x[0]+len*self.dx/sqrt(self.dx**2+self.dy**2)
-        self.y[1]=self.y[0]+len*self.dy/sqrt(self.dx**2+self.dy**2)
+        self.x[1]=self.x[0]+len*self.dx/math.sqrt(self.dx**2+self.dy**2)
+        self.y[1]=self.y[0]+len*self.dy/math.sqrt(self.dx**2+self.dy**2)
         self = line2D(self.x,self.y)
     
     
@@ -79,12 +91,12 @@ class line2D():
     
     def get_points2(self,npoints):
         t = np.linspace(0,1,npoints)
-        x2=sin(self.angle)*self.length*t+self.x[0]
-        y2=cos(self.angle)*self.length*t+self.y[0]
+        x2=math.sin(self.angle)*self.length*t+self.x[0]
+        y2=math.cos(self.angle)*self.length*t+self.y[0]
         return x2,y2
 
     def bezier(self,npoints):
-        t = linspace(0,1,npoints)
+        t = np.linspace(0,1,npoints)
         [xx,yy] = self.get_point(t)
         b = bezier(xx,yy)
     
@@ -92,13 +104,13 @@ class line2D():
         """
             averages the line with another line
         """
-        self.x = (line.x+self.x)/2
-        self.y = (line.y+self.y)/2
+        self.x = (new_line.x+self.x)/2
+        self.y = (new_line.y+self.y)/2
         self.p = [self.x[0],self.y[0]]; self.q=[self.x[1],self.y[1]]
         self.dx = self.x[1]-self.x[0]; self.dy = self.y[1]-self.y[0]
 
-        self.length = sqrt((self.x[1]-self.x[0])*(self.x[1]-self.x[0]) + (self.y[1]-self.y[0])*(self.y[1]-self.y[0]))
-        self.angle = atan2(self.x[1]-self.x[0],self.y[1]-self.y[0])
+        self.length = math.sqrt((self.x[1]-self.x[0])*(self.x[1]-self.x[0]) + (self.y[1]-self.y[0])*(self.y[1]-self.y[0]))
+        self.angle = math.atan2(self.x[1]-self.x[0],self.y[1]-self.y[0])
     
                     
     def plot2D(self):
@@ -176,7 +188,7 @@ class line2D():
         return True
     
     def mag(self):
-        return sqrt(self.dx^2+self.dy^2)
+        return math.sqrt(self.dx^2+self.dy^2)
     
     
     def angle_between(self,line2):
