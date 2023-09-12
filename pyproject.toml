@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyturbo-aero"
-version = "1.0.5"
+version = "1.0.6"
 description = "PyTurbo_Aero is a Turbomachinery blade design library that lets you create a full 3D blades and passages."
 authors = ["Paht Juangphanich <paht.juangphanich@nasa.gov>"]
 packages = [
