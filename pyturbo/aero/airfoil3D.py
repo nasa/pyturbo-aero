@@ -201,8 +201,8 @@ class airfoil3D():
 
             elif (stackType == stack_type.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
-                self.bezierX.append(hx[0])
-                self.bezierY.append(hy[0])
+                self.bezierX.append(hx)
+                self.bezierY.append(hy)
                 self.bezierZ.append(0)
 
                 [hx_te, hy_te] = self.profileArray[0].camberBezier.get_point(1)
@@ -211,12 +211,12 @@ class airfoil3D():
 
                 for i in range(1, len(self.profileArray)):
                     [x, y] = self.profileArray[i].get_centroid()
-                    dx = hx[0]-x[0]
-                    dy = hy[0]-y[0]
+                    dx = hx-x
+                    dy = hy-y
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    self.bezierX.append(hx[0])
-                    self.bezierY.append(hy[0])
+                    self.bezierX.append(hx)
+                    self.bezierY.append(hy)
                     self.bezierZ.append(self.profileSpan[i]*self.span)
 
                     [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
