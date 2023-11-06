@@ -1,3 +1,4 @@
+from typing import Union
 from .ray import *
 import math
 import numpy as np
@@ -53,8 +54,7 @@ class line2D():
         if (u<0):
             return t,False
 
-        return t,True 
-
+        return t,True
     
     def add_length(self,len):
         """
@@ -84,16 +84,43 @@ class line2D():
         self = line2D(self.x,self.y)
     
     
-    def get_point(self,t):
+    def get_point(self,t:Union[np.ndarray,float]):
+        """Gets the point given a value between 0 and 1
+
+        Args:
+            t (Union[np.ndarray,float]): numpy array linspace(0,1,10) or any float value between 0 and 1
+
+        Returns:
+            Union[np.ndarray,float]: either a single value or an array of values
+        """
         x2=math.sin(self.angle)*self.length*t+self.x[0]
         y2=math.cos(self.angle)*self.length*t+self.y[0]
         return x2,y2
     
-    def get_points2(self,npoints):
-        t = np.linspace(0,1,npoints)
+    def get_points2(self,n:int):
+        """Get `n` number of points along a line
+
+        Args:
+            n (int): _description_
+
+        Returns:
+            Union[np.ndarray,float]: either a single value or an array of values
+        """
+        t = np.linspace(0,1,n)
         x2=math.sin(self.angle)*self.length*t+self.x[0]
         y2=math.cos(self.angle)*self.length*t+self.y[0]
         return x2,y2
+    
+    def get_y(self,x:Union[np.ndarray,float]):
+        """Given an x value, output a y value
+
+        Args:
+            x (Union[np.ndarray,float]): any value
+
+        Returns:
+            Union[np.ndarray,float]: either a single value or an array of values
+        """
+        return self.dy/self.dx * (x-self.x[0]) + self.y[0]
 
     def bezier(self,npoints):
         t = np.linspace(0,1,npoints)
