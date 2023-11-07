@@ -137,7 +137,7 @@ class line2D():
         self.dx = self.x[1]-self.x[0]; self.dy = self.y[1]-self.y[0]
 
         self.length = math.sqrt((self.x[1]-self.x[0])*(self.x[1]-self.x[0]) + (self.y[1]-self.y[0])*(self.y[1]-self.y[0]))
-        self.angle = math.atan2(self.x[1]-self.x[0],self.y[1]-self.y[0])
+        self.angle = math.atan2(self.y[1]-self.y[0],self.x[1]-self.x[0])
     
                     
     def plot2D(self):
