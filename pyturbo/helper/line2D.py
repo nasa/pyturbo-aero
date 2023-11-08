@@ -93,8 +93,8 @@ class line2D():
         Returns:
             Union[np.ndarray,float]: either a single value or an array of values
         """
-        x2=self.dx*self.length*t+self.x[0]
-        y2=self.dy*self.length*t+self.y[0]
+        x2=self.dx*t+self.x[0]
+        y2=self.dy*t+self.y[0]
         return x2,y2
     
     def get_points2(self,n:int):
@@ -107,8 +107,8 @@ class line2D():
             Union[np.ndarray,float]: either a single value or an array of values
         """
         t = np.linspace(0,1,n)
-        x2=self.dx*self.length*t+self.x[0]
-        y2=self.dy*self.length*t+self.y[0]
+        x2=self.dx*t+self.x[0]
+        y2=self.dy*t+self.y[0]
         return x2,y2
     
     def get_y(self,x:Union[np.ndarray,float]):
