@@ -13,10 +13,10 @@ class line2D():
         self.x = x
         self.y = y
         self.p = [x[0], y[0]]; self.q=[x[1], y[1]]
-        self.dx = x[1]-x[0]; self.dy = y[1]-y[0]
-        #  self.m = (y[1]-y[0])/(x[1]-x[0])
-        self.length = math.sqrt((x[1]-x[0])*(x[1]-x[0]) + (y[1]-y[0])*(y[1]-y[0]))
-        self.angle = math.atan2(x[1]-x[0],y[1]-y[0])
+        self.dx = x[1]-x[0]
+        self.dy = y[1]-y[0]
+        self.length = np.sqrt(self.dx*self.dx+self.dy*self.dy)
+        self.angle = np.arctan2(self.dy,self.dx)
 
 
     def to_bezier(self):
@@ -93,8 +93,8 @@ class line2D():
         Returns:
             Union[np.ndarray,float]: either a single value or an array of values
         """
-        x2=math.sin(self.angle)*self.length*t+self.x[0]
-        y2=math.cos(self.angle)*self.length*t+self.y[0]
+        x2=self.dx*self.length*t+self.x[0]
+        y2=self.dy*self.length*t+self.y[0]
         return x2,y2
     
     def get_points2(self,n:int):
@@ -107,8 +107,8 @@ class line2D():
             Union[np.ndarray,float]: either a single value or an array of values
         """
         t = np.linspace(0,1,n)
-        x2=math.sin(self.angle)*self.length*t+self.x[0]
-        y2=math.cos(self.angle)*self.length*t+self.y[0]
+        x2=self.dx*self.length*t+self.x[0]
+        y2=self.dy*self.length*t+self.y[0]
         return x2,y2
     
     def get_y(self,x:Union[np.ndarray,float]):
