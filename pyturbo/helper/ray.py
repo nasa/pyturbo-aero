@@ -51,7 +51,7 @@ class ray3D(ray2D):
         [x,y] = self.get_point(t)
         plt.figure()
         plt.plot(x,y)
-        plot.draw()
+        plt.draw()
         plt.show()
 
 def ray2D_intersection(ray1,ray2):

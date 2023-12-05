@@ -14,9 +14,9 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('_ext'))
 import sphinx_rtd_theme
-import pyturbo_aero
-import pyturbo_aero.aero
-import pyturbo_aero.helper
+import pyturbo
+import pyturbo.aero
+import pyturbo.helper
 
 # -- Project information -----------------------------------------------------
 
@@ -91,7 +91,7 @@ html_theme_options = {
 
 
 html_static_path = ['static']
-rst_context = {'pyturbo-aero': pyturbo_aero}
+rst_context = {'pyturbo-aero': pyturbo}
 
 
 def setup(app):

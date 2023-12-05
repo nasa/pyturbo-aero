@@ -26,4 +26,12 @@ class TestLibrary(unittest.TestCase):
 if __name__ == '__main__':
     # test2D = Test_Bezier()
     # test2D.build_HPT_stator()
-    unittest.main()
+    # unittest.main()
+
+    x = [0, 1.2, 2.1, 2.5]
+    y = [-0.5, 0.5, 1.2, 0]
+    b = bezier(x,y)
+    print(b.get_point(0.0))
+    print(b.get_point(1.2))
+    b.get_point(np.linspace(0,1,10))
+    print('check')

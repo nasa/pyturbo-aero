@@ -103,7 +103,7 @@ class bezier():
             Bx[i],By[i] = tempx,tempy
 
         if (equal_space and len(Bx)>2):
-            Bx,By = self.equal_space(t,Bx,By)
+            Bx,By = self.__equal_space__(t,Bx,By)
             return Bx,By
         return Bx,By
 
