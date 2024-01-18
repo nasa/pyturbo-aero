@@ -302,18 +302,18 @@ class airfoil3D():
         if (self.bImportedBlade):
             self.profiles_shift()     
         
-    def create_blade(self,nProfiles:int,profile_points:int,te_points:int):
+    def create_blade(self,nProfiles:int,num_points:int,trailing_edge_points:int):
         """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. 
 
         Args:
             nProfiles (int): number of intermeidate profiles to generate
-            profile_points (int): number of points per profile. Suction and Pressure side will have this number of points
-            te_points (int): Number of trailing edge points 
+            num_points (int): number of points per profile. Suction and Pressure side will have this number of points
+            trailing_edge_points (int): Number of trailing edge points 
         """
         self.bImportedBlade = False
         # n - number of points to use for pressure and suction sides
-        self.npts = profile_points # number of points to use for suction and pressure side
-        self.nte = te_points
+        self.npts = num_points # number of points to use for suction and pressure side
+        self.nte = trailing_edge_points
         self.nspan = nProfiles
         t = np.linspace(0,1,self.npts)
         t_te = np.linspace(0,1,self.nte) # use 20 points for the trailing edge
@@ -540,8 +540,7 @@ class airfoil3D():
 
         Args:
             name (string): exported filename
-        """
-        import os
+        """        
         if (not os.path.exists('solidworks')):
             os.mkdir('solidworks')
         folder = 'solidworks/{0}'.format(name)
