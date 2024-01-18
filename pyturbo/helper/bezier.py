@@ -69,9 +69,9 @@ class bezier():
             f = sp_intp.PchipInterpolator(t,csum)
             t_start = np.min(t)   
             t_end = np.max(t)
+            f2 = lambda x,y: abs(f(x)-f(y)-target_len)
             for i in range(0,t.size-2):
-                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
+                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
                 t[i+1] = temp.x
                 t_start = t[i+1]
 

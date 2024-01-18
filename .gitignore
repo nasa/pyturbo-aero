@@ -191,5 +191,6 @@ tgs_format.py
 *.soln
 .DS_Store
 
+blade_section*.txt
 # folders 
 solidwork_curves.txt/
