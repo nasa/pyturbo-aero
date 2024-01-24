@@ -745,6 +745,10 @@ class airfoil2D():
         plt.gca().set_aspect('equal')
         plt.show()
 
+    def plot(self):
+        self.plot2D()
+    
+    
     def plot2D(self):
         """Plots the airfoil
 

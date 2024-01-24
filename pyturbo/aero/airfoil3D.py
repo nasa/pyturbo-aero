@@ -558,6 +558,9 @@ class airfoil3D():
                 for k in range(len(x)):
                     f.write("{0:08f} {1:08f} {2:08f}\n".format(x[k],y[k],self.zz[j])) # Number of sections                    
 
+    def plot(self):
+        self.plot3D(True)
+        
     def plot3D(self,only_blade=False):
         """Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade's stacking spine
 

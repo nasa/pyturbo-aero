@@ -1,9 +1,10 @@
+#%% Imports 
 import sys
 from typing import List
 sys.path.insert(0,'../')
 import numpy as np
 from pyturbo.aero import airfoil2D, airfoil3D, stack_type, passage2D
-from pyturbo.helper import exp_ratio, bezier
+from pyturbo.helper import exp_ratio, bezier, pw_bezier2D
 
 #* Stator Design 
 #%% Hub
@@ -55,50 +56,50 @@ stator3D = airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc
 stator3D.stack(stack_type.centroid) # stators are typically stacked with leading edge; stators with centroid or trailing edge
 stator3D.sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage 
 stator3D.lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
-stator3D.create_blade(nProfiles=20,profile_points=160,trailing_edge_points=20)
+stator3D.create_blade(nProfiles=20,num_points=160,trailing_edge_points=20)
 
 # Rotor Design
 #%% Rotor Hub 
 rotor_axial_chord = 0.030
-rotor_hub = airfoil2D(alpha1=35,alpha2=65,axial_chord=rotor_axial_chord,stagger=52) 
+rotor_hub = airfoil2D(alpha1=35,alpha2=65,axial_chord=rotor_axial_chord,stagger=38) 
 rotor_hub.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
 rotor_hub.ps_thickness_add(thicknessArray=ps_height,expansion_ratio=1.2)
 
-ss_height=[0.2400, 0.2000, 0.1600, 0.1400]
+ss_height=[0.2400, 0.2200, 0.2000, 0.1800]
 rotor_hub.ss_thickness_add(thicknessArray=ss_height,camberPercent=0.8,expansion_ratio=1.2)
 
 rotor_hub.le_thickness_match()
-rotor_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
+rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_hub.flow_guidance2(10)
 
 #%% Rotor Mid
-rotor_mid = airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=52) 
+rotor_mid = airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35) 
 rotor_mid.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
 rotor_mid.ps_thickness_add(thicknessArray=ps_height,expansion_ratio=1.2)
 
-ss_height=[0.2400, 0.2000, 0.1600, 0.1400]
+ss_height=[0.2400, 0.2200, 0.2000, 0.1800]
 rotor_mid.ss_thickness_add(thicknessArray=ss_height,camberPercent=0.8,expansion_ratio=1.2)
 
 rotor_mid.le_thickness_match()
-rotor_mid.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
+rotor_mid.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_mid.flow_guidance2(10)
 
 #%% Rotor Tip
-rotor_tip = airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=53) 
+rotor_tip = airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=32) 
 rotor_tip.le_thickness_add(0.03)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
 rotor_tip.ps_thickness_add(thicknessArray=ps_height,expansion_ratio=1.2)
 
-ss_height=[0.2400, 0.2000, 0.1600, 0.1400]
+ss_height=[0.2400, 0.2200, 0.2000, 0.1800]
 rotor_tip.ss_thickness_add(thicknessArray=ss_height,camberPercent=0.8,expansion_ratio=1.2)
 
 rotor_tip.le_thickness_match()
-rotor_tip.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
+rotor_tip.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_tip.flow_guidance2(10)
 
 #%% Rotor 3D 
@@ -106,7 +107,7 @@ rotor3D = airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc=
 rotor3D.stack(stack_type.centroid) # stators are typically stacked with leading edge; stators with centroid or trailing edge
 rotor3D.sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage 
 rotor3D.lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
-rotor3D.create_blade(nProfiles=20,profile_points=160,trailing_edge_points=20)
+rotor3D.create_blade(nProfiles=20,num_points=160,trailing_edge_points=20)
 
 #%% 
 
@@ -136,7 +137,7 @@ def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
         if d1>d2:
             x2 *= 0.80 # Reduce both by 80%, this keeps the slope the same 
             y2 *= 0.80
-    
+        
     x.insert(1,x2)
     y.insert(1,y2)
 
@@ -243,5 +244,7 @@ zshroud_points3 = np.array(zshroud_points3)
 shroud_bezier3 = match_end_slope(shroud_bezier2,zshroud_points3.tolist(),rshroud_points3.tolist())
 
 
+hub_bezier = pw_bezier2D([hub_bezier1,hub_bezier2,hub_bezier3])
+shroud_bezier = pw_bezier2D([shroud_bezier1,shroud_bezier2,shroud_bezier3])
 
-
+hub_bezier.plot2D()
