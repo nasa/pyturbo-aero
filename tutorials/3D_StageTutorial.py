@@ -122,21 +122,26 @@ def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
     Returns:
         _type_: _description_
     """
-    x1 = bezier1.x[-2:] # The last 2 points control the slope of the bezier curve
+    # Look at the last 2 points of the previous bezier curve. These 2 points control the slope
+    x1 = bezier1.x[-2:] 
     y1 = bezier1.y[-2:]
     
-    dx = np.diff(x1)
-    dy = np.diff(y1)
+    dx = np.diff(x1)[0]    # Find the spacing
+    dy = np.diff(y1)[0]
     x2 = x[0]+dx
     y2 = y[0]+dy 
     
     d1 =2; d2=1 # Set these values so loop is executed.
     while d1>d2:    # Loop exists so that new points fall in between existing points 
-        d1 = np.sqrt((x[0]-x2)**2 + (y[0]-y2)**2)
+        # Add extra control point (x2,y2) into list, need to adjust control point
+        dx = x[0]-x2
+        dy = y[0]-y2
+        d1 = np.sqrt((dx)**2 + (dy)**2) 
         d2 = np.sqrt((x[0]-x[1])**2 + (y[0]-y[1])**2)
+        
         if d1>d2:
-            x2 *= 0.80 # Reduce both by 80%, this keeps the slope the same 
-            y2 *= 0.80
+            x2 += dx*0.2 # Reduce both by 80%, this keeps the slope the same 
+            y2 += dy*0.2
         
     x.insert(1,x2)
     y.insert(1,y2)
@@ -151,8 +156,8 @@ rhub = rtip*hub_tip_ratio
 stator_rotor_gap = 0.010
 
 #%% Hub 
-rhub_expansion_coeff1 = [1.05,1.08,1.08] # Stator 
-zhub_expansion_coeff1 = [0.5] 
+rhub_expansion_coeff1 = [1.0,0.98,0.97] # Stator 
+zhub_expansion_coeff1 = [0.25,0.75] 
 
 # This makes the flowpath going from inlet to stator leading edge 
 rhub_points1 = [rhub, rhub]  # 1.5x Stator Inlet, stator_inlet, stator_mid
@@ -163,9 +168,11 @@ hub_bezier1 = bezier(zhub_points1,rhub_points1)
 rhub_points2 = [rhub]
 zhub_points2 = [0] 
 rhub_points2.append(rhub*rhub_expansion_coeff1[0])                      # Mid bezier control point
-zhub_points2.append(stator_hub_axial_chord*0.5)
-rhub_points2.append(rhub*rhub_expansion_coeff1[1])                      # End bezier control point
 zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[0])
+
+rhub_points2.append(rhub*rhub_expansion_coeff1[1])                      # End bezier control point
+zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[1])
+
 rhub_points2.append(rhub*rhub_expansion_coeff1[2])                      # End bezier point
 zhub_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
 
@@ -175,31 +182,32 @@ zhub_points2 = np.array(zhub_points2)
 hub_bezier2 = match_end_slope(hub_bezier1,zhub_points2.tolist(),rhub_points2.tolist())
 
 # Mid stator-rotor gap to rotor_te + stator-rotor gap 
-rhub_expansion_coeff2 = [0.98,0.96,0.97,1] # Rotor
-zhub_expansion_coeff2 = [0.5]
+rhub_expansion_coeff2 = [0.99,0.98,1.0,1.0] # Rotor
+zhub_expansion_coeff2 = [0.5,0.80]
 rhub_points3 = [rhub_points2[-1]]
-zhub_points3 = [0] # This will be adjusted at the end
+zhub_points3 = [zhub_points2[-1]] # This will be adjusted at the end
 
-rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[1]) # Rotor Inlet 
-zhub_points3.append(stator_rotor_gap*0.5)
+rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[0]) # Rotor Inlet 
+zhub_points3.append(zhub_points2[-1]+stator_rotor_gap*0.5)
 
-rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[2]) # Rotor Mid 
-zhub_points3.append(stator_rotor_gap*0.5+rotor_axial_chord*0.5)
+rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[1]) # Rotor Mid 
+zhub_points3.append(zhub_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord*zhub_expansion_coeff2[0])
 
-rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[3]) # Rotor TE
-zhub_points3.append(stator_rotor_gap*0.5+rotor_axial_chord)
+rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[2]) # Rotor TE
+zhub_points3.append(zhub_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord*zhub_expansion_coeff2[1])
 
-rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[4]) # Rotor TE + stator_rotor_gap
-zhub_points3.append(stator_rotor_gap*0.5+rotor_axial_chord+stator_rotor_gap*0.5)
+rhub_points3.append(rhub_points2[-1]*rhub_expansion_coeff2[3]) # Rotor TE + stator_rotor_gap
+zhub_points3.append(zhub_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord+stator_rotor_gap*0.5)
 
 rhub_points3 = np.array(rhub_points3)
 zhub_points3 = np.array(zhub_points3)
+
 hub_bezier3 = match_end_slope(hub_bezier2,zhub_points3.tolist(),rhub_points3.tolist())
 
 
 #%% Shroud 
-rshroud_expansion_coeff1 = [1.05,1.08,1.08] # Stator 
-zshroud_expansion_coeff1 = [0.5] 
+rshroud_expansion_coeff1 = [1.04,1.05,1.06] # Stator 
+zshroud_expansion_coeff1 = [0.25,0.9] 
 
 # This makes the flowpath going from inlet to stator leading edge 
 rshroud_points1 = [rtip, rtip]  # 1.5x Stator Inlet, stator_inlet, stator_mid
@@ -211,8 +219,10 @@ rshroud_points2 = [rtip]
 zshroud_points2 = [0] 
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[0])                      # Mid bezier control point
 zshroud_points2.append(stator_hub_axial_chord*0.5)
+
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[1])                      # End bezier control point
-zshroud_points2.append(stator_hub_axial_chord*zshroud_expansion_coeff1[0])
+zshroud_points2.append(stator_hub_axial_chord*0.5+stator_hub_axial_chord*0.5*zshroud_expansion_coeff1[0])
+
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[2])                      # End bezier point
 zshroud_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
 
@@ -222,22 +232,22 @@ zshroud_points2 = np.array(zshroud_points2)
 shroud_bezier2 = match_end_slope(shroud_bezier1,zshroud_points2.tolist(),rshroud_points2.tolist())
 
 # Mid stator-rotor gap to rotor_te + stator-rotor gap 
-rshroud_expansion_coeff2 = [0.98,0.96,0.97,1] # Rotor
-zshroud_expansion_coeff2 = [0.5]
+rshroud_expansion_coeff2 = [1.0,1.0,1.0,1.0] # Rotor
+zshroud_expansion_coeff2 = [0.40,0.8]
 rshroud_points3 = [rshroud_points2[-1]]
-zshroud_points3 = [0] # This will be adjusted at the end
+zshroud_points3 = [zshroud_points2[-1]] # This will be adjusted at the end
 
-rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[1]) # Rotor Inlet 
-zshroud_points3.append(stator_rotor_gap*0.5)
+rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[0]) # Rotor Inlet 
+zshroud_points3.append(zshroud_points2[-1]+stator_rotor_gap*0.5)
 
-rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[2]) # Rotor Mid 
-zshroud_points3.append(stator_rotor_gap*0.5+rotor_axial_chord*0.5)
+rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[1]) # Rotor Mid 
+zshroud_points3.append(zshroud_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord*zshroud_expansion_coeff2[0])
 
-rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[3]) # Rotor TE
-zshroud_points3.append(stator_rotor_gap*0.5+rotor_axial_chord)
+rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[2]) # Rotor TE
+zshroud_points3.append(zshroud_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord*zshroud_expansion_coeff2[1])
 
-rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[4]) # Rotor TE + stator_rotor_gap
-zshroud_points3.append(stator_rotor_gap*0.5+rotor_axial_chord+stator_rotor_gap*0.5)
+rshroud_points3.append(rshroud_points2[-1]*rshroud_expansion_coeff2[3]) # Rotor TE + stator_rotor_gap
+zshroud_points3.append(zshroud_points2[-1]+stator_rotor_gap*0.5+rotor_axial_chord+stator_rotor_gap*0.5)
 
 rshroud_points3 = np.array(rshroud_points3)
 zshroud_points3 = np.array(zshroud_points3)
@@ -247,4 +257,28 @@ shroud_bezier3 = match_end_slope(shroud_bezier2,zshroud_points3.tolist(),rshroud
 hub_bezier = pw_bezier2D([hub_bezier1,hub_bezier2,hub_bezier3])
 shroud_bezier = pw_bezier2D([shroud_bezier1,shroud_bezier2,shroud_bezier3])
 
-hub_bezier.plot2D()
+#%% Plot The curves
+shroud_bezier.plot()
+hub_bezier.plot()
+
+#%% Rotate and Center the blade
+stator3D.center_le()
+stator3D.flip_cw()
+stator3D.rotate(cx=0,cy=0,angle=90)
+
+rotor3D.center_le()
+rotor3D.flip_cw()
+rotor3D.rotate(cx=0,cy=0,angle=90)
+# %% Create the passage and add in the Blades 
+passage = passage2D([stator3D,rotor3D],[stator_rotor_gap])
+
+zhub,rhub = hub_bezier.get_point(np.linspace(0,1,100))
+zshroud,rshroud = shroud_bezier.get_point(np.linspace(0,1,100))
+passage.add_endwalls(zhub,rhub,zshroud,rshroud)
+passage.blade_fit(0)
+
+passage.plot2D_channel()
+passage.plot3D()
+
+passage.export_json('data.json')
+passage.export_dat('data.dat')

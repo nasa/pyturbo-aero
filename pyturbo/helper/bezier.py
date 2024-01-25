@@ -119,8 +119,10 @@ class bezier():
         t = np.linspace(0,1,100)
         [x,y] = self.get_point(t,equal_space)        
         plt.plot(x, y,'-b')
-        plt.plot(self.x, self.y,'or')
-
+        plt.scatter(self.x, self.y, facecolors='none', edgecolors='r')
+        plt.plot(self.x[0], self.y[0], 'or')
+        plt.plot(self.x[-1], self.y[-1], 'or')
+        
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
