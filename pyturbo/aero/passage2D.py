@@ -10,27 +10,28 @@ from ..helper import spline_type, pspline
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-from . import airfoil3D
+from . import Airfoil3D
 
-class passage2D:
+class Passage2D:
     
-    blades: List[airfoil3D]
+    blades: List[Airfoil3D]
     spacing: List[float]
     first_last_profile_shift: float 
     
     """Passage2D fits 3D blades inside of a channel
     """
-    def __init__(self,blade_array:List[airfoil3D],spacing_array:List[float]):
+    def __init__(self,blade_array:List[Airfoil3D],spacing_array:List[float]):
         """Initialize the passage with airfoils and spacing array
 
             Airfoils are spaced and then passage is moved to fit the airfoils. Call add_hub and add_shroud to include the hub and shroud definitions
             
         Args:
-            blade_array (List[airfoil3D]): array of airfoil3D objects
+            blade_array (List[Airfoil3D]): array of Airfoil3D objects
             spacing_array (List[float]): space between the each pair of blades
         """
         self.blades=blade_array
-        self.spacing=spacing_array        
+        self.spacing=spacing_array
+        self.first_last_profile_shift = 0  
 
     @property
     def profile_shift(self):
@@ -42,7 +43,7 @@ class passage2D:
         """
         return self.first_last_profile_shift 
     
-    @property.setter
+    @profile_shift.setter
     def profile_shift(self,val:float=0):
         """Add a value to shift the first and last profile for each blade. The top profile will be shifted up and bottom profile will be shifted down. 
             This is useful if your mesher needs to do a cut with the hub and shroud curves. 
@@ -202,7 +203,7 @@ class passage2D:
 
         
         fig.update_layout(showlegend=False,scene= dict(aspectmode='manual',aspectratio=dict(x=1, y=1, z=1)))
-        fig.show()
+        return fig
 
     def check_replace_max(self,max_prev,max_new):
         if max_new>max_prev:
@@ -261,6 +262,7 @@ class passage2D:
         """
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
+        ax.view_init(elev=29,azim=-124)
         theta_max=0.0; zmax=0.0; rmax=0.0
         theta_min=0.0; zmin=0.0; rmin=0.0
 
@@ -282,8 +284,8 @@ class passage2D:
         ax.plot3D(zhub, zhub*0,rhub, color='black')
         ax.plot3D(zshroud, zshroud*0,rshroud, color='black')
 
-        rmax = self.check_replace_max(rmax,np.max(np.append(rhub,rshroud)))
-        rmin = self.check_replace_min(rmin,np.min(np.append(rhub,rshroud)))
+        rmax = np.max(np.append(rhub,rshroud))
+        rmin = np.min(np.append(rhub,rshroud))
 
         zmax = self.check_replace_max(zmax,np.max(np.append(zhub,zshroud)))
         zmin = self.check_replace_min(zmin,np.min(np.append(zhub,zshroud)))
@@ -298,11 +300,13 @@ class passage2D:
         # Comment or uncomment following both lines to test the fake bounding box:
         for thetab, zb, rb in zip(Thetab, Zb, Rb):
             ax.plot([zb],[thetab],[rb], 'w')
-        ax.view_init(azim=-90, elev=-90)
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
-        plt.show()
+        ax.set_box_aspect([ub - lb for lb, ub in (getattr(ax, f'get_{a}lim')() for a in 'xyz')])
+
+        return fig
+        
 
     def plot2D(self,fig_size=None):
         """2D plot of the channel and blade using matplotlib
@@ -335,7 +339,6 @@ class passage2D:
 
         if len(self.rshroud_control)>0:
             ax.scatter(self.zshroud_control, self.rshroud_control,s=10,marker='o',c='red')
-
         
         ax.set_aspect('equal')
         return fig

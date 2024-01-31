@@ -3,14 +3,14 @@ import sys
 from typing import List
 sys.path.insert(0,'../')
 import numpy as np
-from pyturbo.aero import airfoil2D, airfoil3D, stack_type, passage2D
+from pyturbo.aero import Airfoil2D, Airfoil3D, stack_type, Passage2D
 from pyturbo.helper import exp_ratio, bezier, pw_bezier2D
 
 #* Stator Design 
 #%% Hub
 stator_hub_axial_chord = 0.040
 #This creates the camberline
-stator_hub = airfoil2D(alpha1=0,alpha2=72,axial_chord=stator_hub_axial_chord,stagger=52) 
+stator_hub = Airfoil2D(alpha1=0,alpha2=72,axial_chord=stator_hub_axial_chord,stagger=52) 
 stator_hub.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -24,7 +24,7 @@ stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 stator_hub.flow_guidance2(10)
 
 #%% Mid
-stator_mid = airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52) 
+stator_mid = Airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52) 
 stator_mid.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -38,7 +38,7 @@ stator_mid.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 stator_mid.flow_guidance2(10)
 
 #%% Tip
-stator_tip = airfoil2D(alpha1=0,alpha2=68,axial_chord=stator_hub_axial_chord*0.95,stagger=53) 
+stator_tip = Airfoil2D(alpha1=0,alpha2=68,axial_chord=stator_hub_axial_chord*0.95,stagger=53) 
 stator_tip.le_thickness_add(0.03)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -52,7 +52,7 @@ stator_tip.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 stator_tip.flow_guidance2(10)
 
 #%% 3D Stator Blade 
-stator3D = airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
+stator3D = Airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
 stator3D.stack(stack_type.centroid) # stators are typically stacked with leading edge; stators with centroid or trailing edge
 stator3D.sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage 
 stator3D.lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
@@ -61,7 +61,7 @@ stator3D.create_blade(nProfiles=20,num_points=160,trailing_edge_points=20)
 # Rotor Design
 #%% Rotor Hub 
 rotor_axial_chord = 0.030
-rotor_hub = airfoil2D(alpha1=35,alpha2=65,axial_chord=rotor_axial_chord,stagger=38) 
+rotor_hub = Airfoil2D(alpha1=35,alpha2=65,axial_chord=rotor_axial_chord,stagger=38) 
 rotor_hub.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -75,7 +75,7 @@ rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_hub.flow_guidance2(10)
 
 #%% Rotor Mid
-rotor_mid = airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35) 
+rotor_mid = Airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35) 
 rotor_mid.le_thickness_add(0.04)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -89,7 +89,7 @@ rotor_mid.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_mid.flow_guidance2(10)
 
 #%% Rotor Tip
-rotor_tip = airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=32) 
+rotor_tip = Airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=32) 
 rotor_tip.le_thickness_add(0.03)
 
 ps_height = [0.0500,0.0200,-0.0100] # These are thicknesses 
@@ -103,7 +103,7 @@ rotor_tip.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_tip.flow_guidance2(10)
 
 #%% Rotor 3D 
-rotor3D = airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
+rotor3D = Airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
 rotor3D.stack(stack_type.centroid) # stators are typically stacked with leading edge; stators with centroid or trailing edge
 rotor3D.sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage 
 rotor3D.lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
@@ -270,7 +270,7 @@ rotor3D.center_le()
 rotor3D.flip_cw()
 rotor3D.rotate(cx=0,cy=0,angle=90)
 # %% Create the passage and add in the Blades 
-passage = passage2D([stator3D,rotor3D],[stator_rotor_gap])
+passage = Passage2D([stator3D,rotor3D],[stator_rotor_gap])
 
 zhub,rhub = hub_bezier.get_point(np.linspace(0,1,100))
 zshroud,rshroud = shroud_bezier.get_point(np.linspace(0,1,100))
@@ -280,5 +280,5 @@ passage.blade_fit(0)
 passage.plot2D_channel()
 passage.plot3D()
 
-passage.export_json('data.json')
-passage.export_dat('data.dat')
+passage.export_json('stage_data.json')
+passage.export_dat('stage_data.dat')

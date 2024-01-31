@@ -4,7 +4,7 @@ import math
 from typing import List
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
-from .airfoil2D import airfoil2D
+from .airfoil2D import Airfoil2D
 from scipy.optimize import minimize_scalar
 import enum
 import copy
@@ -18,7 +18,7 @@ from stl import mesh
 
 
 class stack_type(enum.Enum):
-    """class defining the type of stacking for airfoil2D profiles
+    """class defining the type of stacking for Airfoil2D profiles
 
     Args:
         enum (enum.Emum): inherits enum
@@ -29,11 +29,11 @@ class stack_type(enum.Enum):
 
 
 
-class airfoil3D():
+class Airfoil3D():
     '''
         Properties
     '''
-    profileArray: List[airfoil2D]
+    profileArray: List[Airfoil2D]
     profileSpan: List[float] 
     span:float 
     IsSplineFitted: bool
@@ -121,12 +121,12 @@ class airfoil3D():
 
     """Defines a 3D Airfoil to be used in a channel
     """
-    def __init__(self, profileArray: List[airfoil2D], profile_loc: List[float], height: float):
+    def __init__(self, profileArray: List[Airfoil2D], profile_loc: List[float], height: float):
         """Constructs a 3D Airfoil
 
         Args:
-            profileArray (List[airfoil2D]): array of airfoil2D profiles
-            profile_loc (List[float]): location of the airfoil2D profiles
+            profileArray (List[Airfoil2D]): array of Airfoil2D profiles
+            profile_loc (List[float]): location of the Airfoil2D profiles
             height (float): height of the 3D blade
         """
         self.profileArray = profileArray
