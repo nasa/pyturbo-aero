@@ -7,7 +7,7 @@ from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 import copy
 
-class Airfoil2D():
+class airfoil2D():
     """Design a 2D Airfoil using bezier curves 
     """
     '''Initial values'''
@@ -28,14 +28,14 @@ class Airfoil2D():
     psBezierX:List[float]
     psBezierY:List[float]
 
-    def __init__(self,alpha1:float,alpha2:float,axial_chord:float,stagger:float):
+    def __init__(self,alpha1,alpha2,axial_chord,stagger):
         """Constructor for Airfoil2D 
 
         Args:
             alpha1 (float): inlet metal angle of the blade 0 to 90 deg
             alpha2 (float): outlet metal angle of the blade 0 to 90 deg
             axial_chord (float): Axial chord of the blade
-            stagger (float): stagger angle in degrees measured from trailing edge to leading edge
+            stagger (float): stagger angle measured from trailing edge to leading edge
         """
         self.alpha1 = alpha1
         self.alpha2 = alpha2
@@ -745,10 +745,6 @@ class Airfoil2D():
         plt.gca().set_aspect('equal')
         plt.show()
 
-    def plot(self):
-        self.plot2D()
-    
-    
     def plot2D(self):
         """Plots the airfoil
 
@@ -964,7 +960,7 @@ class Airfoil2D():
             numpy.ndarray: x coordinate of the pressure side
             numpy.ndarray: y coordinate of the suction side
             numpy.ndarray: y coordinate of the pressure side
-            Airfoil2D: the adjacent airfoil
+            airfoil2D: the adjacent airfoil
         """
         turb2 = copy.deepcopy(self)
         turb2.add_pitch(s_c*self.chord)
