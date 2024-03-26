@@ -204,8 +204,8 @@ class line2D():
 
         t1 = T[0]; t2 = T[1]
 
-        [x, y] = r1.get_points(t1)
-        [x2, y2] = r2.get_points(t2)
+        [x, y] = r1.get_point(t1)
+        [x2, y2] = r2.get_point(t2)
         if (math.sqrt((x-x2)**2 + (y-y2)**2) > 0.001):
             return False
         
