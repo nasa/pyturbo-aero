@@ -42,7 +42,7 @@ class bezier():
     def get_x_y(self):
         return self.x,self.y
     
-    def get_curve_length(self):
+    def get_curve_length(self) -> float:
         """Gets the curve length
 
         Returns:
@@ -53,7 +53,7 @@ class bezier():
         for i in range(0,len(x)-1):
             d[i] = math.sqrt((x[i+1]-x[i])**2 + (y[i+1]-y[i])**2)
         
-        return sum(d) # Linear approximation of curve length
+        return sum(d)[0] # Linear approximation of curve length
 
     def __equal_space__(self,t:np.ndarray,x,y):
         """
