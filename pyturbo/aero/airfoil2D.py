@@ -7,7 +7,7 @@ from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 import copy
 
-class airfoil2D():
+class Airfoil2D:
     """Design a 2D Airfoil using bezier curves 
     """
     '''Initial values'''
@@ -28,7 +28,7 @@ class airfoil2D():
     psBezierX:List[float]
     psBezierY:List[float]
 
-    def __init__(self,alpha1,alpha2,axial_chord,stagger):
+    def __init__(self,alpha1:float,alpha2:float,axial_chord:float,stagger:float):
         """Constructor for Airfoil2D 
 
         Args:
@@ -80,7 +80,7 @@ class airfoil2D():
         self.cambBezierY = [y1,y,y2]
         self.camberBezier = bezier(self.cambBezierX,self.cambBezierY)
 
-    def le_thickness_add(self,thickness:float,counter_rotation:bool=False):
+    def add_le_thickness(self,thickness:float,counter_rotation:bool=False):
         """Adds thickness to leading edge either on pressure side or suction side. 
            If counter rotation is false, thickness is added to the suction side 
 
@@ -118,7 +118,7 @@ class airfoil2D():
         b = bezier(self.psBezierX,self.psBezierY)
         self.psBezier = b
     
-    def le_thickness_match(self):
+    def match_le_thickness(self):
         """Matches the second derivative by changing the thickness of the opposite side
 
         Args:
@@ -276,7 +276,7 @@ class airfoil2D():
         b = bezier(self.ssBezierX,self.ssBezierY)
         self.ssBezier = b      
     
-    def ss_thickness_add(self,thicknessArray:List[float],camberPercent:float=None,thickness_loc:List[float]=None,expansion_ratio:float=1.2):
+    def add_ss_thickness(self,thicknessArray:List[float],camberPercent:float=None,thickness_loc:List[float]=None,expansion_ratio:float=1.2):
         """Adds thickness to the suction side by specifying bezier control points 
 
         Args:
@@ -339,7 +339,7 @@ class airfoil2D():
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
 
     # Adds thickness to pressure side
-    def ps_thickness_add(self,thicknessArray:List[float],expansion_ratio:float=1.2):
+    def add_ps_thickness(self,thicknessArray:List[float],expansion_ratio:float=1.2):
         """Add thickness to the pressure side 
 
         Args:

@@ -4,7 +4,7 @@ import math
 from typing import List
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
-from .airfoil2D import airfoil2D
+from .airfoil2D import Airfoil2D
 from scipy.optimize import minimize_scalar
 import enum
 import copy
@@ -17,8 +17,8 @@ from tqdm import trange
 from stl import mesh
 
 
-class stack_type(enum.Enum):
-    """class defining the type of stacking for airfoil2D profiles
+class StackType(enum.Enum):
+    """class defining the type of stacking for Airfoil2D profiles
 
     Args:
         enum (enum.Emum): inherits enum
@@ -29,17 +29,17 @@ class stack_type(enum.Enum):
 
 
 
-class airfoil3D():
+class Airfoil3D():
     '''
         Properties
     '''
-    profileArray: List[airfoil2D]
+    profileArray: List[Airfoil2D]
     profileSpan: List[float] 
     span:float 
     IsSplineFitted: bool
     IsSplineFittedShell: bool 
     
-    stackType:stack_type 
+    stackType:StackType 
     '''Bezier X,Y,Z are for the stacking line of the blade'''
     bezierX: List[float]    
     bezierY: List[float]
@@ -121,12 +121,12 @@ class airfoil3D():
 
     """Defines a 3D Airfoil to be used in a channel
     """
-    def __init__(self, profileArray: List[airfoil2D], profile_loc: List[float], height: float):
+    def __init__(self, profileArray: List[Airfoil2D], profile_loc: List[float], height: float):
         """Constructs a 3D Airfoil
 
         Args:
-            profileArray (List[airfoil2D]): array of airfoil2D profiles
-            profile_loc (List[float]): location of the airfoil2D profiles
+            profileArray (List[Airfoil2D]): array of Airfoil2D profiles
+            profile_loc (List[float]): location of the Airfoil2D profiles
             height (float): height of the 3D blade
         """
         self.profileArray = profileArray
@@ -135,11 +135,11 @@ class airfoil3D():
         self.IsSplineFitted = False
         self.IsSplineFittedShell = False
 
-    def stack(self, stackType=stack_type.centroid):
+    def stack(self, stackType=StackType.centroid):
         """Defines how the airfoil profiles are stacked
 
         Args:
-            stackType (stack_type, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to stack_type.centroid.
+            stackType (StackType, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to StackType.centroid.
         """
         self.bezierX = []; self.bezierY = []; self.bezierZ = []
         self.stackType = stackType
@@ -147,7 +147,7 @@ class airfoil3D():
         self.te_center_y = np.zeros(len(self.profileArray))
         if (len(self.profileArray) >= 2):
             # Stack the airfoils about LE
-            if (stackType == stack_type.leading_edge):
+            if (stackType == StackType.leading_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(0)
                 self.bezierX.append(hx[0])
@@ -173,7 +173,7 @@ class airfoil3D():
                     self.te_center_x[i] = hx_te[0]
                     self.te_center_y[i] = hy_te[0]
             # Stack the airfoils about TE
-            elif (stackType == stack_type.trailing_edge):
+            elif (stackType == StackType.trailing_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(1)
                 self.bezierX.append(hx[0])
@@ -199,7 +199,7 @@ class airfoil3D():
                     self.te_center_x[i] = hx_te[0]
                     self.te_center_y[i] = hy_te[0]
 
-            elif (stackType == stack_type.centroid):
+            elif (stackType == StackType.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
                 self.bezierX.append(hx)
                 self.bezierY.append(hy)
@@ -230,7 +230,7 @@ class airfoil3D():
             self.b3 = bezier3(self.bezierX,self.bezierY,self.bezierZ)
             self.bImportedBlade = False
 
-    def sweep(self,sweep_y=[],sweep_z=[]):
+    def sweep(self,sweep_y:List[float]=[],sweep_z:List[float]=[]):
         """Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied
 
         Args:
@@ -886,12 +886,12 @@ class airfoil3D():
 
         for i in range(0,nprofiles):
             x = bx[i]; y = by[i]
-            if (self.stackType == stack_type.centroid):
+            if (self.stackType == StackType.centroid):
                 sx = cx[i]; sy = cy[i]
-            elif (self.stackType == stack_type.leading_edge):
+            elif (self.stackType == StackType.leading_edge):
                 sx = self.xps[i,0]
                 sy = self.yps[i,0]
-            else: # (self.stackType == stack_type.trailing_edge)
+            else: # (self.stackType == StackType.trailing_edge)
                 sx = 0
                 sy = 0
             

@@ -1,20 +1,15 @@
 from typing import List
 import numpy as np
-from scipy.special import comb
-from scipy.interpolate import CubicSpline
 from scipy.interpolate import PchipInterpolator
-import math
 import json
-from scipy.special import comb
-from ..helper import spline_type, pspline
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from .airfoil3D import Airfoil3D
 
 class passage2D:
     """Passage2D fits 3D blades inside of a channel
     """
-    def __init__(self,airfoil_array,spacing_array,periodicity_array):
+    def __init__(self,airfoil_array:List[Airfoil3D],spacing_array:List[float]):
         '''
         Initialize the passage with airfoils and spacing array
             airfoil_array = array of airfoil3D objects
@@ -24,7 +19,6 @@ class passage2D:
         '''
         self.airfoils=airfoil_array
         self.spacing=spacing_array
-        self.periodicity_array = periodicity_array
 
 
     def add_endwalls(self,zhub:List[float],rhub:List[float],zshroud:List[float],rshroud:List[float],zhub_control:List[float]=[],rhub_control:List[float]=[],zshroud_control:List[float]=[],rshroud_control:List[float]=[]):
