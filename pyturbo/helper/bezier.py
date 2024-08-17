@@ -1,10 +1,10 @@
-from typing import List, Optional, Union
+from typing import List, Union
 import numpy as np
+import numpy.typing as npt
 from scipy.special import comb
 import scipy.interpolate as sp_intp
 from scipy.optimize import minimize_scalar 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import math 
 from scipy.special import comb
 from .arc import arclen3, arclen
@@ -55,7 +55,7 @@ class bezier():
         
         return sum(d)[0] # Linear approximation of curve length
 
-    def __equal_space__(self,t:np.ndarray,x,y):
+    def __equal_space__(self,t:npt.NDArray,x:npt.NDArray,y:npt.NDArray):
         """
             Equally space points along a bezier curve using arc length
             Inputs 
@@ -82,7 +82,11 @@ class bezier():
             mean_old = mean_new
         return x,y
 
-    def get_point(self,t,equal_space=False):
+    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+        return self.get_point(t,equal_space)
+    
+    
+    def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
         """
             Get a point or points along a bezier curve
             Inputs:
@@ -124,39 +128,40 @@ class bezier():
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
+        
+    def B(n:int,i:int,t:float):
+            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
+            return c*t**i *(1-t)**(n-i)
+        
+    def get_point_dt(self,t:Union[npt.NDArray]):
+        """Gets the derivative dx,dy as a function of t 
 
-    def get_point_dt(self,t):
-        """
-         Gets the derivative
-        """
-        if type(t) is not np.ndarray:
-            t = np.array([t],dtype=float) # the brackets [] are really helpful. scalars have to be converted to array before passing
-        tmin = np.min(t)
-        tmax = np.max(t)
+        Args:
+            t (Union[np.ndarray]): Array or float from 0 to 1 
             
-        Bx = np.zeros(len(t))
-        By = np.zeros(len(t))
-        for i in range(len(t)):                      
-            tempx = 0; tempy = 0;                
-            if (t[i] == 1): # Use downwind
-                tempx = self.x[-1] - self.x[-2]
-                tempy = self.y[-1]- self.y[-2]             
-            elif (t[i] == 0):
-                tempx = self.x[1] - self.x[0]
-                tempy = self.y[1]- self.y[0]          
-            else:
-                for j in range(self.n-1): # n-1      
-                    b = (comb(self.n-2,j,True)*t[i]**j) * (1-t[i])**(self.n-2-j)    # Bn-1                    
-                    tempx = tempx + b*(self.x[j+1]-self.x[j]) # Note: j+1 = j
-                    tempy = tempy + b*(self.y[j+1]-self.y[j])                   
-                
-                tempx = tempx*(self.n-1)
-                tempy = tempy*(self.n-1)
-            
-            Bx[i] = tempx
-            By[i] = tempy
-        return Bx,By
+        Returns:
+            tuple: containing
 
+                **dx** (npt.NDArray): Derivative of x as a function of t 
+                **dy** (npt.NDArray): Derivative of y as a function of t 
+        """
+        t = convert_to_ndarray(t)
+        
+        dx = t*0; dy = t*0
+        for i in range(self.n-1):
+            dx += self.B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
+            dy += self.B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
+        
+        return dx,dy
+
+    def get_point_dt2(self,t:Union[npt.NDArray]):
+        t = convert_to_ndarray(t)
+        dx2 = t*0; dy2 = t*0
+        for i in range(self.n-2):
+            dx2 = self.B(self.n-2)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = self.B(self.n-2)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+        return dx2,dy2
+    
     def rotate(self,angle:float):
         """Rotate 
 
@@ -217,6 +222,9 @@ class bezier3:
             mean_old = mean_new
         return x,y,z
     
+    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+        return self.get_point(t,equal_space)
+    
     def get_point(self,t,equal_space = True):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
@@ -252,47 +260,30 @@ class bezier3:
         return Bx,By,Bz
     
     def get_point_dt(self,t:Union[float,List[float],np.ndarray]):
-        """Returns the derivative at a particular percentage 
+        """Gets the derivative dx,dy as a function of t 
 
         Args:
-            t (Union[float,List[float],np.ndarray]): Percentage from 0 to 1
-
+            t (Union[np.ndarray]): Array or float from 0 to 1 
+            
         Returns:
-            (Tuple): containing
-                - *dx* (np.ndarray): dx_dt
-                - *dy* (np.ndarray): dy_dt
-                - *dz* (np.ndarray): dz_dt
+            tuple: containing
+
+                **dx** (npt.NDArray): Derivative of x as a function of t 
+                **dy** (npt.NDArray): Derivative of y as a function of t 
         """
         t = convert_to_ndarray(t)
+        
+        def B(n:int,i:int,t:float):
+            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
+            return c*t**i *(1-t)**(n-i)
+        
+        dx = 0; dy = 0
+        for i in range(self.n-1):
+            dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
+            dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
+            dz += B(self.n-1,i,t)*self.n*(self.z[i+1]-self.z[i])
 
-        tmin = np.min(t)
-        tmax = np.max(t)
-            
-        Bx = np.zeros((len(t),1))
-        By = np.zeros((len(t),1))
-        Bz = np.zeros((len(t),1))
-        for i in range(len(t)):                      
-            tempx = 0; tempy = 0; tempz=0              
-            if (t[i] == 1): # Use downwind
-                tempx = self.x[-1] - self.x[-2]
-                tempy = self.y[-1]- self.y[-2]                  
-            elif (t[i] == 0):
-                tempx = self.x(2) - self.x(1)
-                tempy = self.y(2)- self.y(1)                 
-            else:
-                for j in range(self.n-1): # n-1      
-                    b = (comb(self.n-1,j,True)*t[i]**j) * (1-t[i])**(self.n-1-j)    # Bn-1                    
-                    tempx = tempx + b*(self.x[j+2]-self.x[j+1]) # Note: j+1 = j
-                    tempy = tempy + b*(self.y[j+2]-self.y[j+1])                   
-                    tempz = tempz + b*(self.z[j+2]-self.z[j+1]) 
-                tempx = tempx*(self.n-1)
-                tempy = tempy*(self.n-1)
-                tempz = tempz*(self.n-1)
-
-            Bx[i] = tempx
-            By[i] = tempy
-            Bz[i] = tempz
-        return Bx,By,Bz
+        return dx,dy
 
 
 def time_this(original_function):

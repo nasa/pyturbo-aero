@@ -310,8 +310,6 @@ class Airfoil2D:
             self.ssBezierY[0] = self.cambBezierY[0]
             self.ssBezierX[-1] = self.cambBezierX[-1]
             self.ssBezierY[-1] = self.cambBezierY[-1]
-        else:
-            indx = len(self.ssBezierX)+1
         
         b = self.camberBezier
         for i in range(0,len(t)):
@@ -511,8 +509,6 @@ class Airfoil2D:
         """Swaps the leading edge with trailing edge 
 
         """
-
-         
         y1c = self.cambBezierY[0]
         x1c = self.cambBezierX[0]
         for i in range(len(self.cambBezierX)):
@@ -542,7 +538,7 @@ class Airfoil2D:
 
         # Flip Suction side
         
-        if (type(self.ssBezier) == 'pw_bezier2D'):
+        if isinstance(self.ssBezier,pw_bezier2D):
             y1ss = self.ssBezier.bezierArray[0].y[0]
             x1ss = self.ssBezier.bezierArray[0].x[0]
             for i in range(0,len(self.ssBezier.bezierArray)):
