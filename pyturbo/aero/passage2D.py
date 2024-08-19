@@ -6,7 +6,7 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from .airfoil3D import Airfoil3D
 
-class passage2D:
+class Passage2D:
     """Passage2D fits 3D blades inside of a channel
     """
     def __init__(self,airfoil_array:List[Airfoil3D],spacing_array:List[float]):

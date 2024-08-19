@@ -8,7 +8,7 @@ from ..helper import derivative_1, bezier,cosd,sind, convert_to_ndarray
 import math, copy
 import numpy as np 
 
-class airfoil_wavy(Airfoil3D):
+class AirfoilWavy(Airfoil3D):
     """Makes the surface of the airfoil: LE, TE, SS, PS wavy
     """
     def __init__(self,profileArray:List[Airfoil2D],profile_loc:List[float],height:float):
@@ -19,7 +19,7 @@ class airfoil_wavy(Airfoil3D):
             profile_loc ([List[float]]): Locations in terms of percent span where these 2D airfoils are located 
             height (float): height of the airfoil
         """
-        super(airfoil_wavy, self).__init__(profileArray,profile_loc,height)
+        super(AirfoilWavy, self).__init__(profileArray,profile_loc,height)
    
 
     def stretch_thickness_chord(self,SSRatio,PSRatio,LERatio,TERatio,LE_wave_angle,TE_wave_angle,TE_smooth=0.85):

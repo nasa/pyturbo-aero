@@ -43,11 +43,20 @@ class Centrif2D:
         pass
     
     def add_camber(self,alpha1:float,alpha2:float,stagger:float,x1:float,x2:float) -> None:
-        self.alpha1 = alpha1
-        self.alpha2 = alpha2
+        """Defines a camber line
+
+        Args:
+            alpha1 (float): inlet flow angle
+            alpha2 (float): outlet flow angle
+            stagger (float): stagger angle
+            x1 (float): Location of LE angle control point 
+            x2 (float): Location of TE angle control point
+        """
+        self.alpha1 = np.radians(alpha1)
+        self.alpha2 = np.radians(alpha2)
         self.x1 = x1
         self.x2 = x2 
-        self.stagger = stagger
+        self.stagger = np.radians(stagger)
         
         h = np.tan(stagger)-(1-x2)*np.tan(alpha2)
         x = [0,x1,x2,1]
@@ -102,8 +111,8 @@ class Centrif2D:
         """builds the suction side 
 
         Args:
-            thickness_array (List[float]): _description_
-            expansion_ratio (float, optional): _description_. Defaults to 1.2.
+            thickness_array (List[float]): thickness defined perpendicular to the camber line
+            expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
         t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1) # 1 point for the leading edge and 1 for TE starting point before radius is added
         x, y = self.camber.get_point(t)
@@ -119,8 +128,8 @@ class Centrif2D:
         """Builds the pressure side
 
         Args:
-            thickness_array (List[float]): _description_
-            expansion_ratio (float, optional): _description_. Defaults to 1.2.
+            thickness_array (List[float]): Thickness array to use 
+            expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
         t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1)
         x, y = self.camber.get_point(t)
@@ -150,23 +159,113 @@ class Centrif2D:
         self.ss_te = arc(x,y,radius,theta,theta+90-wedge_ss)
          
     def add_te_cut(self,radius:float):
-        x,y = self.camber.get_point(1)
+        """Cuts the trailing edge instead of having a rounded TE
+
+        Args:
+            radius (float): Trailing edge radius where to define the cut
+        """
+        _,y = self.camber.get_point(1)
         self.te_cut = True
         self.ss_te_pts = np.linspace(y-radius,y,10)
         self.ps_te_pts = np.linspace(y,y+radius,10) 
 
     def build(self,npts:int,npt_te:int=20):
-        # Build the pressure and suction sides 
-        
+        """Build the 2D Geometry 
+
+        Args:
+            npts (int): number of points to define the pressure and suction sides
+            npt_te (int, optional): number of points used to define trailing edge. Defaults to 20.
+        """
         if not self.te_cut:
             t = np.linspace(0,1,npt_te)
-            
             ps_te_x,ps_te_y = self.ps_arc.get_point(t)
             
             ss_te_x,ss_te_y = self.ss_arc.get_point(t)
             ss_te_x = np.flip(ss_te_x)
             ss_te_y = np.flip(ss_te_y)
-            
+
+            self.ss_te_pts = np.concatenate([ss_te_x,ss_te_y])
+            self.ps_te_pts = np.concatenate([ps_te_x,ps_te_y])
+        
+        self.ps_x[-1]=ps_te_x[0]
+        self.ps_y[-1]=ps_te_y[0]
+        self.ss_x[-1]=ss_te_x[0]
+        self.ss_y[-1]=ss_te_y[0]
+        
+        self.ps_bezier = bezier(self.ps_x, self.ps_y)
+        self.ss_bezier = bezier(self.ss_x, self.ss_y)
+        
+        self.ps_pts = np.zeros(shape=(npts+npt_te,2))
+        self.ss_pts = np.zeros(shape=(npts+npt_te,2))
         
         
-        pass
+        self.ps_pts[:npts,0],self.ps_y[:npts,1] = self.ps_bezier.get_point(npts)
+        self.ss_pts[:npts,0],self.ss_y[:npts,1] = self.ss_bezier.get_point(npts)
+        
+        self.ps_pts[npts:,0] = self.ps_te_pts[1:,0]
+        self.ps_pts[npts:,1] = self.ps_te_pts[1:,1]
+        
+        self.ss_pts[npts:,0] = self.ss_te_pts[1:,0]
+        self.ss_pts[npts:,1] = self.ss_te_pts[1:,1]
+    
+    def plot_camber(self):
+        """Plots the camber of the airfoil
+        
+        Returns:
+            None
+        """
+        t = np.linspace(0,1,50)
+        # plt.ion()
+        marker_style = dict(markersize=8, markerfacecoloralt='tab:red')
+
+        [xcamber, ycamber] = self.camber.get_point(t)
+        
+        plt.figure(num=1, clear=True)
+        plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
+            linewidth=2)
+        plt.plot(self.camber.x,self.camber.y, color='red', marker='o',linestyle='--',**marker_style)        
+        plt.gca().set_aspect('equal')
+        plt.show()
+    
+    def plot(self):
+        """Plots the airfoil
+
+        Returns:
+            None
+        """
+        t = np.linspace(0,1,200)
+        [xcamber, ycamber] = self.camber.get_point(t)
+        [xPS, yPS] = self.ps_bezier.get_point(t)
+        [xSS, ySS] = self.ss_bezier.get_point(t)
+
+        plt.figure(num=1,clear=True)
+        plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
+            linewidth=2)
+        plt.plot(xPS,yPS, color='blue', linestyle='solid', 
+            linewidth=2)
+        plt.plot(xSS,ySS, color='red', linestyle='solid', 
+            linewidth=2)
+        plt.plot(self.ps_bezier.x,self.ps_bezier.y, color='blue', marker='o',markerfacecolor="None",markersize=8)
+        plt.plot(self.ss_bezier.x,self.ss_bezier.y, color='red', marker='o',markerfacecolor="None",markersize=8)
+        # Plot the line from camber to the control points
+        # suction side
+        for indx in range(len(self.ss_pts)):
+            x = self.ss_pts[indx,0]
+            y = self.ss_pts[indx,1]
+            d = dist(x,y,xcamber,ycamber)
+            min_indx = np.where(d == np.amin(d))[0][0]
+            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
+        # pressure side
+        for indx in range(0,len(self.ps_pts)):
+            x = self.ps_pts[indx,0]
+            y = self.ps_pts[indx,1]
+            d = dist(x,y,xcamber,ycamber)
+            min_indx = np.where(d == np.amin(d))[0][0]
+            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
+        # Plot the Trailing Edge
+        t = np.linspace(0,1,20)
+        plt.plot(self.ps_te_pts[:,0],self.ps_te_pts[:,1], color='blue', linestyle='solid')
+
+        plt.plot(self.ss_te_pts[:,0],self.ss_te_pts[:,1], color='red', linestyle='solid')
+        plt.gca().set_aspect('equal')
+        plt.show()
