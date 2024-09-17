@@ -63,8 +63,8 @@ napoleon_custom_sections = None
 templates_path = ['_templates']
 
 srclink_project = 'https://github.com/nasa/pyturbo-aero'
-srclink_branch = 'master'
-srclink_src_path = 'docs/'
+srclink_branch = 'main'
+srclink_src_path = '/'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -90,7 +90,7 @@ html_theme_options = {
 }
 
 
-html_static_path = ['static']
+html_static_path = ['_static']
 rst_context = {'pyturbo-aero': pyturbo}
 
 

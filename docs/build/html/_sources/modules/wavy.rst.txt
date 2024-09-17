@@ -1,5 +1,5 @@
 Wavy Airfoil
 ====================
-.. automodule:: pyturbo_aero.aero.airfoil_wavy
+.. autoclass:: pyturbo.aero.airfoil_wavy
     :members:
     :special-members:

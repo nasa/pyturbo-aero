@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyturbo_aero.aero.airfoil3D &mdash; pyturbo-aero 1.0.1 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <title>pyturbo.aero.airfoil3D &mdash; pyturbo-aero 1.0.12 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/underscore.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=a4fe78c3"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -26,14 +27,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../../index.html" class="icon icon-home"> pyturbo-aero
+
+          
+          
+          <a href="../../../index.html">
+            
           </a>
               <div class="version">
-                1.0.1
+                1.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -42,21 +47,20 @@
               <p class="caption" role="heading"><span class="caption-text">python API</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/airfoil2D.html">Airfoil 2D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/airfoil2D.html#pyturbo.aero.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/airfoil3D.html">Airfoil 3D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/channel.html">2D Passage definition</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/channel.html#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/channel.html#pyturbo.aero.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules/helper.html">PyTurbo.helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules/helper.html">PyTurbo Helper Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules/wavy.html">Wavy Airfoil</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/wavy.html#pyturbo.aero.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -74,9 +78,9 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
-          <li><a href="../../index.html">Module code</a> &raquo;</li>
-      <li>pyturbo_aero.aero.airfoil3D</li>
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pyturbo.aero.airfoil3D</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -85,7 +89,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for pyturbo_aero.aero.airfoil3D</h1><div class="highlight"><pre>
+  <h1>Source code for pyturbo.aero.airfoil3D</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">code</span> <span class="kn">import</span> <span class="n">interact</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
@@ -102,26 +106,117 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+<span class="kn">from</span> <span class="nn">stl</span> <span class="kn">import</span> <span class="n">mesh</span>
 
 
-<div class="viewcode-block" id="stack_type"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type">[docs]</a><span class="k">class</span> <span class="nc">stack_type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;class defining the type of stacking for airfoil2D profiles</span>
+<span class="k">class</span> <span class="nc">stack_type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;class defining the type of stacking for airfoil2D profiles</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        enum (enum.Emum): inherits enum</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">leading_edge</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">centroid</span> <span class="o">=</span> <span class="mi">2</span>
-    <span class="n">trailing_edge</span> <span class="o">=</span> <span class="mi">3</span></div>
+    <span class="n">trailing_edge</span> <span class="o">=</span> <span class="mi">3</span>
 
 
 
+<div class="viewcode-block" id="airfoil3D">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D">[docs]</a>
+<span class="k">class</span> <span class="nc">airfoil3D</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Properties</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">profileArray</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">airfoil2D</span><span class="p">]</span>
+    <span class="n">profileSpan</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> 
+    <span class="n">span</span><span class="p">:</span><span class="nb">float</span> 
+    <span class="n">IsSplineFitted</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">IsSplineFittedShell</span><span class="p">:</span> <span class="nb">bool</span> 
+    
+    <span class="n">stackType</span><span class="p">:</span><span class="n">stack_type</span> 
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Bezier X,Y,Z are for the stacking line of the blade&#39;&#39;&#39;</span>
+    <span class="n">bezierX</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>    
+    <span class="n">bezierY</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">bezierZ</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
 
-<div class="viewcode-block" id="airfoil3D"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D">[docs]</a><span class="k">class</span> <span class="nc">airfoil3D</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Defines a 3D Airfoil to be used in a channel</span>
+    <span class="n">te_center_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>     <span class="c1"># Center of trailing edge for each span profile</span>
+    <span class="n">te_center_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> 
+    <span class="n">b3</span><span class="p">:</span> <span class="n">bezier3</span>                 <span class="c1"># 3D Bezier curve that defines the stacking</span>
+    <span class="n">bImportedBlade</span><span class="p">:</span> <span class="nb">bool</span>
+
+    <span class="n">sweepY</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># Array defining the sweep and lean points. </span>
+    <span class="n">sweepZ</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>          <span class="c1"># </span>
+
+    <span class="n">leanX</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">leanY</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">nte</span><span class="p">:</span> <span class="nb">int</span>                    <span class="c1"># Number of points defining the trailing edge</span>
+    <span class="n">npts</span><span class="p">:</span> <span class="nb">int</span>                   <span class="c1"># Number of points defining the suction and pressure side</span>
+    <span class="n">nspan</span><span class="p">:</span> <span class="nb">int</span>                  <span class="c1"># Number of cross sections along the span</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Profile points: these are the 2D Profiles that you passed into the constructor&#39;&#39;&#39;</span>
+    <span class="n">spline_xpss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>     <span class="c1"># Profile Suction side </span>
+    <span class="n">spline_ypss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">spline_zpp</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">spline_xpps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>     <span class="c1"># Profile Pressure side</span>
+    <span class="n">spline_ypps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;3D Blade points: Final blade points after lean and sweep are accounted for&#39;&#39;&#39;</span>
+    <span class="n">spline_xss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>      <span class="c1"># Suction side list of curves</span>
+    <span class="n">spline_yss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+    <span class="n">spline_zss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+
+    <span class="n">spline_xps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>      <span class="c1"># Pressure side: list of curves </span>
+    <span class="n">spline_yps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+    <span class="n">spline_zps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+
+    <span class="n">spline_te_xss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>   <span class="c1"># Trailing edge suction side points</span>
+    <span class="n">spline_te_yss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">spline_te_xps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>   <span class="c1"># Trailing edge pressure side points </span>
+    <span class="n">spline_te_yps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">xss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>             <span class="c1"># Blade cross sections defined without Lean or Sweep</span>
+    <span class="n">yss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>             
+    <span class="n">te_ss_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">te_ss_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    
+    <span class="n">xps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">yps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">te_ps_x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">te_ps_y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">control_x_ss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    <span class="c1"># Location of the stacking line control points</span>
+    <span class="n">control_y_ss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">control_x_ps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    
+    <span class="n">control_y_ps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">c_te_x_ss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">c_te_y_ss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">c_te_x_ps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">c_te_y_ps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">shft_xss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>        <span class="c1"># Suction side Final points with lean and sweep</span>
+    <span class="n">shft_yss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>        <span class="c1"># These are the points that are exported</span>
+    <span class="n">shft_zss</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+    <span class="n">shft_xps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>        <span class="c1"># Pressure side Final points with lean and sweep</span>
+    <span class="n">shft_yps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>        <span class="c1"># These are the points that are exported</span>
+    <span class="n">shft_zps</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+
+<span class="w">    </span><span class="sd">&#39;&#39;&#39;Shell&#39;&#39;&#39;</span>    
+    <span class="n">shell_xss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>  <span class="c1"># curves defining the shelled geometry</span>
+    <span class="n">shell_yss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>  
+    <span class="n">shell_zss</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+
+    <span class="n">shell_xps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+    <span class="n">shell_yps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span>
+    <span class="n">shell_zps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">]</span> 
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Defines a 3D Airfoil to be used in a channel</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">profileArray</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">airfoil2D</span><span class="p">],</span> <span class="n">profile_loc</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">height</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Constructs a 3D Airfoil</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Constructs a 3D Airfoil</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            profileArray (List[airfoil2D]): array of airfoil2D profiles</span>
@@ -134,8 +229,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">IsSplineFitted</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">IsSplineFittedShell</span> <span class="o">=</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="airfoil3D.stack"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.stack">[docs]</a>    <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stackType</span><span class="o">=</span><span class="n">stack_type</span><span class="o">.</span><span class="n">centroid</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Defines how the airfoil profiles are stacked</span>
+<div class="viewcode-block" id="airfoil3D.stack">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.stack">[docs]</a>
+    <span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stackType</span><span class="o">=</span><span class="n">stack_type</span><span class="o">.</span><span class="n">centroid</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Defines how the airfoil profiles are stacked</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            stackType (stack_type, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to stack_type.centroid.</span>
@@ -149,43 +246,39 @@
             <span class="k">if</span> <span class="p">(</span><span class="n">stackType</span> <span class="o">==</span> <span class="n">stack_type</span><span class="o">.</span><span class="n">leading_edge</span><span class="p">):</span>
                 <span class="n">hub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">[</span><span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">]</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bx</span> <span class="o">=</span> <span class="n">hx</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">by</span> <span class="o">=</span> <span class="n">hy</span>  <span class="c1"># set the base centroid</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
                 <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">)):</span>
                     <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                    <span class="n">dx</span> <span class="o">=</span> <span class="n">hx</span><span class="o">-</span><span class="n">x</span>
-                    <span class="n">dy</span> <span class="o">=</span> <span class="n">hy</span><span class="o">-</span><span class="n">y</span>
+                    <span class="n">dx</span> <span class="o">=</span> <span class="n">hx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">dy</span> <span class="o">=</span> <span class="n">hy</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="c1"># Shift the points based on camber</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileSpan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="p">)</span>
 
                     <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span>
                         <span class="mi">1</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="c1"># Stack the airfoils about TE</span>
             <span class="k">elif</span> <span class="p">(</span><span class="n">stackType</span> <span class="o">==</span> <span class="n">stack_type</span><span class="o">.</span><span class="n">trailing_edge</span><span class="p">):</span>
                 <span class="n">hub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">[</span><span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">]</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bx</span> <span class="o">=</span> <span class="n">hx</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">by</span> <span class="o">=</span> <span class="n">hy</span>  <span class="c1"># set the base centroid</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
                 <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="n">hub</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">)):</span>
                     <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -193,25 +286,24 @@
                     <span class="n">dy</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="c1"># Shift the points based on camber</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileSpan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="p">)</span>
 
                     <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span>
                         <span class="mi">1</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="k">elif</span> <span class="p">(</span><span class="n">stackType</span> <span class="o">==</span> <span class="n">stack_type</span><span class="o">.</span><span class="n">centroid</span><span class="p">):</span>
                 <span class="p">[</span><span class="n">hx</span><span class="p">,</span> <span class="n">hy</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_centroid</span><span class="p">()</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">bx</span> <span class="o">=</span> <span class="n">hx</span><span class="p">;</span> <span class="bp">self</span><span class="o">.</span><span class="n">by</span> <span class="o">=</span> <span class="n">hy</span>  <span class="c1"># set the base centroid</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hx</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hy</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
                 <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">)):</span>
                     <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_centroid</span><span class="p">()</span>
@@ -225,8 +317,8 @@
 
                     <span class="p">[</span><span class="n">hx_te</span><span class="p">,</span> <span class="n">hy_te</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">camberBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span>
                         <span class="mi">1</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hx_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">hy_te</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">)</span>
@@ -234,8 +326,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">b3</span> <span class="o">=</span> <span class="n">bezier3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bImportedBlade</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="airfoil3D.sweep"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.sweep">[docs]</a>    <span class="k">def</span> <span class="nf">sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sweep_y</span><span class="o">=</span><span class="p">[],</span><span class="n">sweep_z</span><span class="o">=</span><span class="p">[]):</span>
-        <span class="sd">&quot;&quot;&quot;Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied</span>
+
+<div class="viewcode-block" id="airfoil3D.sweep">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.sweep">[docs]</a>
+    <span class="k">def</span> <span class="nf">sweep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sweep_y</span><span class="o">=</span><span class="p">[],</span><span class="n">sweep_z</span><span class="o">=</span><span class="p">[]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            sweep_y (List[float], optional): adds bezier points to the sweep of the blade. Defaults to [].</span>
@@ -252,12 +347,12 @@
 
         <span class="c1"># add sweep where z does not exist </span>
         <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">)</span> <span class="c1"># tells what items in leanZ do not exist in bezierZ</span>
-        <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span> <span class="o">==</span> <span class="n">i1</span><span class="p">)</span> <span class="c1"># get the index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepY</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">by</span><span class="p">)</span>
-        <span class="n">xx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span><span class="p">;</span> <span class="n">xx</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bx</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span> <span class="n">xx</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
-
+        <span class="k">if</span> <span class="n">i1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span> <span class="o">==</span> <span class="n">i1</span><span class="p">)</span> <span class="c1"># get the index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepY</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">xx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sweepZ</span><span class="p">;</span> <span class="n">xx</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span> <span class="n">xx</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
 
         <span class="c1"># SORT</span>
         <span class="c1"># A = sortrows([self.bezierZ&#39; self.bezierX&#39; self.bezierY&#39;])</span>
@@ -269,8 +364,11 @@
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bImportedBlade</span><span class="p">):</span> <span class="c1"># imported blade doesn&#39;t have 2D airfoil profiles defined, just points</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">profiles_shift</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="airfoil3D.lean_add"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.lean_add">[docs]</a>    <span class="k">def</span> <span class="nf">lean_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">leanX</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">leanZ</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.</span>
+
+<div class="viewcode-block" id="airfoil3D.lean">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.lean">[docs]</a>
+    <span class="k">def</span> <span class="nf">lean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">leanX</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">leanZ</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            leanX (List[float]): lean points </span>
@@ -290,11 +388,12 @@
         <span class="c1">#  Add Lean where Z does not exist</span>
         <span class="c1"># [~,i1] = setxor(leanZ,self.bezierZ); %  MATLAB CODE tells what items in leanZ do not exist in bezierZ</span>
         <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">leanZ</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">)</span>
-        <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">leanZ</span> <span class="o">==</span> <span class="n">i1</span><span class="p">)</span> <span class="c1"># get the index</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">,</span> <span class="n">leanZ</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leanX</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">bx</span><span class="p">)</span>
-        <span class="n">yy</span> <span class="o">=</span> <span class="n">leanZ</span><span class="p">;</span> <span class="n">yy</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">by</span> <span class="c1">#TODO Need to check this</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span> <span class="n">yy</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">i1</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">i1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">leanZ</span> <span class="o">==</span> <span class="n">i1</span><span class="p">)</span> <span class="c1"># get the index</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">,</span> <span class="n">leanZ</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">leanX</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">yy</span> <span class="o">=</span> <span class="n">leanZ</span><span class="p">;</span> <span class="n">yy</span><span class="p">[</span><span class="n">i1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#TODO Need to check this</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span> <span class="n">yy</span><span class="p">[</span><span class="n">i1</span><span class="p">])</span>
 
         <span class="c1"># Sort</span>
         <span class="n">indx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">)</span>
@@ -304,29 +403,32 @@
         
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bImportedBlade</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">profiles_shift</span><span class="p">()</span>     </div>
+
         
-<div class="viewcode-block" id="airfoil3D.create_blade"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.create_blade">[docs]</a>    <span class="k">def</span> <span class="nf">create_blade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nProfiles</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">profile_points</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">te_points</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. </span>
+<div class="viewcode-block" id="airfoil3D.create_blade">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.create_blade">[docs]</a>
+    <span class="k">def</span> <span class="nf">create_blade</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nProfiles</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">num_points</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">trailing_edge_points</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            nProfiles (int): number of intermeidate profiles to generate</span>
-<span class="sd">            profile_points (int): number of points per profile. Suction and Pressure side will have this number of points</span>
-<span class="sd">            te_points (int): Number of trailing edge points </span>
+<span class="sd">            num_points (int): number of points per profile. Suction and Pressure side will have this number of points</span>
+<span class="sd">            trailing_edge_points (int): Number of trailing edge points </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bImportedBlade</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># n - number of points to use for pressure and suction sides</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">profile_points</span> <span class="c1"># number of points to use for suction and pressure side</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nte</span> <span class="o">=</span> <span class="n">te_points</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">num_points</span> <span class="c1"># number of points to use for suction and pressure side</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nte</span> <span class="o">=</span> <span class="n">trailing_edge_points</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">nspan</span> <span class="o">=</span> <span class="n">nProfiles</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">)</span>
         <span class="n">t_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">)</span> <span class="c1"># use 20 points for the trailing edge</span>
         <span class="n">n_profiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">)</span>
         <span class="c1"># x,y,z profiles - stores the x,y,z coordinate for each profile for a given time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spline_xpp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spline_xpps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spline_xpss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">spline_te_xss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span> <span class="c1"># trailing edge points fixed at 100</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spline_te_yss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">spline_te_xps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
@@ -350,17 +452,17 @@
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_profiles</span><span class="p">):</span>
             <span class="c1"># [tmpXps[:,j], tmpYps[:,j]] = self.profileArray[j]._psBezier.get_point(t)</span>
             <span class="c1"># [tmpXss[:,j], tmpYss[:,j]] = self.profileArray[j]._ssBezier.get_point(t)</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpp</span><span class="p">[:,</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypp</span><span class="p">[:,</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpps</span><span class="p">[:,</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span><span class="p">[:,</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpps</span><span class="p">[:,</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span><span class="p">[:,</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpss</span><span class="p">[:,</span><span class="n">j</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spline_ypss</span><span class="p">[:,</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[:,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileSpan</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span>              <span class="c1"># Span</span>
         
             
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">):</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">xps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span> <span class="c1"># Natural spline</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_ypp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span> <span class="c1"># Natural spline</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
             
-            <span class="bp">self</span><span class="o">.</span><span class="n">xss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_ypps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_xpss</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_zpp</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">spline_ypss</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">)</span>
         
 
         <span class="n">spline_zpp_te</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
@@ -394,17 +496,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c_te_y_ss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">nte</span><span class="p">,</span><span class="n">n_profiles</span><span class="p">))</span>
         
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_profiles</span><span class="p">):</span>                
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">control_x_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">control_x_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">_ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">control_x_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">psBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">control_x_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">ssBezier</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
             <span class="c1"># add trailing edge</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_te_x_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_te_y_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">TE_ps_arc</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t_te</span><span class="p">)</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">c_te_x_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">c_te_y_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">TE_ss_arc</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t_te</span><span class="p">)</span>
 
         <span class="c1"># Shift all the generated turbine profiles points based on the bezier curve</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">profiles_shift</span><span class="p">()</span></div>
+
  
-<div class="viewcode-block" id="airfoil3D.shift"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.shift">[docs]</a>    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Moves the blade and recomputes the geometry</span>
+<div class="viewcode-block" id="airfoil3D.shift">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.shift">[docs]</a>
+    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Moves the blade and recomputes the geometry</span>
 <span class="sd">            Step 1 - shifts the profiles</span>
 <span class="sd">            Step 2 - add lean and sweep again</span>
 <span class="sd">            Step 3 - recompute the geometry if npts != 0 </span>
@@ -419,9 +524,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">x</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">y</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">+</span> <span class="n">x</span></div>
+
  
-<div class="viewcode-block" id="airfoil3D.scale_zss"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zss">[docs]</a>    <span class="k">def</span> <span class="nf">scale_zss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zmin</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">zmax</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;scales the z axis to match the channel height. Channel height may be defined as the radius</span>
+<div class="viewcode-block" id="airfoil3D.scale_zss">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.scale_zss">[docs]</a>
+    <span class="k">def</span> <span class="nf">scale_zss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zmin</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">zmax</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;scales the z axis to match the channel height. Channel height may be defined as the radius</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            zmin (List[float]): Array of size n corresponding to minimum radius</span>
@@ -443,8 +551,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">shell_zss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span></div>
 
     
-<div class="viewcode-block" id="airfoil3D.scale_zps"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.scale_zps">[docs]</a>    <span class="k">def</span> <span class="nf">scale_zps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zmin</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">zmax</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
-        <span class="sd">&quot;&quot;&quot;scales the z axis to match the channel height. Channel height may be defined as the radius</span>
+<div class="viewcode-block" id="airfoil3D.scale_zps">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.scale_zps">[docs]</a>
+    <span class="k">def</span> <span class="nf">scale_zps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zmin</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">zmax</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;scales the z axis to match the channel height. Channel height may be defined as the radius</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            zmin (List[float]): Array of size n corresponding to minimum radius</span>
@@ -465,20 +575,28 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">shell_zps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span></div>
 
     
-<div class="viewcode-block" id="airfoil3D.flip_cw"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.flip_cw">[docs]</a>    <span class="k">def</span> <span class="nf">flip_cw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z</span>
+<div class="viewcode-block" id="airfoil3D.flip_cw">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.flip_cw">[docs]</a>
+    <span class="k">def</span> <span class="nf">flip_cw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span></div>
 
-<div class="viewcode-block" id="airfoil3D.flip"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Mirrors the blade by multiplying y direction by -1. This is assuming axial chord is in the y direction and span is in z</span>
+
+<div class="viewcode-block" id="airfoil3D.flip">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.flip">[docs]</a>
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Mirrors the blade by multiplying y direction by -1. This is assuming axial chord is in the y direction and span is in z</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shft_yss</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_yss</span></div>
 
-<div class="viewcode-block" id="airfoil3D.section_z"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.section_z">[docs]</a>    <span class="k">def</span> <span class="nf">section_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zStartPercent</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">zEndPercent</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>  
-        <span class="sd">&quot;&quot;&quot;Chops the blade in between 2 spanwise lines. Think of it as cutting the blade between (zStartPercent) 10% and (zEndPercent) 50%</span>
+
+<div class="viewcode-block" id="airfoil3D.section_z">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.section_z">[docs]</a>
+    <span class="k">def</span> <span class="nf">section_z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">zStartPercent</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">zEndPercent</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>  
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Chops the blade in between 2 spanwise lines. Think of it as cutting the blade between (zStartPercent) 10% and (zEndPercent) 50%</span>
 
 
 <span class="sd">        Args:</span>
@@ -504,20 +622,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">csapi</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zps</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">zps</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_zps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">zps</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span><span class="o">=</span> <span class="n">zss</span></div>
+
         
         <span class="c1"># self.cylindrical()</span>
       
-<div class="viewcode-block" id="airfoil3D.cartesian"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.cartesian">[docs]</a>    <span class="k">def</span> <span class="nf">cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="airfoil3D.cartesian">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.cartesian">[docs]</a>
+    <span class="k">def</span> <span class="nf">cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Converts the default cylindrical coordinates to cartesian system   </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">[</span><span class="n">nprofiles</span><span class="p">,</span><span class="n">_</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nprofiles</span><span class="p">):</span> <span class="c1"># for each 2d blade profile in the 3d blade</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">_</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_cyl_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
             <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="n">_</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_cyl_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zps</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>      </div>
+
          
-<div class="viewcode-block" id="airfoil3D.plot_profile"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.plot_profile">[docs]</a>    <span class="k">def</span> <span class="nf">plot_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">figureNum</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Incomplete</span>
+<div class="viewcode-block" id="airfoil3D.plot_profile">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.plot_profile">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">figureNum</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Incomplete</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            figureNum ([type]): [description]</span>
@@ -527,6 +651,7 @@
         <span class="n">PSx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n2D</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">nprofiles</span><span class="p">)</span>
         <span class="n">PSy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n2D</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">nprofiles</span><span class="p">)</span>
         <span class="n">SSx</span> <span class="o">=</span> <span class="n">PSx</span><span class="p">;</span> <span class="n">SSy</span> <span class="o">=</span> <span class="n">PSy</span><span class="p">;</span> <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n2D</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span><span class="n">nprofiles</span><span class="p">)</span></div>
+
         <span class="c1"># figure(figureNum)</span>
         <span class="c1"># hold on</span>
         <span class="c1"># for i = 1:nprofiles</span>
@@ -540,13 +665,14 @@
         <span class="c1"># hold off</span>
         <span class="c1"># axis equal            </span>
     
-<div class="viewcode-block" id="airfoil3D.export_solidworks"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.export_solidworks">[docs]</a>    <span class="k">def</span> <span class="nf">export_solidworks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>          
-        <span class="sd">&quot;&quot;&quot;Export the blades in RTheta,Z,R coordinate format</span>
+<div class="viewcode-block" id="airfoil3D.export_solidworks">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.export_solidworks">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_solidworks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>          
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Export the blades in RTheta,Z,R coordinate format</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            name (string): exported filename</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">import</span> <span class="nn">os</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
         <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;solidworks&#39;</span><span class="p">)):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;solidworks&#39;</span><span class="p">)</span>
         <span class="n">folder</span> <span class="o">=</span> <span class="s1">&#39;solidworks/</span><span class="si">{0}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
@@ -564,8 +690,11 @@
                 <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)):</span>
                     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0:08f}</span><span class="s2"> </span><span class="si">{1:08f}</span><span class="s2"> </span><span class="si">{2:08f}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="n">y</span><span class="p">[</span><span class="n">k</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">zz</span><span class="p">[</span><span class="n">j</span><span class="p">]))</span> <span class="c1"># Number of sections                    </span></div>
 
-<div class="viewcode-block" id="airfoil3D.plot3D"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D">[docs]</a>    <span class="k">def</span> <span class="nf">plot3D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">only_blade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade&#39;s stacking spine</span>
+
+<div class="viewcode-block" id="airfoil3D.plot3D">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.plot3D">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot3D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">only_blade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade&#39;s stacking spine</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            only_blade (bool, optional): Only plot the blade, no stacking spine. Defaults to False.</span>
@@ -619,12 +748,16 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
 
-        <span class="sd">&#39;&#39;&#39;</span>
+<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">            Creates a 3D plot of the blade using plotly</span>
 <span class="sd">            Trailing edge center line is also plotted along with the blade&#39;s stacking spine</span>
 <span class="sd">        &#39;&#39;&#39;</span></div>
-<div class="viewcode-block" id="airfoil3D.plot3D_ly"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.plot3D_ly">[docs]</a>    <span class="k">def</span> <span class="nf">plot3D_ly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">only_blade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade&#39;s stacking spine</span>
+
+    
+<div class="viewcode-block" id="airfoil3D.plot3D_ly">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.plot3D_ly">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot3D_ly</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">only_blade</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots a 3D representation of the blade and control points trailing edge center line is also plotted along with the blade&#39;s stacking spine</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            only_blade (bool, optional): Only plot the blade, no stacking spine. Defaults to False.</span>
@@ -663,8 +796,11 @@
         <span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span><span class="n">showlegend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">scene</span><span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">aspectmode</span><span class="o">=</span><span class="s1">&#39;manual&#39;</span><span class="p">,</span><span class="n">aspectratio</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
         <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="airfoil3D.calc_nblades"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.calc_nblades">[docs]</a>    <span class="k">def</span> <span class="nf">calc_nblades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pitchChord</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">rhub</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>   
-        <span class="sd">&quot;&quot;&quot;Calculates the number of blades </span>
+
+<div class="viewcode-block" id="airfoil3D.calc_nblades">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.calc_nblades">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_nblades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pitchChord</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">rhub</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>   
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the number of blades </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            pitchChord (float): pitch to chord ratio</span>
@@ -673,10 +809,13 @@
         <span class="n">pitch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileArray</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">c</span><span class="o">*</span><span class="n">pitchChord</span>
         <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">rhub</span><span class="o">/</span><span class="n">pitch</span><span class="p">)</span></div>
 
+
     
-<div class="viewcode-block" id="airfoil3D.import_geometry"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.import_geometry">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="airfoil3D.import_geometry">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.import_geometry">[docs]</a>
+    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">import_geometry</span><span class="p">(</span><span class="n">folder</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">npoints</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span><span class="n">nspan</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">axial_chord</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">span</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="n">ss_ps_split</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;imports geometry from a folder. Make sure there are 2 files inside the folder example: airfoil_0.txt and airfoil_1.txt. In this example, these two files represent the hub and tip. You can have as many as you want but 2 is the minimum. Filenames are sorted before import</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;imports geometry from a folder. Make sure there are 2 files inside the folder example: airfoil_0.txt and airfoil_1.txt. In this example, these two files represent the hub and tip. You can have as many as you want but 2 is the minimum. Filenames are sorted before import</span>
 
 <span class="sd">        airfoil_0 can contain 2 columns x,y or 3 columns x,y,z. Z column isn&#39;t used because you set the span. The span determines the spanwise location of the two airfoils </span>
 
@@ -824,9 +963,12 @@
         <span class="n">a3D</span><span class="o">.</span><span class="n">nspan</span> <span class="o">=</span> <span class="n">nspan</span>
         <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">pwd</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">a3D</span></div>
+
     
-<div class="viewcode-block" id="airfoil3D.get_chord"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_chord">[docs]</a>    <span class="k">def</span> <span class="nf">get_chord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the chord, axial chord for all the profiles </span>
+<div class="viewcode-block" id="airfoil3D.get_chord">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_chord">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_chord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the chord, axial chord for all the profiles </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">chord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
         <span class="n">axial_chord</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="mi">0</span><span class="p">])</span>
@@ -836,9 +978,12 @@
         <span class="n">max_axial_chord</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">axial_chord</span><span class="p">)</span>
         <span class="n">avg_axial_chord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axial_chord</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">chord</span><span class="p">,</span><span class="n">axial_chord</span></div>
+
     
-<div class="viewcode-block" id="airfoil3D.get_pitch"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_pitch">[docs]</a>    <span class="k">def</span> <span class="nf">get_pitch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nBlades</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the pitch distribution for a 3D blade row</span>
+<div class="viewcode-block" id="airfoil3D.get_pitch">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_pitch">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_pitch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nBlades</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the pitch distribution for a 3D blade row</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            nBlades (int): Number of blades </span>
@@ -855,8 +1000,11 @@
         <span class="n">s_c</span> <span class="o">=</span> <span class="n">s</span><span class="o">/</span><span class="n">chord</span>
         <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_c</span></div>
 
-<div class="viewcode-block" id="airfoil3D.profiles_shift"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.profiles_shift">[docs]</a>    <span class="k">def</span> <span class="nf">profiles_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="airfoil3D.profiles_shift">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.profiles_shift">[docs]</a>
+    <span class="k">def</span> <span class="nf">profiles_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Shift all profiles based on bezier curve that describes the spline of the blade</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">b3</span> <span class="o">=</span> <span class="n">bezier3</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierX</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierY</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierZ</span><span class="p">)</span>
@@ -948,8 +1096,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">control_z_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_z_ps</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileSpan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">control_z_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_z_ss</span><span class="p">[:,</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">profileSpan</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">span</span></div>
 
-<div class="viewcode-block" id="airfoil3D.convert_cyl_cartesian"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.convert_cyl_cartesian">[docs]</a>    <span class="k">def</span> <span class="nf">convert_cyl_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rth</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">radius</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert a single profile from cylindrical to cartesian coordinates. </span>
+
+<div class="viewcode-block" id="airfoil3D.convert_cyl_cartesian">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.convert_cyl_cartesian">[docs]</a>
+    <span class="k">def</span> <span class="nf">convert_cyl_cartesian</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">rth</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">radius</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a single profile from cylindrical to cartesian coordinates. </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            rth (np.ndarray): points in rtheta coordinate system</span>
@@ -974,6 +1125,7 @@
         
         <span class="k">return</span> <span class="n">yss</span><span class="p">,</span><span class="n">zss</span><span class="p">,</span><span class="n">thss</span></div>
 
+
     <span class="k">def</span> <span class="nf">__check_camber_intersection__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray</span><span class="p">,</span><span class="n">camber_x</span><span class="p">,</span><span class="n">camber_y</span><span class="p">):</span>
         <span class="n">bIntersect</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">camber_x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># check if ray intersects with</span>
@@ -988,8 +1140,10 @@
                     <span class="k">break</span>
         <span class="k">return</span> <span class="n">bIntersect</span>
     
-<div class="viewcode-block" id="airfoil3D.__check_ss_ray_intersection__"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ss_ray_intersection__">[docs]</a>    <span class="k">def</span> <span class="nf">__check_ss_ray_intersection__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray</span><span class="p">,</span><span class="n">ss_x</span><span class="p">,</span><span class="n">ss_y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="airfoil3D.__check_ss_ray_intersection__">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.__check_ss_ray_intersection__">[docs]</a>
+    <span class="k">def</span> <span class="nf">__check_ss_ray_intersection__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray</span><span class="p">,</span><span class="n">ss_x</span><span class="p">,</span><span class="n">ss_y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            checks to see if the ray intersects the suction side</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bIntersect</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1004,9 +1158,12 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="k">break</span>
         <span class="k">return</span> <span class="n">bIntersect</span></div>
+
     
-<div class="viewcode-block" id="airfoil3D.__check_ps_ray_intersection__"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.__check_ps_ray_intersection__">[docs]</a>    <span class="k">def</span> <span class="nf">__check_ps_ray_intersection__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">,</span><span class="n">ps_y</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="airfoil3D.__check_ps_ray_intersection__">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.__check_ps_ray_intersection__">[docs]</a>
+    <span class="k">def</span> <span class="nf">__check_ps_ray_intersection__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">,</span><span class="n">ps_y</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            checks to see if the ray intersects the pressure side</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bIntersect</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1022,8 +1179,11 @@
                     <span class="k">break</span>
         <span class="k">return</span> <span class="n">bIntersect</span></div>
 
-<div class="viewcode-block" id="airfoil3D.get_cross_section_normal"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section_normal">[docs]</a>    <span class="k">def</span> <span class="nf">get_cross_section_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ss_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ss_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets the normal of a cross section for a given profile</span>
+
+<div class="viewcode-block" id="airfoil3D.get_cross_section_normal">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_cross_section_normal">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_cross_section_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ss_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ss_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the normal of a cross section for a given profile</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            ss_x (np.ndarray): x - suction side points of a given profile</span>
@@ -1084,8 +1244,11 @@
 
         <span class="k">return</span> <span class="n">ss_nx</span><span class="p">,</span><span class="n">ss_ny</span><span class="p">,</span><span class="n">ps_nx</span><span class="p">,</span><span class="n">ps_ny</span></div>
 
-<div class="viewcode-block" id="airfoil3D.spanwise_spline_fit"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit">[docs]</a>    <span class="k">def</span> <span class="nf">spanwise_spline_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="airfoil3D.spanwise_spline_fit">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.spanwise_spline_fit">[docs]</a>
+    <span class="k">def</span> <span class="nf">spanwise_spline_fit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Fits the blade with splines that run along the profiles </span>
 <span class="sd">            Helps with the wavy design</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1108,8 +1271,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">spline_zss</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">[:,</span><span class="n">p</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">IsSplineFitted</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="airfoil3D.spanwise_spline_fit_shell"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.spanwise_spline_fit_shell">[docs]</a>    <span class="k">def</span> <span class="nf">spanwise_spline_fit_shell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">smooth</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Applies a shell in the spanwise direction. Creates a new blade inside the current blade. Helps with heat pipe design</span>
+
+<div class="viewcode-block" id="airfoil3D.spanwise_spline_fit_shell">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.spanwise_spline_fit_shell">[docs]</a>
+    <span class="k">def</span> <span class="nf">spanwise_spline_fit_shell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">smooth</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Applies a shell in the spanwise direction. Creates a new blade inside the current blade. Helps with heat pipe design</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            shell_thickness (float): how much material to remove from the blade</span>
@@ -1150,8 +1316,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shell_zps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">[:,</span><span class="n">p</span><span class="p">]))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">IsSplineFittedShell</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="airfoil3D.get_cross_section"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_cross_section">[docs]</a>    <span class="k">def</span> <span class="nf">get_cross_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get an arbirtary cross section at percent span. Doesn&#39;t factor into account the shift caused by the channel. Assumes the blade hasn&#39;t been placed inside of a channel. </span>
+
+<div class="viewcode-block" id="airfoil3D.get_cross_section">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_cross_section">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_cross_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get an arbirtary cross section at percent span. Doesn&#39;t factor into account the shift caused by the channel. Assumes the blade hasn&#39;t been placed inside of a channel. </span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            percent_span (float): percent span to get the cross section</span>
@@ -1186,9 +1355,12 @@
         <span class="n">camber_y</span> <span class="o">=</span> <span class="p">(</span><span class="n">yps</span><span class="o">+</span><span class="n">yss</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span>
 
         <span class="k">return</span> <span class="n">xss</span><span class="p">,</span><span class="n">yss</span><span class="p">,</span><span class="n">zss</span><span class="p">,</span><span class="n">xps</span><span class="p">,</span><span class="n">yps</span><span class="p">,</span><span class="n">zps</span><span class="p">,</span><span class="n">camber_x</span><span class="p">,</span><span class="n">camber_y</span></div>
+
         
-<div class="viewcode-block" id="airfoil3D.get_shell_2D"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_shell_2D">[docs]</a>    <span class="k">def</span> <span class="nf">get_shell_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">smooth</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">shell_points</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Gets the 2D shell for a given % span</span>
+<div class="viewcode-block" id="airfoil3D.get_shell_2D">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_shell_2D">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_shell_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">smooth</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span><span class="n">shell_points</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">80</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the 2D shell for a given % span</span>
 
 
 <span class="sd">        Args:</span>
@@ -1337,9 +1509,12 @@
                 <span class="n">ss_z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shell_zps</span><span class="p">[</span><span class="n">i</span><span class="p">](</span><span class="n">percent_span</span><span class="p">)</span>        
     
         <span class="k">return</span> <span class="n">ss_x_new</span><span class="p">,</span><span class="n">ss_y_new</span><span class="p">,</span><span class="n">ss_z</span><span class="p">,</span><span class="n">ps_x_new</span><span class="p">,</span><span class="n">ps_y_new</span><span class="p">,</span><span class="n">ps_z</span></div>
+
     
-<div class="viewcode-block" id="airfoil3D.rotate"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.rotate">[docs]</a>    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cx</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">cy</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">angle</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Rotate all shifted profiles about the leading edge including control profiles</span>
+<div class="viewcode-block" id="airfoil3D.rotate">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.rotate">[docs]</a>
+    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">cx</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">cy</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">angle</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Rotate all shifted profiles about the leading edge including control profiles</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cx (float): rotation point x coordinate</span>
@@ -1371,9 +1546,12 @@
             <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ss</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">-</span> <span class="n">cy</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">control_x_ss</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">cosd</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">-</span> <span class="n">dy</span><span class="o">*</span><span class="n">sind</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span> <span class="o">+</span> <span class="n">cx</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">control_y_ss</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">dx</span><span class="o">*</span><span class="n">sind</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">dy</span><span class="o">*</span><span class="n">cosd</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span> <span class="o">+</span> <span class="n">cy</span></div>
+
             
-<div class="viewcode-block" id="airfoil3D.center_le"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.center_le">[docs]</a>    <span class="k">def</span> <span class="nf">center_le</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;centers the blade by placing leading edge at 0,0</span>
+<div class="viewcode-block" id="airfoil3D.center_le">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.center_le">[docs]</a>
+    <span class="k">def</span> <span class="nf">center_le</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;centers the blade by placing leading edge at 0,0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">yc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shft_yss</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
@@ -1402,10 +1580,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">te_center_x</span> <span class="o">-</span> <span class="n">xc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">te_center_y</span> <span class="o">-</span> <span class="n">yc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zz</span> <span class="o">-</span> <span class="n">xc</span></div>
-        
 
-<div class="viewcode-block" id="airfoil3D.plot_shell_2D"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.plot_shell_2D">[docs]</a>    <span class="k">def</span> <span class="nf">plot_shell_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Plots the 2D shell used for placement of heat pipes</span>
+        
+<div class="viewcode-block" id="airfoil3D.plot_shell_2D">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.plot_shell_2D">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_shell_2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_span</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">shell_thickness</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plots the 2D shell used for placement of heat pipes</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            percent_span (float): percent span where shell occurs</span>
@@ -1427,8 +1607,11 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">set_aspect</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span></div>
 
-<div class="viewcode-block" id="airfoil3D.get_circumference"><a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D.get_circumference">[docs]</a>    <span class="k">def</span> <span class="nf">get_circumference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ss_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ss_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;returns the circumferene of a 2D airfoil profile</span>
+
+<div class="viewcode-block" id="airfoil3D.get_circumference">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.get_circumference">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_circumference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ss_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ss_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">ps_y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns the circumferene of a 2D airfoil profile</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            ss_x (np.ndarray): suction size x</span>
@@ -1444,7 +1627,94 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ss_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ss_x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ss_x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ss_y</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ss_y</span><span class="p">)))</span>
         <span class="n">ps_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ps_x</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ps_x</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ps_y</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ps_y</span><span class="p">)))</span>
-        <span class="k">return</span> <span class="n">ss_len</span><span class="p">,</span><span class="n">ps_len</span></div></div>
+        <span class="k">return</span> <span class="n">ss_len</span><span class="p">,</span><span class="n">ps_len</span></div>
+
+
+<div class="viewcode-block" id="airfoil3D.export_stl">
+<a class="viewcode-back" href="../../../modules/airfoil3D.html#pyturbo.aero.airfoil3D.export_stl">[docs]</a>
+    <span class="k">def</span> <span class="nf">export_stl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">filename</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;blade.stl&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Exports the finished blade to STL</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename (str, optional): Name of the STL file . Defaults to &quot;blade.stl&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xss</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_xps</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_yss</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_yps</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zss</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shft_zps</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Create triangles</span>
+        <span class="n">nspan</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># number of spans </span>
+        <span class="n">nv</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">nspan</span> <span class="c1"># number of verticies</span>
+        <span class="n">faces</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        
+        <span class="c1"># Bottom triangles</span>
+        <span class="n">i</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># span 0</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)):</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span> 
+            <span class="n">v3</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v3</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v1</span><span class="p">])</span>
+          
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">v3</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v3</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v1</span><span class="p">])</span>
+
+        <span class="c1"># Construct side wall triangles</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span> <span class="c1"># Spans</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span> <span class="c1"># points for each span                 </span>
+                <span class="c1"># Blue triangle</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">v2</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">j</span>
+                <span class="n">v3</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+                <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v3</span><span class="p">])</span>
+
+                <span class="c1"># red triangle</span>
+                <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">j</span> 
+                <span class="n">v2</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span>
+                <span class="n">v3</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">j</span><span class="o">-</span><span class="mi">1</span> 
+                <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v3</span><span class="p">])</span>
+                <span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="c1"># Blue triangle</span>
+                    <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                    <span class="n">v2</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="n">v3</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v3</span><span class="p">])</span>
+
+                    <span class="c1"># red triangle</span>
+                    <span class="n">v1</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> 
+                    <span class="n">v2</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">v3</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span> 
+                    <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="p">,</span><span class="n">v2</span><span class="p">,</span><span class="n">v3</span><span class="p">])</span>
+        <span class="c1"># Top triangles </span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)):</span>
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">j</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span> 
+            <span class="n">v3</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">v2</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">v3</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+   
+            <span class="n">v1</span> <span class="o">=</span> <span class="n">j</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">v2</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">v3</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> 
+            <span class="n">faces</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">v1</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">v2</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">v3</span><span class="o">+</span><span class="p">(</span><span class="n">nspan</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+
+        
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">faces</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">faces</span><span class="p">)</span>
+        <span class="n">blade</span> <span class="o">=</span> <span class="n">mesh</span><span class="o">.</span><span class="n">Mesh</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">faces</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">Mesh</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">faces</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+                <span class="n">blade</span><span class="o">.</span><span class="n">vectors</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">f</span><span class="p">[</span><span class="n">j</span><span class="p">],:]</span>
+
+        
+        <span class="n">blade</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></div>
+</div>
+
+        
 </pre></div>
 
            </div>
