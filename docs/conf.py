@@ -25,8 +25,8 @@ copyright = '2021, Paht Juangphanich'
 author = 'Paht Juangphanich <paht.juangphanich@nasa.gov>'
 
 # The full version, including alpha/beta/rc tags
-version = '1.0.1' 
-release = '1.0.1' 
+version = '1.0.12' 
+release = '1.0.12' 
 
 
 # -- General configuration ---------------------------------------------------
@@ -41,7 +41,7 @@ extensions = [
     'sphinx.ext.doctest',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinxcontrib.napoleon'
+    'sphinx.ext.napoleon'
 ]
 autosummary_generate = True
 
@@ -63,8 +63,8 @@ napoleon_custom_sections = None
 templates_path = ['_templates']
 
 srclink_project = 'https://github.com/nasa/pyturbo-aero'
-srclink_branch = 'master'
-srclink_src_path = 'docs/'
+srclink_branch = 'main'
+srclink_src_path = '/'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -90,7 +90,7 @@ html_theme_options = {
 }
 
 
-html_static_path = ['static']
+html_static_path = ['_static']
 rst_context = {'pyturbo-aero': pyturbo}
 
 

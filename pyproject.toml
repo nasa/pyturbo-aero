@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyturbo-aero"
-version = "1.0.12"
+version = "1.0.13"
 description = "PyTurbo_Aero is a Turbomachinery blade design library that lets you create a full 3D blades and passages."
 authors = ["Paht Juangphanich <paht.juangphanich@nasa.gov>"]
 packages = [
@@ -8,13 +8,13 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.7"
+python = ">=3.9"
 plotly = "*"
 tqdm = "*"
-scipy = ">1.8.0"
-pandas = ">=1.4"
-numpy = ">1.23.1"
-matplotlib = ">3.2.1"
+scipy = "*"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
 numpy-stl = "*"
 
 [tool.poetry.dev-dependencies]

@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>2D Passage definition &mdash; pyturbo-aero 1.0.1 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <title>2D Passage definition &mdash; pyturbo-aero 1.0.12 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=a4fe78c3"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PyTurbo.helper" href="helper.html" />
+    <link rel="next" title="PyTurbo Helper Functions" href="helper.html" />
     <link rel="prev" title="Airfoil 3D" href="airfoil3D.html" /> 
 </head>
 
@@ -29,14 +30,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../index.html" class="icon icon-home"> pyturbo-aero
+
+          
+          
+          <a href="../index.html">
+            
           </a>
               <div class="version">
-                1.0.1
+                1.0.12
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -45,21 +50,20 @@
               <p class="caption" role="heading"><span class="caption-text">python API</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="airfoil2D.html">Airfoil 2D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="airfoil2D.html#pyturbo_aero.aero.airfoil2D.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="airfoil2D.html#pyturbo.aero.airfoil2D"><code class="docutils literal notranslate"><span class="pre">airfoil2D</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="airfoil3D.html">Airfoil 3D</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="airfoil3D.html#pyturbo_aero.aero.airfoil3D.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="airfoil3D.html#pyturbo_aero.aero.airfoil3D.stack_type"><code class="docutils literal notranslate"><span class="pre">stack_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="airfoil3D.html#pyturbo.aero.airfoil3D"><code class="docutils literal notranslate"><span class="pre">airfoil3D</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">2D Passage definition</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pyturbo_aero.aero.passage2D.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pyturbo.aero.passage2D"><code class="docutils literal notranslate"><span class="pre">passage2D</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="helper.html">PyTurbo.helper</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helper.html">PyTurbo Helper Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="wavy.html">Wavy Airfoil</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="wavy.html#pyturbo_aero.aero.airfoil_wavy.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="wavy.html#pyturbo.aero.airfoil_wavy"><code class="docutils literal notranslate"><span class="pre">airfoil_wavy</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -77,8 +81,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>2D Passage definition</li>
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">2D Passage definition</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/modules/channel.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -88,18 +92,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pyturbo_aero.aero.passage2D">
-<span id="d-passage-definition"></span><h1>2D Passage definition<a class="headerlink" href="#module-pyturbo_aero.aero.passage2D" title="Permalink to this heading"></a></h1>
+  <section id="d-passage-definition">
+<h1>2D Passage definition<a class="headerlink" href="#d-passage-definition" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo_aero.aero.passage2D.</span></span><span class="sig-name descname"><span class="pre">passage2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airfoil_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodicity_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.aero.</span></span><span class="sig-name descname"><span class="pre">passage2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">airfoil_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacing_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periodicity_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D" title="Link to this definition"></a></dt>
 <dd><p>Passage2D fits 3D blades inside of a channel</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.add_endwalls">
-<span class="sig-name descname"><span class="pre">add_endwalls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zhub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zshroud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rshroud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zhub_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhub_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zshroud_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rshroud_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.add_endwalls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.add_endwalls" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.add_endwalls">
+<span class="sig-name descname"><span class="pre">add_endwalls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">zhub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zshroud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rshroud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zhub_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rhub_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zshroud_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rshroud_control</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.add_endwalls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.add_endwalls" title="Link to this definition"></a></dt>
 <dd><p>Adds the endwalls</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zhub</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – points defining the hub axial coordinate</p></li>
 <li><p><strong>rhub</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – points defining the hub radial coordinate</p></li>
@@ -115,22 +119,22 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.blade_fit">
-<span class="sig-name descname"><span class="pre">blade_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xBladeStart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.blade_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.blade_fit" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.blade_fit">
+<span class="sig-name descname"><span class="pre">blade_fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xBladeStart</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.blade_fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.blade_fit" title="Link to this definition"></a></dt>
 <dd><p>Fits the blade within the channel</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>xBladeStart</strong> (<em>float</em>) – axial location of where the leading edge of the first blade starts within the channel</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.curve_endwalls">
-<span class="sig-name descname"><span class="pre">curve_endwalls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve_zr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.curve_endwalls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.curve_endwalls" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.curve_endwalls">
+<span class="sig-name descname"><span class="pre">curve_endwalls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">curve_zr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.curve_endwalls"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.curve_endwalls" title="Link to this definition"></a></dt>
 <dd><p>Curves the endwalls in the merdional plane. This is used to create radial machines. Distance from shroud to hub will be maintained</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>curve_zr</strong> (<em>List</em>) – List of points [[1,2],[3,4]]</p>
 </dd>
 </dl>
@@ -138,11 +142,11 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.export_dat">
-<span class="sig-name descname"><span class="pre">export_dat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nChannelPoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.export_dat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.export_dat" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.export_dat">
+<span class="sig-name descname"><span class="pre">export_dat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nChannelPoints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.export_dat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.export_dat" title="Link to this definition"></a></dt>
 <dd><p>Exports the channel to a dat file, we recommend using json.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nChannelPoints</strong> (<em>int</em><em>, </em><em>optional</em>) – number of points to define the channel. Defaults to 200.</p></li>
 <li><p><strong>xmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum axial value. Defaults to None.</p></li>
@@ -154,11 +158,11 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.export_json">
-<span class="sig-name descname"><span class="pre">export_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nChannelPoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.export_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.export_json" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.export_json">
+<span class="sig-name descname"><span class="pre">export_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nChannelPoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.export_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.export_json" title="Link to this definition"></a></dt>
 <dd><p>Exports the design to a json file</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>nChannelPoints</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of channel points. Defaults to 200.</p></li>
 <li><p><strong>xmin</strong> (<em>float</em><em>, </em><em>optional</em>) – minimum axial value before scale is applied. Defaults to None.</p></li>
@@ -170,27 +174,27 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.plot2D">
-<span class="sig-name descname"><span class="pre">plot2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.plot2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.plot2D" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.plot2D">
+<span class="sig-name descname"><span class="pre">plot2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.plot2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.plot2D" title="Link to this definition"></a></dt>
 <dd><p>2D plot of the channel and blade using matplotlib</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.plot2D_channel">
-<span class="sig-name descname"><span class="pre">plot2D_channel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.plot2D_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.plot2D_channel" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.plot2D_channel">
+<span class="sig-name descname"><span class="pre">plot2D_channel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.plot2D_channel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.plot2D_channel" title="Link to this definition"></a></dt>
 <dd><p>Plot the blades within the channel
 uses plotly</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.plot3D">
-<span class="sig-name descname"><span class="pre">plot3D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.plot3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.plot3D" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.plot3D">
+<span class="sig-name descname"><span class="pre">plot3D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.plot3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.plot3D" title="Link to this definition"></a></dt>
 <dd><p>3D plot of the channel and blade using matplotlib</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="pyturbo_aero.aero.passage2D.passage2D.plot3D_ly">
-<span class="sig-name descname"><span class="pre">plot3D_ly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo_aero/aero/passage2D.html#passage2D.plot3D_ly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo_aero.aero.passage2D.passage2D.plot3D_ly" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="pyturbo.aero.passage2D.plot3D_ly">
+<span class="sig-name descname"><span class="pre">plot3D_ly</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/aero/passage2D.html#passage2D.plot3D_ly"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.aero.passage2D.plot3D_ly" title="Link to this definition"></a></dt>
 <dd><p>Plot the blades within the channel
 uses plotly</p>
 </dd></dl>
@@ -204,7 +208,7 @@ uses plotly</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="airfoil3D.html" class="btn btn-neutral float-left" title="Airfoil 3D" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="helper.html" class="btn btn-neutral float-right" title="PyTurbo.helper" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="helper.html" class="btn btn-neutral float-right" title="PyTurbo Helper Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
