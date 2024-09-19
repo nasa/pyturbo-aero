@@ -1,6 +1,6 @@
 from enum import Enum
 import numpy as np
-from typing import List
+from typing import List, Tuple
 import numpy.typing as npt
 from scipy.optimize import minimize_scalar
 from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,bisect
@@ -42,25 +42,45 @@ class Centrif2D:
     def __init__(self) -> None:
         pass
     
-    def add_camber(self,alpha1:float,alpha2:float,stagger:float,x1:float,x2:float) -> None:
+    def add_camber(self,alpha1:float,alpha2:float,
+                   stagger:float,x1:float=0.1,x2:float=0.85,aggressivity:Tuple[float,float]=(0.8,0.9)) -> None:
         """Defines a camber line
 
         Args:
             alpha1 (float): inlet flow angle
             alpha2 (float): outlet flow angle
             stagger (float): stagger angle
-            x1 (float): Location of LE angle control point 
-            x2 (float): Location of TE angle control point
+            x1 (float): Location of LE angle control point [0,1] use percent axial chord. Default 0.1
+            x2 (float): Location of TE angle control point [0,1] use percent axial chord. Default 0.85
+            aggressivity (Tuple[float,float]): controls how aggressive the curve is at the exit
         """
         self.alpha1 = np.radians(alpha1)
         self.alpha2 = np.radians(alpha2)
         self.x1 = x1
-        self.x2 = x2 
+        self.x2 = x2
         self.stagger = np.radians(stagger)
         
-        h = np.tan(stagger)-(1-x2)*np.tan(alpha2)
-        x = [0,x1,x2,1]
-        rtheta = [0, x1*np.tan(stagger),h,np.tan(stagger)]
+        h = np.tan(self.stagger)-(1-x2)*np.tan(self.alpha2)
+        hm = np.tan(self.stagger)/2
+        
+        x = list(); rtheta = list()
+        x = [0,x1]; rtheta = [0,x1*np.tan(self.alpha1)] 
+        x_end = [x2,1]; rtheta_end = [h,np.tan(self.stagger)]
+        
+        np.tan(self.stagger)-(x2-x1)*np.tan(self.alpha2)
+        
+        
+        xm = [x1+(x2-x1)*aggressivity[0]]
+        hm = [rtheta[1] + (h-rtheta[1])*(aggressivity[1])]
+        
+        x.extend(xm)
+        rtheta.extend(hm)
+        x.extend(x_end)
+        rtheta.extend(rtheta_end)
+        
+        x = [float(p) for p in x]   # convert all to floats
+        rtheta = [float(p) for p in rtheta]
+        
         self.camber = bezier(x,rtheta)
         self.ss_x=[]; self.ss_y = []
         self.ps_x=[]; self.ps_y = []
@@ -122,7 +142,6 @@ class Centrif2D:
         for i in range(1,len(t)-1):
             self.ss_x.append(x[i]+dx*thickness_array[indx]/m[i])
             self.ss_y.append(y[i]-dy*thickness_array[indx]/m[i])
-            
         
     def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """Builds the pressure side
@@ -207,6 +226,8 @@ class Centrif2D:
         
         self.ss_pts[npts:,0] = self.ss_te_pts[1:,0]
         self.ss_pts[npts:,1] = self.ss_te_pts[1:,1]
+        
+        self.match_le_thickness()
     
     def plot_camber(self):
         """Plots the camber of the airfoil
@@ -225,6 +246,7 @@ class Centrif2D:
             linewidth=2)
         plt.plot(self.camber.x,self.camber.y, color='red', marker='o',linestyle='--',**marker_style)        
         plt.gca().set_aspect('equal')
+        plt.title('Camber')
         plt.show()
     
     def plot(self):

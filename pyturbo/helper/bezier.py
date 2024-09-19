@@ -128,10 +128,7 @@ class bezier():
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
-        
-    def B(n:int,i:int,t:float):
-            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
-            return c*t**i *(1-t)**(n-i)
+    
         
     def get_point_dt(self,t:Union[npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
@@ -145,21 +142,30 @@ class bezier():
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
         """
+        def B(n:int,i:int,t:float):
+            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
+            return c*t**i *(1-t)**(n-i)
+        
         t = convert_to_ndarray(t)
         
         dx = t*0; dy = t*0
         for i in range(self.n-1):
-            dx += self.B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
-            dy += self.B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
+            dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
+            dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
         
         return dx,dy
 
     def get_point_dt2(self,t:Union[npt.NDArray]):
         t = convert_to_ndarray(t)
+        
+        def B(n:int,i:int,t:float):
+            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
+            return c*t**i *(1-t)**(n-i)
+        
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
-            dx2 = self.B(self.n-2)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
-            dy2 = self.B(self.n-2)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+            dx2 = B(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = B(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
         return dx2,dy2
     
     def rotate(self,angle:float):
