@@ -29,7 +29,7 @@ class stack_type(enum.Enum):
 
 
 
-class airfoil3D():
+class Airfoil3D():
     '''
         Properties
     '''
