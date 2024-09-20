@@ -7,7 +7,7 @@ from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 import copy
 
-class Airfoil2D:
+class Airfoil2D():
     """Design a 2D Airfoil using bezier curves 
     """
     '''Initial values'''
