@@ -4,7 +4,7 @@ import math
 from typing import List
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
-from .airfoil2D import airfoil2D
+from .airfoil2D import Airfoil2D
 from scipy.optimize import minimize_scalar
 import enum
 import copy
