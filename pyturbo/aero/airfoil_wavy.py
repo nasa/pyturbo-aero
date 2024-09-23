@@ -5,14 +5,14 @@ from .airfoil3D import *
 from ..helper import derivative_1, bezier,cosd,sind
 import math
 
-class airfoil_wavy(airfoil3D):
+class airfoil_wavy(Airfoil3D):
     """Makes the surface of the airfoil: LE, TE, SS, PS wavy
     """
     def __init__(self,profileArray,profile_loc,height):
-        """Initializes a wavy airfoil from an array of profiles, location and height, same as airfoil3D
+        """Initializes a wavy airfoil from an array of profiles, location and height, same as Airfoil3D
 
         Args:
-            profileArray ([airfoil2D]): Array of 2D airfoil profiles 
+            profileArray ([Airfoil2D]): Array of 2D airfoil profiles 
             profile_loc ([List[float]]): Locations in terms of percent span where these 2D airfoils are located 
             height ([float]): height of the airfoil
         """

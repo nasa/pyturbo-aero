@@ -5,12 +5,12 @@
 import sys
 sys.path.insert(0,'../../')
 import numpy as np
-from pyturbo.aero import airfoil2D
+from pyturbo.aero import Airfoil2D
 from pyturbo.helper import exp_ratio
 from pyturbo.aero import airfoil3D, stack_type
 import matplotlib.pyplot as plt 
 
-stator2D = airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58) # This creates the camberline
+stator2D = Airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58) # This creates the camberline
 
 # Building Leading Edge
 stator2D.le_thickness_add(0.04)
