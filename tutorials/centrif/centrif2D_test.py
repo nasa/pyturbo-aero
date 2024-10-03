@@ -8,21 +8,29 @@ from pyturbo.helper import exp_ratio
 def test_centrif2D_cut_te():
     hub = Centrif2D()
 
-    hub.add_camber(alpha1=0,alpha2=60,stagger=35,x1=0.1,x2=0.95,aggressivity=(0.85,0.2))
+    hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
     # hub.plot_camber()
     
-    hub.add_le_thickness(0.01)
-    hub.add_ss_thickness(thickness_array=[0.05,0.08,0.08,0.06])
-    hub.add_ps_thickness(thickness_array=[0.05,0.08,0.08,0.06])
-    hub.add_te_cut(0.05)
-    hub.build(20)
+    hub.add_le_thickness(0.02)
+    hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_te_cut()
+    hub.build(200)
     hub.plot()
-    
-    
-    
-    hub.plot_camber()
 
+def test_centrif2D_rounded_te():
+    hub = Centrif2D()
+
+    hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    # hub.plot_camber()
+    
+    hub.add_le_thickness(0.02)
+    hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_te_radius(0.001,5,5)
+    hub.build(200)
     hub.plot()
     
 if __name__=="__main__":
-    test_centrif2D_cut_te()
+    # test_centrif2D_cut_te()
+    test_centrif2D_rounded_te()

@@ -6,7 +6,7 @@ from scipy.optimize import minimize_scalar
 from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,bisect
 from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
-
+from geomdl import NURBS, knotvector
     
 class Centrif2D:
     """Constructing the 2D profiles for a centrif compressor or turbine
@@ -18,18 +18,18 @@ class Centrif2D:
     stagger:float
     x1:float
     x2:float
-    ss:bezier
-    ps:bezier
     
     ss_te:arc
     ps_te:arc
     
     le_thickness:float
-    ss_bezier:bezier
+    ss_bezier:NURBS.BSpline
+    ss_bezier_te:NURBS.BSpline
     ss_x:List[float]
-    ss_y:List[float]    # this is rtheta 
+    ss_y:List[float]    # this is rtheta
     
-    ps_bezier:bezier
+    ps_bezier:NURBS.BSpline
+    ps_bezier_te:NURBS.BSpline
     ps_x:List[float]
     ps_y:List[float]
     
@@ -94,12 +94,15 @@ class Centrif2D:
         dx,dy = self.camber.get_point_dt(0)
         m = np.sqrt(dx**2 + dy**2) # magnitude
 
+        self.ss_x.append(0); self.ss_y.append(0)
+        self.ps_x.append(0); self.ps_y.append(0)
+        
         self.le_thickness = thickness
         if abs(dy) <1E-6:
             self.ss_x.append(0)
-            self.ss_y.append(thickness)
+            self.ss_y.append(-thickness)
             self.ps_x.append(0)
-            self.ps_y.append(-thickness)
+            self.ps_y.append(thickness)
         else:
             self.ss_x.append(thickness*(dx/m))
             self.ss_y.append(thickness*(-dy/m))
@@ -108,24 +111,7 @@ class Centrif2D:
             self.ps_y.append(thickness*(dy/m))
             
     
-    def match_le_thickness(self)->None:
-        """Matches the 2nd derivative at the leading edge 
-        """
-        ss_dx2,ss_dy2 = self.ssBezier.get_point_dt2(0)
-        
-        dx,dy = self.camber.get_point_dt(0)
-        m = np.sqrt(dx**2 + dy**2) # magnitude
-
-        def match_ps_deriv2(thickness:float,camber_dx:float,camber_dy:float): 
-            # adjust thickness to match 2nd derivative 
-            self.ps_x[0] = thickness*(-camber_dx/m)
-            self.ps_y[0] = thickness*(camber_dy/m)
-            ps_dx2,ps_dy2 = self.psBezier.get_point_dt2(0)
-            return abs(ps_dy2/ps_dx2 - ss_dy2/ss_dx2)
-        
-        temp = minimize_scalar(match_ps_deriv2,bounds=(0,self.le_thickness*15),method="bounded") 
-        #! Check temp variable to see if it converged and if it doesn't, use the default le_thickness
-        print('check')
+   
 
     def add_ss_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """builds the suction side 
@@ -134,15 +120,15 @@ class Centrif2D:
             thickness_array (List[float]): thickness defined perpendicular to the camber line
             expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
+        thickness_array = convert_to_ndarray(thickness_array)
         t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1) # 1 point for the leading edge and 1 for TE starting point before radius is added
         x, y = self.camber.get_point(t)
         dx, dy = self.camber.get_point_dt(t)
-        m = np.sqrt(dx**2 + dy**2) # magnitude
-        indx = 0 
+        m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
         for i in range(1,len(t)-1):
-            self.ss_x.append(x[i]+dx*thickness_array[indx]/m[i])
-            self.ss_y.append(y[i]-dy*thickness_array[indx]/m[i])
-        
+            self.ss_x.append(x[i]+dx[i]*m[i-1])
+            self.ss_y.append(y[i]-dy[i]*m[i-1])
+            
     def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """Builds the pressure side
 
@@ -150,14 +136,15 @@ class Centrif2D:
             thickness_array (List[float]): Thickness array to use 
             expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
+        thickness_array = convert_to_ndarray(thickness_array)
         t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1)
         x, y = self.camber.get_point(t)
         dx, dy = self.camber.get_point_dt(t)
-        m = np.sqrt(dx**2 + dy**2) # magnitude
-        indx = 0 
+        # m^2 * (dx^2+dy^2) = thickness^2
+        m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
         for i in range(1,len(t)-1):
-            self.ps_x.append(x[i]-dx*thickness_array[indx]/m[i])
-            self.ps_y.append(y[i]+dy*thickness_array[indx]/m[i])
+            self.ps_x.append(x[i]-dx[i]*m[i-1])
+            self.ps_y.append(y[i]+dy[i]*m[i-1])
         
 
     def add_te_radius(self,radius:float,wedge_ss:float,wedge_ps:float):
@@ -174,29 +161,38 @@ class Centrif2D:
         
         theta = np.atan2(dy,dx)
         
-        self.ps_te = arc(x,y,radius,theta+90-wedge_ps,theta)
-        self.ss_te = arc(x,y,radius,theta,theta+90-wedge_ss)
+        ps_te = arc(x,y,radius,theta+90-wedge_ps,theta)
+        ss_te = arc(x,y,radius,theta,theta+90-wedge_ss)
+        
+        self.te_cut = False
+        ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
+        ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
+        print('check')
          
-    def add_te_cut(self,radius:float):
+    def add_te_cut(self):
         """Cuts the trailing edge instead of having a rounded TE
 
         Args:
             radius (float): Trailing edge radius where to define the cut
-        """
-        _,y = self.camber.get_point(1)
+        """        
+        radius = (self.ps_y[-1] - self.ss_y[-1])/2
+        
+        x,y = self.camber.get_point(1)
         self.te_cut = True
-        self.ss_te_pts = np.linspace(y-radius,y,10)
-        self.ps_te_pts = np.linspace(y,y+radius,10) 
-
-    def build(self,npts:int,npt_te:int=20):
+        
+        self.ss_te_pts = np.concat([1+0*np.linspace(y-radius,y,10), np.linspace(y-radius,y,10)],axis=1)
+        self.ps_te_pts = np.flipud(np.concat([1+0*np.linspace(y+radius,y,10), np.linspace(y,y+radius,10)],axis=1))
+        
+    def build(self,npts:int):
         """Build the 2D Geometry 
 
         Args:
             npts (int): number of points to define the pressure and suction sides
             npt_te (int, optional): number of points used to define trailing edge. Defaults to 20.
         """
+        npts_te = self.ss_te_pts.shape[0]
         if not self.te_cut:
-            t = np.linspace(0,1,npt_te)
+            t = np.linspace(0,1,npts_te)
             ps_te_x,ps_te_y = self.ps_arc.get_point(t)
             
             ss_te_x,ss_te_y = self.ss_arc.get_point(t)
@@ -206,29 +202,35 @@ class Centrif2D:
             self.ss_te_pts = np.concatenate([ss_te_x,ss_te_y])
             self.ps_te_pts = np.concatenate([ps_te_x,ps_te_y])
         
-        self.ps_x[-1]=ps_te_x[0]
-        self.ps_y[-1]=ps_te_y[0]
-        self.ss_x[-1]=ss_te_x[0]
-        self.ss_y[-1]=ss_te_y[0]
+        # Get the camberline
+        xc,yc = self.camber.get_point(np.linspace(0,1,npts*2))
         
-        self.ps_bezier = bezier(self.ps_x, self.ps_y)
-        self.ss_bezier = bezier(self.ss_x, self.ss_y)
+        ps = NURBS.Curve(); # knots = # control points + order of curve
+        ps.degree = 3 # cubic
+        ctrlpts = np.concatenate([ 
+                                    np.column_stack([self.ps_x, self.ps_y]),
+                                    self.ps_te_pts
+                                ])
+        ctrlpts = np.column_stack([ctrlpts, ctrlpts[:,1]*0]) # Add empty column for z axis
+        ps.ctrlpts = ctrlpts
+        ps.delta = 1/npts
+        # Knots = degree + npts 
+        ps.knotvector = knotvector.generate(ps.degree,ctrlpts.shape[0])
         
-        self.ps_pts = np.zeros(shape=(npts+npt_te,2))
-        self.ss_pts = np.zeros(shape=(npts+npt_te,2))
+        ss = NURBS.Curve()
+        ss.degree = 3 # Cubic
+        ctrlpts = np.concatenate([ 
+                                    np.column_stack([self.ss_x, self.ss_y]),
+                                    self.ss_te_pts
+                                ])
+        ctrlpts = np.column_stack([ctrlpts, ctrlpts[:,1]*0]) # Add empty column for z axis
+        ss.ctrlpts = ctrlpts
+        ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
+        ss.delta = 1/npts
         
-        
-        self.ps_pts[:npts,0],self.ps_y[:npts,1] = self.ps_bezier.get_point(npts)
-        self.ss_pts[:npts,0],self.ss_y[:npts,1] = self.ss_bezier.get_point(npts)
-        
-        self.ps_pts[npts:,0] = self.ps_te_pts[1:,0]
-        self.ps_pts[npts:,1] = self.ps_te_pts[1:,1]
-        
-        self.ss_pts[npts:,0] = self.ss_te_pts[1:,0]
-        self.ss_pts[npts:,1] = self.ss_te_pts[1:,1]
-        
-        self.match_le_thickness()
-    
+        self.ss_pts = np.array(ps.evalpts)
+        self.ps_pts = np.array(ss.evalpts)
+     
     def plot_camber(self):
         """Plots the camber of the airfoil
         
@@ -257,37 +259,17 @@ class Centrif2D:
         """
         t = np.linspace(0,1,200)
         [xcamber, ycamber] = self.camber.get_point(t)
-        [xPS, yPS] = self.ps_bezier.get_point(t)
-        [xSS, ySS] = self.ss_bezier.get_point(t)
+    
 
         plt.figure(num=1,clear=True)
         plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
             linewidth=2)
-        plt.plot(xPS,yPS, color='blue', linestyle='solid', 
-            linewidth=2)
-        plt.plot(xSS,ySS, color='red', linestyle='solid', 
-            linewidth=2)
-        plt.plot(self.ps_bezier.x,self.ps_bezier.y, color='blue', marker='o',markerfacecolor="None",markersize=8)
-        plt.plot(self.ss_bezier.x,self.ss_bezier.y, color='red', marker='o',markerfacecolor="None",markersize=8)
-        # Plot the line from camber to the control points
-        # suction side
-        for indx in range(len(self.ss_pts)):
-            x = self.ss_pts[indx,0]
-            y = self.ss_pts[indx,1]
-            d = dist(x,y,xcamber,ycamber)
-            min_indx = np.where(d == np.amin(d))[0][0]
-            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
-        # pressure side
-        for indx in range(0,len(self.ps_pts)):
-            x = self.ps_pts[indx,0]
-            y = self.ps_pts[indx,1]
-            d = dist(x,y,xcamber,ycamber)
-            min_indx = np.where(d == np.amin(d))[0][0]
-            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed')
-        # Plot the Trailing Edge
-        t = np.linspace(0,1,20)
-        plt.plot(self.ps_te_pts[:,0],self.ps_te_pts[:,1], color='blue', linestyle='solid')
-
-        plt.plot(self.ss_te_pts[:,0],self.ss_te_pts[:,1], color='red', linestyle='solid')
-        plt.gca().set_aspect('equal')
+        plt.plot(self.ps_pts[:,0],self.ps_pts[:,1],'b',label='pressure side')
+        plt.plot(self.ss_pts[:,0],self.ss_pts[:,1],'r',label='suction side')
+        plt.plot(self.ps_x,self.ps_y,'ob',label='ps ctrl pts')
+        plt.plot(self.ss_x,self.ss_y,'or',label='ss ctrl pts')
+        plt.plot(self.ps_te_pts[:,0],self.ps_te_pts[:,1],'ok',label='ps te ctrl pts')
+        plt.plot(self.ss_te_pts[:,0],self.ss_te_pts[:,1],'om',label='ss te ctrl pts')
+        plt.legend()
+        plt.axis('scaled')
         plt.show()

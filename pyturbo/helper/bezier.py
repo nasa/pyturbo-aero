@@ -128,7 +128,7 @@ class bezier():
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
-    
+
         
     def get_point_dt(self,t:Union[npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
