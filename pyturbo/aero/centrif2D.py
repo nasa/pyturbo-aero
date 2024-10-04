@@ -104,17 +104,17 @@ class Centrif2D:
             self.ps_x.append(0)
             self.ps_y.append(thickness)
         else:
-            self.ss_x.append(thickness*(dx/m))
-            self.ss_y.append(thickness*(-dy/m))
+            self.ps_x.append(thickness*(dx/m))
+            self.ps_y.append(thickness*(-dy/m))
             
-            self.ps_x.append(thickness*(-dx/m))
-            self.ps_y.append(thickness*(dy/m))
+            self.ss_x.append(thickness*(-dx/m))
+            self.ss_y.append(thickness*(dy/m))
             
     
    
 
-    def add_ss_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
-        """builds the suction side 
+    def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
+        """builds the pressure side 
 
         Args:
             thickness_array (List[float]): thickness defined perpendicular to the camber line
@@ -126,11 +126,11 @@ class Centrif2D:
         dx, dy = self.camber.get_point_dt(t)
         m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
         for i in range(1,len(t)-1):
-            self.ss_x.append(x[i]+dx[i]*m[i-1])
-            self.ss_y.append(y[i]-dy[i]*m[i-1])
+            self.ps_x.append(x[i]-dx[i]*m[i-1])
+            self.ps_y.append(y[i]+dy[i]*m[i-1])
             
-    def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
-        """Builds the pressure side
+    def add_ss_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
+        """Builds the suction side
 
         Args:
             thickness_array (List[float]): Thickness array to use 
@@ -143,31 +143,63 @@ class Centrif2D:
         # m^2 * (dx^2+dy^2) = thickness^2
         m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
         for i in range(1,len(t)-1):
-            self.ps_x.append(x[i]-dx[i]*m[i-1])
-            self.ps_y.append(y[i]+dy[i]*m[i-1])
+            self.ss_x.append(x[i]+dx[i]*m[i-1])
+            self.ss_y.append(y[i]-dy[i]*m[i-1])
         
 
-    def add_te_radius(self,radius:float,wedge_ss:float,wedge_ps:float):
+    def add_te_radius(self,radius_scale:float=0.6,wedge_ss:float=10,wedge_ps:float=10,elliptical:float=1):
         """Add a trailing edge that's rounded
 
         Args:
-            radius (float): nondimensional trailing edge radius normalized
+            radius_scale (float): 0 to 1 as to how the radius shrinks with respect to spacing between ss and ps last control points
             wedge_ss (float): suction side wedge angle
             wedge_ps (float): pressure side wedge angle 
+            elliptical (float): 1=circular, any value >1 controls how it is elliptical
         """
-        x,y = self.camber.get_point(1)
-        dx,dy = self.camber.get_point_dt(1) # Gets the slope at the end
-        m = np.sqrt(dx**2+dy**2)
+        radius = radius_scale*(self.ps_y[-1] - self.ss_y[-1])/2
+        radius_e = radius*elliptical
+        xn,yn = self.camber.get_point(1)
+        def dist(t):
+            x,y = self.camber.get_point(t)
+            d = np.sqrt((x-xn)**2+(y-yn)**2)
+            return np.abs(radius_e-d)
         
-        theta = np.atan2(dy,dx)
-        
-        ps_te = arc(x,y,radius,theta+90-wedge_ps,theta)
-        ss_te = arc(x,y,radius,theta,theta+90-wedge_ss)
-        
-        self.te_cut = False
+        t = minimize_scalar(dist,bounds=[0,1])
+        dx,dy = self.camber.get_point_dt(t.x)     # Gets the slope at the end
+        xs,ys = self.camber.get_point(t.x)
+        theta = np.degrees(np.atan2(dy,dx))
+        x,y = self.camber.get_point(t.x)
+        ps_te = arc(x,y,radius,theta-wedge_ps+90,theta)
+        ss_te = arc(x,y,radius,theta,theta-90+wedge_ss)
         ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
         ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
-        print('check')
+        self.ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
+        self.ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
+        self.ss_te_pts = np.flipud(self.ss_te_pts)
+        
+        theta = np.radians(-theta)
+        rot = np.array([[np.cos(theta), -np.sin(theta)],
+               [np.sin(theta), np.cos(theta)]])[:,:,0]
+        ps_te_pts = np.matmul(rot,self.ps_te_pts.transpose()).transpose()
+        ss_te_pts = np.matmul(rot,self.ss_te_pts.transpose()).transpose()
+
+        c = np.sqrt((xn-x)**2 + (yn-y)**2)/radius
+        ray = ray2D(xn,yn,-dx,-dy)
+        t_ps = ray.perpendicular(self.ps_te_pts[:,0],self.ps_te_pts[:,1]) 
+        t_ss = ray.perpendicular(self.ss_te_pts[:,0],self.ss_te_pts[:,1])
+        c_ps = np.flip((c-1)*((t_ps - t_ps.min() )/(t_ps.max()-t_ps.min()))+1)
+        c_ss = np.flip((c-1)*((t_ss - t_ss.min() )/(t_ss.max()-t_ss.min()))+1)
+        
+        ps_te_pts[:,0] = c_ps*ps_te_pts[:,0]
+        ss_te_pts[:,0] = c_ss*ss_te_pts[:,0]
+        
+        theta = -theta
+        rot = np.array([[np.cos(theta), -np.sin(theta)],
+               [np.sin(theta), np.cos(theta)]])[:,:,0]
+        self.ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
+        self.ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
+        self.te_cut = False
+        
          
     def add_te_cut(self):
         """Cuts the trailing edge instead of having a rounded TE
@@ -189,22 +221,7 @@ class Centrif2D:
         Args:
             npts (int): number of points to define the pressure and suction sides
             npt_te (int, optional): number of points used to define trailing edge. Defaults to 20.
-        """
-        npts_te = self.ss_te_pts.shape[0]
-        if not self.te_cut:
-            t = np.linspace(0,1,npts_te)
-            ps_te_x,ps_te_y = self.ps_arc.get_point(t)
-            
-            ss_te_x,ss_te_y = self.ss_arc.get_point(t)
-            ss_te_x = np.flip(ss_te_x)
-            ss_te_y = np.flip(ss_te_y)
-
-            self.ss_te_pts = np.concatenate([ss_te_x,ss_te_y])
-            self.ps_te_pts = np.concatenate([ps_te_x,ps_te_y])
-        
-        # Get the camberline
-        xc,yc = self.camber.get_point(np.linspace(0,1,npts*2))
-        
+        """    
         ps = NURBS.Curve(); # knots = # control points + order of curve
         ps.degree = 3 # cubic
         ctrlpts = np.concatenate([ 
@@ -228,8 +245,8 @@ class Centrif2D:
         ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
         ss.delta = 1/npts
         
-        self.ss_pts = np.array(ps.evalpts)
-        self.ps_pts = np.array(ss.evalpts)
+        self.ss_pts = np.array(ss.evalpts)
+        self.ps_pts = np.array(ps.evalpts)
      
     def plot_camber(self):
         """Plots the camber of the airfoil

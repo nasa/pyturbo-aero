@@ -1,6 +1,8 @@
+from typing import Optional, Union
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import numpy.typing as npt 
 
 class ray2D(object):
     def __init__(self,x,y,dx,dy):
@@ -14,7 +16,18 @@ class ray2D(object):
         y = self.y+t*self.dy
         return x,y
 
+    def perpendicular(self,x:Union[float,npt.NDArray],y:Union[float,npt.NDArray]):
+        """this function finds the t where the ray is perpendicular to a point given a point in space 
+        
 
+        Args:
+            x (float): x coordinate of a point
+            y (float): y coordinate of a point 
+        """
+        
+        return (self.dx*(x-self.x[0]) + self.dy*(y-self.y[0]))/(self.dx**2 + self.dy**2)
+        
+        
     def set_length(self,ray_length):
         t = ray_length/math.sqrt(self.dx**2+self.dy**2)
 

@@ -27,7 +27,7 @@ def test_centrif2D_rounded_te():
     hub.add_le_thickness(0.02)
     hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
-    hub.add_te_radius(0.001,5,5)
+    hub.add_te_radius(0.5,5,5,1.2)
     hub.build(200)
     hub.plot()
     
