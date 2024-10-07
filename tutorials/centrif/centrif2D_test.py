@@ -3,7 +3,8 @@
 '''
 import sys
 from pyturbo.aero import Centrif2D
-from pyturbo.helper import exp_ratio
+from pyturbo.helper import exp_ratio, ellispe
+import numpy as np 
 
 def test_centrif2D_cut_te():
     hub = Centrif2D()
@@ -31,6 +32,12 @@ def test_centrif2D_rounded_te():
     hub.build(200)
     hub.plot()
     
+def test_ellispe():
+    a = ellispe(0.5,0.5,1.2,1,0,360)
+    a.get_point(np.linspace(0,1,20))
+    a.plot()
+    
 if __name__=="__main__":
     # test_centrif2D_cut_te()
-    test_centrif2D_rounded_te()
+    # test_centrif2D_rounded_te()
+    test_ellispe()

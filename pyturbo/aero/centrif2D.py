@@ -3,8 +3,7 @@ import numpy as np
 from typing import List, Tuple
 import numpy.typing as npt
 from scipy.optimize import minimize_scalar
-from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,bisect
-from scipy.interpolate import CubicSpline
+from ..helper import bezier,arc,ellispe,exp_ratio,convert_to_ndarray
 import matplotlib.pyplot as plt
 from geomdl import NURBS, knotvector
     
@@ -169,36 +168,45 @@ class Centrif2D:
         xs,ys = self.camber.get_point(t.x)
         theta = np.degrees(np.atan2(dy,dx))
         x,y = self.camber.get_point(t.x)
-        ps_te = arc(x,y,radius,theta-wedge_ps+90,theta)
-        ss_te = arc(x,y,radius,theta,theta-90+wedge_ss)
-        ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
-        ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
-        self.ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
-        self.ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
-        self.ss_te_pts = np.flipud(self.ss_te_pts)
         
-        theta = np.radians(-theta)
-        rot = np.array([[np.cos(theta), -np.sin(theta)],
-               [np.sin(theta), np.cos(theta)]])[:,:,0]
-        ps_te_pts = np.matmul(rot,self.ps_te_pts.transpose()).transpose()
-        ss_te_pts = np.matmul(rot,self.ss_te_pts.transpose()).transpose()
-
-        c = np.sqrt((xn-x)**2 + (yn-y)**2)/radius
-        ray = ray2D(xn,yn,-dx,-dy)
-        t_ps = ray.perpendicular(self.ps_te_pts[:,0],self.ps_te_pts[:,1]) 
-        t_ss = ray.perpendicular(self.ss_te_pts[:,0],self.ss_te_pts[:,1])
-        c_ps = np.flip((c-1)*((t_ps - t_ps.min() )/(t_ps.max()-t_ps.min()))+1)
-        c_ss = np.flip((c-1)*((t_ss - t_ss.min() )/(t_ss.max()-t_ss.min()))+1)
-        
-        ps_te_pts[:,0] = c_ps*ps_te_pts[:,0]
-        ss_te_pts[:,0] = c_ss*ss_te_pts[:,0]
-        
-        theta = -theta
-        rot = np.array([[np.cos(theta), -np.sin(theta)],
-               [np.sin(theta), np.cos(theta)]])[:,:,0]
-        self.ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
-        self.ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
         self.te_cut = False
+        if radius_e == 1:
+            ps_te = arc(x,y,radius,theta-wedge_ps+90,theta)
+            ss_te = arc(x,y,radius,theta,theta-90+wedge_ss)
+            
+            ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
+            ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
+            self.ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
+            self.ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
+            self.ss_te_pts = np.flipud(self.ss_te_pts)
+        else: # Create an ellispe
+            ellispe_te = ellispe(x,y,np.sqrt((x-xn)**2+(y-yn)**2),radius,
+                                 alpha_start=90-wedge_ps,
+                                 alpha_stop=-90+wedge_ss)
+            te_x, te_y = ellispe_te.get_point(np.linspace(0,1,20))
+            
+            theta = np.radians(theta)
+            rot = np.array([[np.cos(theta), -np.sin(theta)],
+                [np.sin(theta), np.cos(theta)]])[:,:,0]
+            self.ps_te_pts = np.matmul(rot,self.ps_te_pts.transpose()).transpose()
+            self.ss_te_pts = np.matmul(rot,self.ss_te_pts.transpose()).transpose()
+
+        # c = np.sqrt((xn-x)**2 + (yn-y)**2)/radius
+        # ray = ray2D(xn,yn,-dx,-dy)
+        # t_ps = ray.perpendicular(self.ps_te_pts[:,0],self.ps_te_pts[:,1]) 
+        # t_ss = ray.perpendicular(self.ss_te_pts[:,0],self.ss_te_pts[:,1])
+        # c_ps = np.flip((c-1)*((t_ps - t_ps.min() )/(t_ps.max()-t_ps.min()))+1)
+        # c_ss = np.flip((c-1)*((t_ss - t_ss.min() )/(t_ss.max()-t_ss.min()))+1)
+        
+        # ps_te_pts[:,0] = c_ps*ps_te_pts[:,0]
+        # ss_te_pts[:,0] = c_ss*ss_te_pts[:,0]
+        
+        # theta = -theta
+        # rot = np.array([[np.cos(theta), -np.sin(theta)],
+        #        [np.sin(theta), np.cos(theta)]])[:,:,0]
+        # self.ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
+        # self.ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
+        
         
          
     def add_te_cut(self):

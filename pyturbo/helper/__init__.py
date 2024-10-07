@@ -7,6 +7,7 @@ from .bisect import bisect
 from .centroid import centroid
 from .derivative import derivative_1, derivative_2
 from .dist import dist
+from .ellispe import ellispe
 from .exp_ratio import exp_ratio
 from .line2D import line2D
 from .min_max_check import check_replace_max, check_replace_min, create_cubic_bounding_box

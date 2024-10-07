@@ -5,7 +5,16 @@ import matplotlib as mpl
 from .convert_to_ndarray import convert_to_ndarray
 
 class arc():
-    def __init__(self,xc,yc,radius,alpha_start,alpha_stop):
+    def __init__(self,xc:float,yc:float,radius:float,alpha_start:float,alpha_stop:float):
+        """Initialize arc
+
+        Args:
+            xc (float): Center x value
+            yc (float): Center y value 
+            radius (float): radius
+            alpha_start (float): starting angle
+            alpha_stop (float): end angle
+        """
         self.x = xc
         self.y = yc
         self.radius = radius
