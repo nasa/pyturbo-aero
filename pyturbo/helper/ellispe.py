@@ -49,10 +49,11 @@ class ellispe:
         # Clockwise
         theta1 = np.degrees(np.arctan2(y1-self.yc, x-self.xc)) # 180 to 0
         theta2 = np.degrees(np.arctan2(y2-self.yc, x-self.xc)) # -180 to 0 
+        theta2[0] *= -1 
         
-        theta = np.concatenate([theta1,np.flip(theta2)[1:-1]]) # 180 to 0 to -180
-        x = np.concatenate([x,np.flip(x)[1:-1]])
-        y = np.concatenate([y1,np.flip(y2)[1:-1]])
+        theta = np.concatenate([theta2,np.flip(theta1)[1:]]) # 180 to 0 to -180
+        x = np.concatenate([x,np.flip(x)[1:]])
+        y = np.concatenate([y1,np.flip(y2)[1:]])
         
         alpha = np.linspace(self.alpha_start,self.alpha_stop,len(t))
         x = interp1d(theta, x)(alpha)
@@ -64,7 +65,7 @@ class ellispe:
         t = np.linspace(0,1,100)
         x,y = self.get_point(t)
         plt.figure(num=1,clear=True)
-        plt.plt(x,y)
+        plt.plot(x,y)
         plt.axis('scaled')
         plt.show()
         
