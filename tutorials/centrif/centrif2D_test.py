@@ -33,7 +33,7 @@ def test_centrif2D_rounded_te():
     hub.plot()
     
 def test_ellispe():
-    a = ellispe(0.5,0.5,1.2,1,0,360)
+    a = ellispe(0.5,0.5,1.2,1,180,-180)
     a.get_point(np.linspace(0,1,20))
     a.plot()
     

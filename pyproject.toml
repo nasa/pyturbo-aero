@@ -16,6 +16,7 @@ pandas = "*"
 numpy = "*"
 matplotlib = "*"
 numpy-stl = "*"
+geomdl = "*"
 
 [tool.poetry.dev-dependencies]
 

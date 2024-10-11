@@ -3,7 +3,7 @@ import numpy as np
 import numpy.typing as npt
 from .convert_to_ndarray import convert_to_ndarray
 import matplotlib.pyplot as plt 
-
+from scipy.interpolate import interp1d
 
 class ellispe:
     xc:float
@@ -50,13 +50,13 @@ class ellispe:
         theta1 = np.degrees(np.arctan2(y1-self.yc, x-self.xc)) # 180 to 0
         theta2 = np.degrees(np.arctan2(y2-self.yc, x-self.xc)) # -180 to 0 
         
-        theta = np.concatenate([theta1,np.flip(theta2)[1:-1]]) # 0 to 180
+        theta = np.concatenate([theta1,np.flip(theta2)[1:-1]]) # 180 to 0 to -180
         x = np.concatenate([x,np.flip(x)[1:-1]])
-        y = np.concatenate([y,np.flip(y)[1,-1]])
+        y = np.concatenate([y1,np.flip(y2)[1:-1]])
         
         alpha = np.linspace(self.alpha_start,self.alpha_stop,len(t))
-        x = np.interp(theta, np.arange(len(x)), alpha)
-        y = np.interp(theta, np.arange(len(y)), alpha)
+        x = interp1d(theta, x)(alpha)
+        y = interp1d(theta, y)(alpha)
         
         return x,y
 
