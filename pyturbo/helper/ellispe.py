@@ -22,10 +22,10 @@ class ellispe:
             alpha_start (float): starting angle
             alpha_stop (float): ending angle
         """
-        self.xc = xc
-        self.yc = yc
-        self.a = xmajor
-        self.b = yminor
+        self.xc = float(xc)
+        self.yc = float(yc)
+        self.a = float(xmajor)
+        self.b = float(yminor)
         self.alpha_start = alpha_start
         self.alpha_stop = alpha_stop
         self.sortY = False
@@ -38,18 +38,21 @@ class ellispe:
             t (Union[float,npt.NDArray]): _description_
         """
         def ellispe_y(x:Union[float,npt.NDArray]):
-            y1 = np.sqrt(self.b**2 - (x-self.xc)**2 / self.a**2) + self.yc
-            y2 = -np.sqrt(self.b**2 - (x-self.xc)**2 / self.a**2) + self.yc
-            return y1,y2
+            y1 = np.sqrt(self.b**2*(1 - (x-self.xc)**2 / self.a**2)) + self.yc
+            y2 = -np.sqrt(self.b**2*(1 - (x-self.xc)**2 / self.a**2)) + self.yc
+            return y1, y2
+        
         t = convert_to_ndarray(t)
         alpha = (self.alpha_stop-self.alpha_start)*t + self.alpha_start
-        x = np.linspace(self.xc-self.a,self.xc+self.a,1000)
+        x = np.linspace(self.xc-self.a,self.xc+self.a,40)
         y1,y2 = ellispe_y(x)
-        
+        y1[0] = y1[-1] # fixes the nan 
+        y2[0] = y2[-1]
         # Clockwise
         theta1 = np.degrees(np.arctan2(y1-self.yc, x-self.xc)) # 180 to 0
         theta2 = np.degrees(np.arctan2(y2-self.yc, x-self.xc)) # -180 to 0 
-        theta2[0] *= -1 
+        if theta2[0]>0:
+            theta2[0] *= -1 
         
         theta = np.concatenate([theta2,np.flip(theta1)[1:]]) # 180 to 0 to -180
         x = np.concatenate([x,np.flip(x)[1:]])

@@ -108,8 +108,6 @@ class Centrif2D:
             
             self.ss_x.append(thickness*(-dx/m))
             self.ss_y.append(thickness*(dy/m))
-            
-    
    
 
     def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
@@ -157,7 +155,7 @@ class Centrif2D:
         """
         radius = radius_scale*(self.ps_y[-1] - self.ss_y[-1])/2
         radius_e = radius*elliptical
-        xn,yn = self.camber.get_point(1)
+        xn,yn = self.camber.get_point(1) # End of camber line
         def dist(t):
             x,y = self.camber.get_point(t)
             d = np.sqrt((x-xn)**2+(y-yn)**2)
@@ -170,7 +168,7 @@ class Centrif2D:
         x,y = self.camber.get_point(t.x)
         
         self.te_cut = False
-        if radius_e == 1:
+        if elliptical == 1:
             ps_te = arc(x,y,radius,theta-wedge_ps+90,theta)
             ss_te = arc(x,y,radius,theta,theta-90+wedge_ss)
             
@@ -180,16 +178,38 @@ class Centrif2D:
             self.ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
             self.ss_te_pts = np.flipud(self.ss_te_pts)
         else: # Create an ellispe
-            ellispe_te = ellispe(x,y,np.sqrt((x-xn)**2+(y-yn)**2),radius,
+            a = np.sqrt((x-xn)**2+(y-yn)**2)
+            ellispe_te = ellispe(x,y,a,radius,
                                  alpha_start=90-wedge_ps,
                                  alpha_stop=-90+wedge_ss)
+        
             te_x, te_y = ellispe_te.get_point(np.linspace(0,1,20))
-            
             theta = np.radians(theta)
+            
+            n = te_x.shape[0]; n2 = int(n/2)
+            self.ps_te_pts = np.flipud(np.stack([te_x[n2-1:],te_y[n2-1:]],axis=1))
+            self.ss_te_pts = np.stack([te_x[:n2],te_y[:n2]],axis=1)
+            
             rot = np.array([[np.cos(theta), -np.sin(theta)],
                 [np.sin(theta), np.cos(theta)]])[:,:,0]
+            
+            xc = (self.ps_te_pts[:,0].sum() + self.ss_te_pts[:,0].sum()) / (self.ps_te_pts.shape[0] + self.ss_te_pts.shape[0])
+            yc = (self.ps_te_pts[:,1].sum() + self.ss_te_pts[:,1].sum()) / (self.ps_te_pts.shape[0] + self.ss_te_pts.shape[0])
+            
+            self.ps_te_pts[:,0] = self.ps_te_pts[:,0]-xc
+            self.ps_te_pts[:,1] = self.ps_te_pts[:,1]-yc
+            
+            self.ss_te_pts[:,0] = self.ss_te_pts[:,0]-xc
+            self.ss_te_pts[:,1] = self.ss_te_pts[:,1]-yc
+            
             self.ps_te_pts = np.matmul(rot,self.ps_te_pts.transpose()).transpose()
             self.ss_te_pts = np.matmul(rot,self.ss_te_pts.transpose()).transpose()
+            
+            self.ps_te_pts[:,0] = self.ps_te_pts[:,0]+xc
+            self.ps_te_pts[:,1] = self.ps_te_pts[:,1]+yc
+            
+            self.ss_te_pts[:,0] = self.ss_te_pts[:,0]+xc
+            self.ss_te_pts[:,1] = self.ss_te_pts[:,1]+yc
 
         # c = np.sqrt((xn-x)**2 + (yn-y)**2)/radius
         # ray = ray2D(xn,yn,-dx,-dy)

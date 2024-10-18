@@ -28,6 +28,19 @@ def test_centrif2D_rounded_te():
     hub.add_le_thickness(0.02)
     hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_te_radius(0.5,5,5,1)
+    hub.build(200)
+    hub.plot()
+
+def test_centrif_ellispe_te():
+    hub = Centrif2D()
+
+    hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    # hub.plot_camber()
+    
+    hub.add_le_thickness(0.02)
+    hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_te_radius(0.5,5,5,1.2)
     hub.build(200)
     hub.plot()
@@ -40,4 +53,6 @@ def test_ellispe():
 if __name__=="__main__":
     # test_centrif2D_cut_te()
     # test_centrif2D_rounded_te()
-    test_ellispe()
+    # test_ellispe()
+    # test_centrif_ellispe_te()
+    
