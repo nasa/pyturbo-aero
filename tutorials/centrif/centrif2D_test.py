@@ -51,8 +51,8 @@ def test_ellispe():
     a.plot()
     
 if __name__=="__main__":
-    # test_centrif2D_cut_te()
-    # test_centrif2D_rounded_te()
-    # test_ellispe()
-    # test_centrif_ellispe_te()
+    test_centrif2D_cut_te()
+    test_centrif2D_rounded_te()
+    test_ellispe()
+    test_centrif_ellispe_te()
     

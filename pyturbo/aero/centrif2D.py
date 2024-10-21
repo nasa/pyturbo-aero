@@ -1,4 +1,3 @@
-from enum import Enum
 import numpy as np
 from typing import List, Tuple
 import numpy.typing as npt
@@ -211,23 +210,6 @@ class Centrif2D:
             self.ss_te_pts[:,0] = self.ss_te_pts[:,0]+xc
             self.ss_te_pts[:,1] = self.ss_te_pts[:,1]+yc
 
-        # c = np.sqrt((xn-x)**2 + (yn-y)**2)/radius
-        # ray = ray2D(xn,yn,-dx,-dy)
-        # t_ps = ray.perpendicular(self.ps_te_pts[:,0],self.ps_te_pts[:,1]) 
-        # t_ss = ray.perpendicular(self.ss_te_pts[:,0],self.ss_te_pts[:,1])
-        # c_ps = np.flip((c-1)*((t_ps - t_ps.min() )/(t_ps.max()-t_ps.min()))+1)
-        # c_ss = np.flip((c-1)*((t_ss - t_ss.min() )/(t_ss.max()-t_ss.min()))+1)
-        
-        # ps_te_pts[:,0] = c_ps*ps_te_pts[:,0]
-        # ss_te_pts[:,0] = c_ss*ss_te_pts[:,0]
-        
-        # theta = -theta
-        # rot = np.array([[np.cos(theta), -np.sin(theta)],
-        #        [np.sin(theta), np.cos(theta)]])[:,:,0]
-        # self.ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
-        # self.ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
-        
-        
          
     def add_te_cut(self):
         """Cuts the trailing edge instead of having a rounded TE
