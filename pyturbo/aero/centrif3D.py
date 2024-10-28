@@ -4,11 +4,14 @@ from ..helper import bezier,convert_to_ndarray, csapi
 import numpy as np 
 import numpy.typing as npt 
 from scipy.interpolate import PchipInterpolator
+from pyturbo.aero.airfoil3D import StackType
+import matplotlib.pyplot as plt 
 
 class Centrif3D():
     """Generates the 3D blade 
     """
     profiles:List[Centrif2D]
+    stacktype:StackType 
     leans:List[bezier]
     lean_cambers:List[float]
     splitters:List[np.ndarray]
@@ -25,11 +28,13 @@ class Centrif3D():
     
     ss_pts:npt.NDArray
     ps_pts:npt.NDArray
+
     
-    def __init__(self,profiles:List[Centrif2D]):
+    def __init__(self,profiles:List[Centrif2D],stacking:StackType=StackType.leading_edge):
         self.profiles = profiles
         self.leans = list()
         self.lean_cambers = list()
+        self.stacktype = stacking
         
     def add_lean(self,lean_pts:List[float],percent_camber:float):
         """Adds lean to the 3D blade. Lean goes from hub to shroud
@@ -49,8 +54,7 @@ class Centrif3D():
             t_end (float): ending percentage along the hub
         """
         self.blade_position = (t_start,t_end)
-    
-    
+      
     def add_hub(self,x:List[float,npt.NDArray],r:List[float,npt.NDArray]):
         """Adds Data for the hub 
 
@@ -60,7 +64,6 @@ class Centrif3D():
         """
         self.hub = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)])
         
-    
     def add_shroud(self,x:List[float,npt.NDArray],r:List[float,npt.NDArray]):
         """_summary_
 
@@ -158,13 +161,78 @@ class Centrif3D():
             self.ss_pts[i,:,1] += ss_fillet[i,:,1]
             self.ps_pts[i,:,0] += ps_fillet[i,:,0]
             self.ps_pts[i,:,1] += ps_fillet[i,:,1]
+           
+    def __apply_stacking__(self):
+        if self.stacktype == StackType.centroid:
+            c_x = list()
+            c_rtheta = list()
+            for p in self.profiles:
+                c_x.append(0.5*(np.mean(p.ps_pts[:,0]) + np.mean(p.ss_pts[:,0])))
+                c_rtheta.append(0.5*(np.mean(p.ps_pts[:,1]) + np.mean(p.ss_pts[:,1])))
+
+            # Relocate centroids to line up
+            i = 1
+            for p in self.profiles[1:]:
+                p.ps_pts[:,0]+=c_x[0]-c_x[i]
+                p.ps_pts[:,1]+=c_rtheta[0]-c_rtheta[i]
                 
-    def build(self,npts_span:int=100,npts_chord:int=100):
-        """Build the 3D Blade
+                p.ss_pts[:,0]+=c_x[0]-c_x[i]
+                p.ss_pts[:,1]+=c_rtheta[0]-c_rtheta[i]
+            
+        elif self.stacktype == StackType.trailing_edge:
+            te_x = list()
+            te_rtheta = list()
+            for p in self.profiles:
+                te_x.append(p.ps_pts[:,-1])
+                te_rtheta.append(p.ps_pts[:,-1])
+
+            # Relocate centroids to line up
+            i = 1
+            for p in self.profiles[1:]:
+                p.ps_pts[:,0]+=te_x[0]-te_x[i]
+                p.ps_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
+                
+                p.ss_pts[:,0]+=te_x[0]-te_x[i]
+                p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
+    
+    def __scale_profiles__(self,npts_span:int,npts_chord:int):
+        """scale the profiles to fit into the hub and shroud 
 
         Args:
-            npts_span (int, optional): number of points defining the span. Defaults to 100.
-            npts_chord (int, optional): number of points defining the chord. Defaults to 100.
+            npts_span (int): number of points in the spanwise direction 
+            npts_chord (int): number of points in the chordwise direction
+        """
+        # Scale to match hub and shroud curves 
+        t = np.linspace(0,1,npts_chord)
+        xhub = PchipInterpolator(t,self.hub[:,0])
+        rhub = PchipInterpolator(t,self.hub[:,1])
+        xshroud = PchipInterpolator(t,self.shroud[:,0])
+        rshroud = PchipInterpolator(t,self.shroud[:,1])
+        
+        t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
+        xh = xhub(t)
+        rh = rhub(t)
+        
+        xsh = xshroud(t)
+        rsh = rshroud(t)
+        
+        # Shift all profiles
+        for j in range(len(t)):
+            xhub_to_shroud = np.linspace(xh[j],xsh[j],npts_span)
+            rhub_to_shroud = np.linspace(rh[j],rsh[j],npts_span)
+            for i in range(len(npts_span)):
+                self.ps_pts[i,j,0]=xhub_to_shroud[j]
+                self.ps_pts[i,j,1]=rhub_to_shroud[j]
+                
+                self.ss_pts[i,j,0]=xhub_to_shroud[j]
+                self.ss_pts[i,j,1]=rhub_to_shroud[j]
+
+    def __interpolate__(self,npts_span:int,npts_chord:int):
+        """Interpolate the geometry to make it denser
+
+        Args:
+            npts_span (int): number of points in the spanwise direction 
+            npts_chord (int): number of points in the chordwise direction
         """
         ss_pts_temp = np.zeros((len(self.profiles),npts_chord,3))
         ps_pts_temp = np.zeros((len(self.profiles),npts_chord,3))
@@ -172,7 +240,7 @@ class Centrif3D():
         for i in range(len(self.profiles)):
             self.profiles[i].build(npts_chord)
             ss_pts_temp[i,:,:] = self.profiles[i].ss_pts
-            ps_pts_temp[i,:,:] = self.profiles[i].ps_pts
+            ps_pts_temp[i,:,:] = self.profiles[i].ps_pts    
         
         # Construct the new denser ss and ps 
         ss_pts = np.zeros((npts_span,npts_chord,3))
@@ -190,15 +258,30 @@ class Centrif3D():
             ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1])(t)
             ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2])(t)
         
+        self.ps_pts = ps_pts
+        self.ss_pts = ss_pts
+        
+    def build(self,npts_span:int=100,npts_chord:int=100):
+        """Build the 3D Blade
+
+        Args:
+            npts_span (int, optional): number of points defining the span. Defaults to 100.
+            npts_chord (int, optional): number of points defining the chord. Defaults to 100.
+        """
+        self.__apply_stacking__()
+        
+        # interpolate the geometry
+        self.__interpolate__(npts_span,npts_chord)
+        
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
             self.__apply_fillets__(npts_chord)
         
-        # Scale to match hub and shroud curves 
-        t = np.linspace(0,1,npts_chord)
-        xhub = PchipInterpolator(t,self.hub[:,0])
-        rhub = PchipInterpolator(t,self.hub[:,1])
-        xhub = PchipInterpolator(t,self.shroud[:,0])
-        rhub = PchipInterpolator(t,self.shroud[:,1])
+        # Scale the profiles for the passage 
+        self.__scale_profiles__(npts_span,npts_chord)
         
+        
+    def plot(self):
+        """Plots the generated design 
+        """
         
