@@ -5,6 +5,7 @@ from typing import List
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
 from .airfoil2D import Airfoil2D
+from ..helper import StackType
 from scipy.optimize import minimize_scalar
 import enum
 import copy
@@ -15,19 +16,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from tqdm import trange
 from stl import mesh
-
-
-class StackType(enum.Enum):
-    """class defining the type of stacking for Airfoil2D profiles
-
-    Args:
-        enum (enum.Emum): inherits enum
-    """
-    leading_edge = 1
-    centroid = 2
-    trailing_edge = 3
-
-
 
 class Airfoil3D():
     '''

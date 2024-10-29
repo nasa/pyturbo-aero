@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 from .centrif2D import Centrif2D
 from ..helper import bezier,convert_to_ndarray, csapi
 import numpy as np 
@@ -13,7 +13,7 @@ class Centrif3D():
     profiles:List[Centrif2D]
     stacktype:StackType 
     leans:List[bezier]
-    lean_cambers:List[float]
+    lean_percent_spans:List[float]
     splitters:List[np.ndarray]
     
     hub:npt.NDArray
@@ -29,6 +29,23 @@ class Centrif3D():
     ss_pts:npt.NDArray
     ps_pts:npt.NDArray
 
+    hub_pts:npt.NDArray
+    shroud_pts:npt.NDArray
+    
+    __tip_clearance:float = 0 
+    
+    @property
+    def tip_clearance(self):
+        return self.__tip_clearance
+    
+    @tip_clearance.setter
+    def tip_clearance(self,val:float=0):
+        """Set the tip clearance 
+
+        Args:
+            val (float, optional): tip clearance as a percentage of the hub to shroud. Defaults to 0.
+        """
+        self.__tip_clearance = val
     
     def __init__(self,profiles:List[Centrif2D],stacking:StackType=StackType.leading_edge):
         self.profiles = profiles
@@ -36,14 +53,14 @@ class Centrif3D():
         self.lean_cambers = list()
         self.stacktype = stacking
         
-    def add_lean(self,lean_pts:List[float],percent_camber:float):
+    def add_lean(self,lean_pts:List[float],percent_span:float):
         """Adds lean to the 3D blade. Lean goes from hub to shroud
 
         Args:
             lean_pts (List[float]): points defining the lean. Example [-0.4, 0, 0.4] this is at the hub, mid, tip
-            percent_camber (float): Where the lean is applied 
+            percent_span (float): Where the lean is applied 
         """
-        self.lean_cambers.append(percent_camber)
+        self.lean_percent_spans.append(percent_span)
         self.leans.append(bezier(lean_pts,np.linspace(0,1,len(lean_pts))))
         
     def set_blade_position(self,t_start:float,t_end:float):
@@ -55,21 +72,21 @@ class Centrif3D():
         """
         self.blade_position = (t_start,t_end)
       
-    def add_hub(self,x:List[float,npt.NDArray],r:List[float,npt.NDArray]):
+    def add_hub(self,x:Union[float,npt.NDArray],r:Union[float,npt.NDArray]):
         """Adds Data for the hub 
 
         Args:
-            x (List[float,npt.NDArray]): x coordinates for the hub 
-            r (List[float,npt.NDArray]): radial coordinates for the hub 
+            x (Union[float,npt.NDArray]): x coordinates for the hub 
+            r (Union[float,npt.NDArray]): radial coordinates for the hub 
         """
         self.hub = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)])
         
-    def add_shroud(self,x:List[float,npt.NDArray],r:List[float,npt.NDArray]):
+    def add_shroud(self,x:Union[float,npt.NDArray],r:Union[float,npt.NDArray]):
         """_summary_
 
         Args:
-            x (List[float,npt.NDArray]): x coordinates for the hub 
-            r (List[float,npt.NDArray]): radial coordinates for the hub 
+            x (Union[float,npt.NDArray]): x coordinates for the hub 
+            r (Union[float,npt.NDArray]): radial coordinates for the hub 
         """
         self.shroud = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)])
     
@@ -218,6 +235,7 @@ class Centrif3D():
         
         # Shift all profiles
         for j in range(len(t)):
+            # Need to implement tip gap
             xhub_to_shroud = np.linspace(xh[j],xsh[j],npts_span)
             rhub_to_shroud = np.linspace(rh[j],rsh[j],npts_span)
             for i in range(len(npts_span)):
@@ -226,6 +244,8 @@ class Centrif3D():
                 
                 self.ss_pts[i,j,0]=xhub_to_shroud[j]
                 self.ss_pts[i,j,1]=rhub_to_shroud[j]
+        self.hub_pts = np.vstack([xhub(np.linspace(0,1,npts_chord*2)),xhub(np.linspace(0,1,npts_chord*2))*0, rhub(np.linspace(0,1,npts_chord*2))])
+        self.shroud_pts = np.vstack([xshroud(np.linspace(0,1,npts_chord*2)),xshroud(np.linspace(0,1,npts_chord*2))*0, rshroud(np.linspace(0,1,npts_chord*2))])
 
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -260,6 +280,35 @@ class Centrif3D():
         
         self.ps_pts = ps_pts
         self.ss_pts = ss_pts
+    
+    def __apply_lean__(self,npts_span:int,npts_chord:int):
+        """Lean is a shift in the profiles in the y-direction
+            
+        Args:
+            npts_span (int): _description_
+            npts_chord (int): _description_
+        """
+        lean_x = list(); lean_y = list() 
+        if self.lean_cambers[0] != 0:
+            b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
+            self.leans.insert(0,b)
+            self.lean_cambers.insert(0,0)
+        if self.lean_cambers[-1] != 1:
+            b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
+            self.leans.append(b)
+            self.lean_cambers.append(1)
+            
+        for lean,camb in zip(self.leans,self.lean_cambers):
+            for profile,profile_loc in zip(self.profiles,np.linspace(0,1,len(self.profiles))):
+                lean.get_point(profile_loc)
+                x,y = profile.camber.get_point(camb)
+                dy = lean(profile_loc)
+                lean_x.append(x); lean_y.append(y)
+        lean_x = PchipInterpolator(self.lean_cambers,lean_x)
+        lean_x = PchipInterpolator(self.lean_cambers,lean_y)
+
+        # Lets shift the profiles based on the normal direction 
+                
         
     def build(self,npts_span:int=100,npts_chord:int=100):
         """Build the 3D Blade
@@ -284,4 +333,16 @@ class Centrif3D():
     def plot(self):
         """Plots the generated design 
         """
+        fig = plt.figure(num=1,dpi=150)
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,1],'k')
+        ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,1],'k')
+        for i in self.ss_pts.shape[0]:
+            ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,1],self.ss_pts[i,:,2],'r')
+            ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,1],self.ps_pts[i,:,2],'b')
+        ax.view_init(azim=90, elev=45)
+        ax.set_xlabel('x-axial')
+        ax.set_ylabel('rth')
+        ax.set_zlabel('r-radial')
+        plt.show()
         

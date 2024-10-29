@@ -5,6 +5,8 @@ from .arc import arc, arclen, arclen3
 from .bezier import bezier,bezier3,pw_bezier2D
 from .bisect import bisect
 from .centroid import centroid
+from .convert_to_ndarray import convert_to_ndarray, cosd,sind, tand
+from .csapi import csapi
 from .derivative import derivative_1, derivative_2
 from .dist import dist
 from .ellispe import ellispe
@@ -14,7 +16,6 @@ from .min_max_check import check_replace_max, check_replace_min, create_cubic_bo
 from .pspline import pspline, pspline_intersect, spline_type
 from .ray import ray2D, ray2D_intersection,ray3D
 from .rotate_array_values import rotate_array_vals
+from .stacking import StackType
 from .unique_xy import uniqueXY
 from .wave import wave_control
-from .convert_to_ndarray import convert_to_ndarray, cosd,sind, tand
-from .csapi import csapi
