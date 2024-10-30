@@ -281,14 +281,42 @@ class Centrif3D():
         self.ps_pts = ps_pts
         self.ss_pts = ss_pts
     
+    def __percent_camber__(self,npts_span:int,npts_chord:int) -> npt.NDArray:
+        """Gets the percent along the camber line for each profile and interpolates that to fill the interpolated blade. 
+
+        Args:
+            npts_span (int): number of points in the span
+            npts_chord (int): number of points in the chord 
+
+        Returns:
+            npt.NDArray: matrix shape [npts_span,npts_chord] of percent camber 
+        """
+        percent_distance_along_camber_for_each_profile = np.zeros((len(self.profiles),npts_chord))
+        for i,p in enumerate(self.profiles):
+            camber = np.vstack([(p.ss_pts[:,0]+p.ps_pts[:,0])/2, (p.ss_pts[:,1]+p.ps_pts[:,1])/2])
+            diff_camber = np.vstack([0, np.diff(camber)])
+            camber_len = np.sum(diff_camber)
+            percent_distance_along_camber = [np.sum(diff_camber[:i])/camber_len for i in range(len(camber))]
+            percent_distance_along_camber_for_each_profile[i,:] = percent_distance_along_camber
+        
+        percent_distance = np.zeros((npts_span,npts_chord))
+        # Spanwise interpolation
+        for j in range(npts_chord):
+            percent_distance[:,j] = csapi(np.linspace(0,1,len(self.profiles)),percent_distance_along_camber_for_each_profile[:,j],np.linspace(0,1,npts_span))
+        return percent_distance
+    
     def __apply_lean__(self,npts_span:int,npts_chord:int):
         """Lean is a shift in the profiles in the y-direction
             
         Args:
-            npts_span (int): _description_
-            npts_chord (int): _description_
+            npts_span (int): number of points in the spanwise direction 
+            npts_chord (int): number of points in the chordwise direction 
         """
-        lean_x = list(); lean_y = list() 
+        
+        percent_camber = self.__percent_camber__(npts_span,npts_chord)
+        lean_y_temp = np.zeros((npts_span,len(self.leans)))  # rth
+    
+        # Insert zero lean at LE and TE if lean isn't specified there
         if self.lean_cambers[0] != 0:
             b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
             self.leans.insert(0,b)
@@ -297,18 +325,16 @@ class Centrif3D():
             b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
             self.leans.append(b)
             self.lean_cambers.append(1)
-            
-        for lean,camb in zip(self.leans,self.lean_cambers):
-            for profile,profile_loc in zip(self.profiles,np.linspace(0,1,len(self.profiles))):
-                lean.get_point(profile_loc)
-                x,y = profile.camber.get_point(camb)
-                dy = lean(profile_loc)
-                lean_x.append(x); lean_y.append(y)
-        lean_x = PchipInterpolator(self.lean_cambers,lean_x)
-        lean_x = PchipInterpolator(self.lean_cambers,lean_y)
-
-        # Lets shift the profiles based on the normal direction 
-                
+        # for each lean and location 
+        i = 0 
+        for lean,lean_loc in zip(self.leans,self.lean_cambers):
+            lean_y_temp[:,i] = lean.get_point(np.linspace(0,1,npts_span))
+            i+=1 
+        
+        # Apply lean 
+        for i in range(npts_span):
+            self.ss_pts[:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
+            self.ps_pts[:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
         
     def build(self,npts_span:int=100,npts_chord:int=100):
         """Build the 3D Blade
@@ -321,6 +347,8 @@ class Centrif3D():
         
         # interpolate the geometry
         self.__interpolate__(npts_span,npts_chord)
+        
+        self.__apply_lean__(npts_span,npts_chord)
         
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
