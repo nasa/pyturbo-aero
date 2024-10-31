@@ -1,6 +1,6 @@
 from typing import List, Tuple, Union
 from .centrif2D import Centrif2D
-from ..helper import bezier,convert_to_ndarray, csapi
+from ..helper import bezier,convert_to_ndarray, csapi, line2D
 import numpy as np 
 import numpy.typing as npt 
 from scipy.interpolate import PchipInterpolator
@@ -34,6 +34,11 @@ class Centrif3D():
     
     __tip_clearance:float = 0 
     
+    func_xhub:PchipInterpolator
+    func_rhub:PchipInterpolator
+    func_xshroud:PchipInterpolator
+    func_rshroud:PchipInterpolator
+    
     @property
     def tip_clearance(self):
         return self.__tip_clearance
@@ -52,6 +57,9 @@ class Centrif3D():
         self.leans = list()
         self.lean_cambers = list()
         self.stacktype = stacking
+        self.lean_cambers = list()
+        self.leans = list() 
+        self.fillet_r = 0
         
     def add_lean(self,lean_pts:List[float],percent_span:float):
         """Adds lean to the 3D blade. Lean goes from hub to shroud
@@ -79,7 +87,7 @@ class Centrif3D():
             x (Union[float,npt.NDArray]): x coordinates for the hub 
             r (Union[float,npt.NDArray]): radial coordinates for the hub 
         """
-        self.hub = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)])
+        self.hub = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)]).transpose()
         
     def add_shroud(self,x:Union[float,npt.NDArray],r:Union[float,npt.NDArray]):
         """_summary_
@@ -88,7 +96,7 @@ class Centrif3D():
             x (Union[float,npt.NDArray]): x coordinates for the hub 
             r (Union[float,npt.NDArray]): radial coordinates for the hub 
         """
-        self.shroud = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)])
+        self.shroud = np.vstack([convert_to_ndarray(x),convert_to_ndarray(r)]).transpose()
     
     def add_hub_bezier_fillet(self,ps:bezier=None,ps_loc:float=0,ss:bezier=None,ss_loc:float=0,r:float=0):
         """Add hub bezier fillet
@@ -212,6 +220,53 @@ class Centrif3D():
                 p.ss_pts[:,0]+=te_x[0]-te_x[i]
                 p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
     
+    def __stretch_profiles__(self,npts_span:int,npts_chord:int):
+        """Stretch the profiles in the x and y direction to match camber
+
+        Args:
+            npts_span (int): number of points defining the span
+            npts_chord (int): number of points defining the chord 
+        """
+        # Lets get the length from start to finish
+        t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
+        xh = self.func_xhub(t)
+        rh = self.func_rhub(t)
+        
+        hub_length_of_blade = np.sum(np.sqrt(np.diff(xh)**2+np.diff(rh)**2))
+        _,cambers = self.__percent_camber__(npts_span,npts_chord)
+        for i in range(cambers.shape[0]):
+            diff_camber = np.vstack([
+                    [0,0],
+                    np.vstack([np.diff(cambers[:,0]),np.diff(cambers[:,1])]).transpose()
+                ])
+            camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
+            self.ss_pts[i,:]*=hub_length_of_blade/camber_len  # Scale the blade profiles to the hub length 
+            self.ps_pts[i,:]*=hub_length_of_blade/camber_len
+
+    def __apply_tip_gap__(self):
+        """Apply tip gap and construct new functions that define the hub and shroud 
+        """
+        # Scale to match hub and shroud curves 
+        t = np.linspace(0,1,self.hub.shape[0])
+        # Implement Tip gap
+        hub = self.hub.copy()       # create a copy 
+        shroud = self.shroud.copy()
+        if self.tip_clearance>0:
+            for i in self.hub.shape[0]:
+                xhub = self.hub[i,0]
+                rhub = self.hub[i,1]
+                xshroud = self.shroud[i,0]
+                rshroud = self.shroud[i,1]
+                l = line2D([xhub,rhub],[xshroud,rshroud])
+                x,r = l.get_point(1-self.tip_clearance)
+                shroud[i,0] = x
+                shroud[i,1] = r
+        
+        self.func_xhub = PchipInterpolator(t,hub[:,0])
+        self.func_rhub = PchipInterpolator(t,hub[:,1])
+        self.func_xshroud = PchipInterpolator(t,shroud[:,0])
+        self.func_rshroud = PchipInterpolator(t,shroud[:,1])
+        
     def __scale_profiles__(self,npts_span:int,npts_chord:int):
         """scale the profiles to fit into the hub and shroud 
 
@@ -219,33 +274,36 @@ class Centrif3D():
             npts_span (int): number of points in the spanwise direction 
             npts_chord (int): number of points in the chordwise direction
         """
-        # Scale to match hub and shroud curves 
-        t = np.linspace(0,1,npts_chord)
-        xhub = PchipInterpolator(t,self.hub[:,0])
-        rhub = PchipInterpolator(t,self.hub[:,1])
-        xshroud = PchipInterpolator(t,self.shroud[:,0])
-        rshroud = PchipInterpolator(t,self.shroud[:,1])
+        thub_to_shroud = np.linspace(0,1,npts_span)
+        percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
+        t = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber
         
-        t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
-        xh = xhub(t)
-        rh = rhub(t)
+        xhub = self.func_xhub(t)
+        rhub = self.func_rhub(t)
         
-        xsh = xshroud(t)
-        rsh = rshroud(t)
+        xshroud = self.func_xshroud(t)
+        rshroud = self.func_rshroud(t)
         
         # Shift all profiles
-        for j in range(len(t)):
-            # Need to implement tip gap
-            xhub_to_shroud = np.linspace(xh[j],xsh[j],npts_span)
-            rhub_to_shroud = np.linspace(rh[j],rsh[j],npts_span)
-            for i in range(len(npts_span)):
-                self.ps_pts[i,j,0]=xhub_to_shroud[j]
-                self.ps_pts[i,j,1]=rhub_to_shroud[j]
+        for j in range(npts_chord):
+            l = line2D([xhub,rhub],[xshroud,rshroud])
+            xhub_to_shroud, rhub_to_shroud = l.get_point(np.linspace(0,1,npts_span))
+            
+            for i in range(npts_span):    
+                self.ps_pts[i,j,0]=xhub_to_shroud[i]
+                self.ps_pts[i,j,2]=rhub_to_shroud[i]
                 
-                self.ss_pts[i,j,0]=xhub_to_shroud[j]
-                self.ss_pts[i,j,1]=rhub_to_shroud[j]
-        self.hub_pts = np.vstack([xhub(np.linspace(0,1,npts_chord*2)),xhub(np.linspace(0,1,npts_chord*2))*0, rhub(np.linspace(0,1,npts_chord*2))])
-        self.shroud_pts = np.vstack([xshroud(np.linspace(0,1,npts_chord*2)),xshroud(np.linspace(0,1,npts_chord*2))*0, rshroud(np.linspace(0,1,npts_chord*2))])
+                self.ss_pts[i,j,0]=xhub_to_shroud[i]
+                self.ss_pts[i,j,2]=rhub_to_shroud[i]
+        
+        self.hub_pts = np.vstack([
+                xhub(np.linspace(0,1,npts_chord*2)),
+                xhub(np.linspace(0,1,npts_chord*2))*0, 
+                rhub(np.linspace(0,1,npts_chord*2))]).transpose()
+        self.shroud_pts = np.vstack([
+            xshroud(np.linspace(0,1,npts_chord*2)),
+            xshroud(np.linspace(0,1,npts_chord*2))*0, 
+            rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
 
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -270,13 +328,13 @@ class Centrif3D():
         t = np.linspace(0,1,npts_span)
         
         for i in range(npts_chord):
-            ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0])(t)
-            ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1])(t)
-            ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2])(t)
+            ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],t)
+            ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],t)
+            ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],t)
             
-            ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0])(t)
-            ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1])(t)
-            ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2])(t)
+            ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],t)
+            ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],t)
+            ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],t)
         
         self.ps_pts = ps_pts
         self.ss_pts = ss_pts
@@ -289,21 +347,34 @@ class Centrif3D():
             npts_chord (int): number of points in the chord 
 
         Returns:
-            npt.NDArray: matrix shape [npts_span,npts_chord] of percent camber 
+
+            Tuple containing:
+                **percent_camber** (npt.NDArray): matrix shape [npts_span,npts_chord] of percent camber 
+                **camber** (npt.NDArray): [nspan,1] camber of each profile
         """
-        percent_distance_along_camber_for_each_profile = np.zeros((len(self.profiles),npts_chord))
-        for i,p in enumerate(self.profiles):
-            camber = np.vstack([(p.ss_pts[:,0]+p.ps_pts[:,0])/2, (p.ss_pts[:,1]+p.ps_pts[:,1])/2])
-            diff_camber = np.vstack([0, np.diff(camber)])
-            camber_len = np.sum(diff_camber)
-            percent_distance_along_camber = [np.sum(diff_camber[:i])/camber_len for i in range(len(camber))]
+        percent_distance_along_camber_for_each_profile = np.zeros((npts_span,npts_chord))
+        camber_temp = np.zeros(shape=(npts_span,npts_chord,2))
+        for i in range(npts_span):
+            camber_temp[i,:,:] = np.vstack([(
+                    self.ss_pts[i,:,0]+self.ps_pts[i,:,0])/2, 
+                    (self.ss_pts[i,:,1]+self.ps_pts[i,:,1])/2]).transpose()
+            diff_camber = np.vstack([
+                    [0,0],
+                    np.vstack([np.diff(camber_temp[i,:,0]),np.diff(camber_temp[i,:,1])]).transpose()
+            ])
+            camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
+            percent_distance_along_camber = [camber_len[i]/camber_len[-1] for i in range(len(camber_len))]
             percent_distance_along_camber_for_each_profile[i,:] = percent_distance_along_camber
         
         percent_distance = np.zeros((npts_span,npts_chord))
+        camber = percent_distance_along_camber_for_each_profile[:,-1] # camber for each profile
         # Spanwise interpolation
         for j in range(npts_chord):
-            percent_distance[:,j] = csapi(np.linspace(0,1,len(self.profiles)),percent_distance_along_camber_for_each_profile[:,j],np.linspace(0,1,npts_span))
-        return percent_distance
+            percent_distance[:,j] = csapi(np.linspace(0,1,len(self.profiles)),
+                                          percent_distance_along_camber_for_each_profile[:,j],
+                                          np.linspace(0,1,npts_span))
+        
+        return percent_distance, camber
     
     def __apply_lean__(self,npts_span:int,npts_chord:int):
         """Lean is a shift in the profiles in the y-direction
@@ -312,30 +383,30 @@ class Centrif3D():
             npts_span (int): number of points in the spanwise direction 
             npts_chord (int): number of points in the chordwise direction 
         """
+        if len(self.lean_cambers) != 0: 
+            percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
+            lean_y_temp = np.zeros((npts_span,len(self.leans)))  # rth
         
-        percent_camber = self.__percent_camber__(npts_span,npts_chord)
-        lean_y_temp = np.zeros((npts_span,len(self.leans)))  # rth
-    
-        # Insert zero lean at LE and TE if lean isn't specified there
-        if self.lean_cambers[0] != 0:
-            b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
-            self.leans.insert(0,b)
-            self.lean_cambers.insert(0,0)
-        if self.lean_cambers[-1] != 1:
-            b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
-            self.leans.append(b)
-            self.lean_cambers.append(1)
-        # for each lean and location 
-        i = 0 
-        for lean,lean_loc in zip(self.leans,self.lean_cambers):
-            lean_y_temp[:,i] = lean.get_point(np.linspace(0,1,npts_span))
-            i+=1 
-        
-        # Apply lean 
-        for i in range(npts_span):
-            self.ss_pts[:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-            self.ps_pts[:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-        
+            # Insert zero lean at LE and TE if lean isn't specified there
+            if self.lean_cambers[0] != 0:
+                b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
+                self.leans.insert(0,b)
+                self.lean_cambers.insert(0,0)
+            if self.lean_cambers[-1] != 1:
+                b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
+                self.leans.append(b)
+                self.lean_cambers.append(1)
+            # for each lean and location 
+            i = 0 
+            for lean,lean_loc in zip(self.leans,self.lean_cambers):
+                lean_y_temp[:,i] = lean.get_point(np.linspace(0,1,npts_span))
+                i+=1 
+            
+            # Apply lean 
+            for i in range(npts_span):
+                self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
+                self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
+            
     def build(self,npts_span:int=100,npts_chord:int=100):
         """Build the 3D Blade
 
@@ -347,8 +418,10 @@ class Centrif3D():
         
         # interpolate the geometry
         self.__interpolate__(npts_span,npts_chord)
+        self.__apply_tip_gap__()
         
         self.__apply_lean__(npts_span,npts_chord)
+        self.__stretch_profiles__(npts_span,npts_chord)
         
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
@@ -363,9 +436,9 @@ class Centrif3D():
         """
         fig = plt.figure(num=1,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
-        ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,1],'k')
-        ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,1],'k')
-        for i in self.ss_pts.shape[0]:
+        ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
+        ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
+        for i in range(self.ss_pts.shape[0]):
             ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,1],self.ss_pts[i,:,2],'r')
             ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,1],self.ps_pts[i,:,2],'b')
         ax.view_init(azim=90, elev=45)

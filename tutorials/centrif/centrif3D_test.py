@@ -145,7 +145,10 @@ def test_centrif3D_rounded_te():
     comp = Centrif3D([hub,mid,tip],StackType.leading_edge)
     comp.add_hub(xhub,rhub)
     comp.add_shroud(xshroud,rshroud)
-    comp.
+    comp.set_blade_position(0.1,0.95)
+    comp.build(100,100)
+    comp.plot()
+    
 def test_centrif_ellispe_te():
     hub = Centrif2D()
 
