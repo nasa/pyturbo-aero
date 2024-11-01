@@ -1,11 +1,12 @@
 
 from typing import List
-
+from .centrif3D import Centrif3D
 
 class Passage3D:
+    blade:Centrif3D
     s_c:List[float]
     
-    def __init__(self) -> None:
+    def __init__(self,blade:Centrif3D,nblades:int) -> None:
         pass
     
     def add_splitter(self,x_scale:float,loc:float=0):
@@ -17,4 +18,7 @@ class Passage3D:
         """
         for p in self.profiles:
             p.build()
-        self.splitters.append()    
+        self.splitters.append()
+    
+    def add_pattern(chord_scaling:List[float],pitch_variations_float):
+        pass

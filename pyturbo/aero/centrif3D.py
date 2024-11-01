@@ -235,13 +235,8 @@ class Centrif3D():
         hub_length_of_blade = np.sum(np.sqrt(np.diff(xh)**2+np.diff(rh)**2))
         _,cambers = self.__percent_camber__(npts_span,npts_chord)
         for i in range(cambers.shape[0]):
-            diff_camber = np.vstack([
-                    [0,0],
-                    np.vstack([np.diff(cambers[:,0]),np.diff(cambers[:,1])]).transpose()
-                ])
-            camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
-            self.ss_pts[i,:]*=hub_length_of_blade/camber_len  # Scale the blade profiles to the hub length 
-            self.ps_pts[i,:]*=hub_length_of_blade/camber_len
+            self.ss_pts[i,:]*=hub_length_of_blade/cambers[-1]  # Scale the blade profiles to the hub length 
+            self.ps_pts[i,:]*=hub_length_of_blade/cambers[-1]
 
     def __apply_tip_gap__(self):
         """Apply tip gap and construct new functions that define the hub and shroud 
@@ -276,34 +271,45 @@ class Centrif3D():
         """
         thub_to_shroud = np.linspace(0,1,npts_span)
         percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
-        t = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber
         
-        xhub = self.func_xhub(t)
-        rhub = self.func_rhub(t)
+        t = np.zeros((npts_span,npts_chord))
+        for i in range(npts_span):
+            t[i,:] = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber[i,:]
         
-        xshroud = self.func_xshroud(t)
-        rshroud = self.func_rshroud(t)
-        
-        # Shift all profiles
         for j in range(npts_chord):
-            l = line2D([xhub,rhub],[xshroud,rshroud])
-            xhub_to_shroud, rhub_to_shroud = l.get_point(np.linspace(0,1,npts_span))
+            xhub = self.func_xhub(t[:,j])
+            rhub = self.func_rhub(t[:,j])
             
-            for i in range(npts_span):    
-                self.ps_pts[i,j,0]=xhub_to_shroud[i]
-                self.ps_pts[i,j,2]=rhub_to_shroud[i]
+            xshroud = self.func_xshroud(t[:,j])
+            rshroud = self.func_rshroud(t[:,j])
+            l = line2D([xhub,rhub],[xshroud,rshroud])
+            x,r = l.get_point(np.linspace(0,1,npts_span))
+            for i in range(npts_span):
+                self.ps_pts[i,j,0]=x[i]
+                self.ps_pts[i,j,2]=r[i]
                 
-                self.ss_pts[i,j,0]=xhub_to_shroud[i]
-                self.ss_pts[i,j,2]=rhub_to_shroud[i]
+                self.ss_pts[i,j,0]=x[i]
+                self.ss_pts[i,j,2]=r[i]
+            
+            # # Shift all profiles
+            # for j in range(npts_chord):
+            #     l = line2D([xhub,rhub],[xshroud,rshroud])
+            #     xhub_to_shroud, rhub_to_shroud = l.get_point(np.linspace(0,1,npts_span))
+                
+            #     self.ps_pts[:,j,0]=xhub_to_shroud
+            #     self.ps_pts[:,j,2]=rhub_to_shroud
+                
+            #     self.ss_pts[:,j,0]=xhub_to_shroud
+            #     self.ss_pts[:,j,2]=rhub_to_shroud
         
         self.hub_pts = np.vstack([
-                xhub(np.linspace(0,1,npts_chord*2)),
-                xhub(np.linspace(0,1,npts_chord*2))*0, 
-                rhub(np.linspace(0,1,npts_chord*2))]).transpose()
+                self.func_xhub(np.linspace(0,1,npts_chord*2)),
+                self.func_xhub(np.linspace(0,1,npts_chord*2))*0, 
+                self.func_rhub(np.linspace(0,1,npts_chord*2))]).transpose()
         self.shroud_pts = np.vstack([
-            xshroud(np.linspace(0,1,npts_chord*2)),
-            xshroud(np.linspace(0,1,npts_chord*2))*0, 
-            rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
+            self.func_xshroud(np.linspace(0,1,npts_chord*2)),
+            self.func_xshroud(np.linspace(0,1,npts_chord*2))*0, 
+            self.func_rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
 
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -354,6 +360,7 @@ class Centrif3D():
         """
         percent_distance_along_camber_for_each_profile = np.zeros((npts_span,npts_chord))
         camber_temp = np.zeros(shape=(npts_span,npts_chord,2))
+        camber_lengths = list()
         for i in range(npts_span):
             camber_temp[i,:,:] = np.vstack([(
                     self.ss_pts[i,:,0]+self.ps_pts[i,:,0])/2, 
@@ -365,14 +372,10 @@ class Centrif3D():
             camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
             percent_distance_along_camber = [camber_len[i]/camber_len[-1] for i in range(len(camber_len))]
             percent_distance_along_camber_for_each_profile[i,:] = percent_distance_along_camber
-        
-        percent_distance = np.zeros((npts_span,npts_chord))
-        camber = percent_distance_along_camber_for_each_profile[:,-1] # camber for each profile
-        # Spanwise interpolation
-        for j in range(npts_chord):
-            percent_distance[:,j] = csapi(np.linspace(0,1,len(self.profiles)),
-                                          percent_distance_along_camber_for_each_profile[:,j],
-                                          np.linspace(0,1,npts_span))
+            camber_lengths.append(camber_len)
+            
+        percent_distance = percent_distance_along_camber_for_each_profile
+        camber = np.array(camber_lengths)[:,-1] # camber for each profile
         
         return percent_distance, camber
     
