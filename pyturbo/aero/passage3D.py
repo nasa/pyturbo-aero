@@ -20,5 +20,6 @@ class Passage3D:
             p.build()
         self.splitters.append()
     
-    def add_pattern(chord_scaling:List[float],pitch_variations_float):
+    def add_pattern(chord_scaling:List[float],pitch_to_chord_variations:float):
+        
         pass
