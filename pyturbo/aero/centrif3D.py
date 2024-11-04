@@ -39,6 +39,9 @@ class Centrif3D():
     func_xshroud:PchipInterpolator
     func_rshroud:PchipInterpolator
     
+    npts_span:int = 100
+    npts_chord:int = 100
+    
     @property
     def tip_clearance(self):
         return self.__tip_clearance
@@ -409,7 +412,8 @@ class Centrif3D():
             for i in range(npts_span):
                 self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
                 self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-            
+    
+    
     def build(self,npts_span:int=100,npts_chord:int=100):
         """Build the 3D Blade
 
@@ -417,6 +421,9 @@ class Centrif3D():
             npts_span (int, optional): number of points defining the span. Defaults to 100.
             npts_chord (int, optional): number of points defining the chord. Defaults to 100.
         """
+        self.npts_span = npts_span
+        self.npts_chord = npts_chord
+        
         self.__apply_stacking__()
         
         # interpolate the geometry
