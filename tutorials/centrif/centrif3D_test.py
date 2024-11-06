@@ -149,18 +149,46 @@ def test_centrif3D_rounded_te():
     comp.build(100,100)
     comp.plot()
     
-def test_centrif_ellispe_te():
+def test_centrif_fillet():
     hub = Centrif2D()
-
     hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
     # hub.plot_camber()
     
     hub.add_le_thickness(0.02)
     hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
-    hub.add_te_radius(0.5,5,5,1.2)
+    hub.add_te_radius(0.5,5,5,1)
     hub.build(200)
-    hub.plot()
+    # hub.plot()
+    
+    mid = Centrif2D()
+    mid.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    # hub.plot_camber()
+    
+    mid.add_le_thickness(0.02)
+    mid.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    mid.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    mid.add_te_radius(0.5,5,5,1)
+    mid.build(200)
+    
+    tip = Centrif2D()
+    tip.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    # hub.plot_camber()
+    
+    tip.add_le_thickness(0.02)
+    tip.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    tip.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    tip.add_te_radius(0.5,5,5,1)
+    tip.build(200)
+
+    # Define hub and shroud
+    xhub,rhub,xshroud,rshroud = create_passage_compressor()    
+    comp = Centrif3D([hub,mid,tip],StackType.leading_edge)
+    comp.add_hub(xhub,rhub)
+    comp.add_shroud(xshroud,rshroud)
+    comp.set_blade_position(0.01,0.95)
+    comp.build(100,100)
+    comp.plot()
     
 if __name__=="__main__":
     test_centrif3D_rounded_te()
