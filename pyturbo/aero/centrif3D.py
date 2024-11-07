@@ -6,6 +6,7 @@ import numpy.typing as npt
 from scipy.interpolate import PchipInterpolator
 from pyturbo.aero.airfoil3D import StackType
 import matplotlib.pyplot as plt 
+from plot3d import Block
 
 class Centrif3D():
     """Generates the 3D blade 
@@ -440,7 +441,7 @@ class Centrif3D():
         # Scale the profiles for the passage 
         self.__scale_profiles__(npts_span,npts_chord)
         
-        
+    
     def plot(self):
         """Plots the generated design 
         """

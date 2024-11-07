@@ -17,6 +17,7 @@ numpy = ">2.0.0"
 matplotlib = "*"
 numpy-stl = "*"
 geomdl = "*"
+plot3d = "*"
 
 [tool.poetry.dev-dependencies]
 
