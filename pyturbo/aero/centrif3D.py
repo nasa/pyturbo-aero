@@ -21,10 +21,10 @@ class Centrif3D():
     shroud:npt.NDArray
     blade_position:Tuple[float,float]
     
-    ss_hub_fillet_loc:List[float]
-    ss_hub_fillet:List[bezier]
-    ps_hub_fillet_loc:List[float]
-    ps_hub_fillet:List[bezier]
+    ss_hub_fillet_loc:List[float] = []
+    ss_hub_fillet:List[bezier] = []
+    ps_hub_fillet_loc:List[float] = []
+    ps_hub_fillet:List[bezier] = []
     fillet_r:float 
     
     ss_pts:npt.NDArray
@@ -42,6 +42,8 @@ class Centrif3D():
     
     npts_span:int = 100
     npts_chord:int = 100
+    t_span:npt.NDArray          # Not used yet but might be in the future
+    t_chord:npt.NDArray
     
     @property
     def tip_clearance(self):
@@ -125,72 +127,165 @@ class Centrif3D():
             self.ss_hub_fillet_loc.append(ss_loc)
         if r>0:    
             self.fillet_r = r 
+    
+    def __cleanup_fillet_inputs__(self):
+        """Cleans up the fillets input so that there is always a fillet defined at the leading edge and trailing edge
+        """
+        # if the pressure side fillet is defined at leading edge but suction side is not
+        if self.ps_hub_fillet_loc[0] == 0 and self.ss_hub_fillet_loc[0]>0:
+            self.ss_hub_fillet.insert(0,self.ps_hub_fillet[0])
+            self.ss_hub_fillet_loc.insert(0,self.ps_hub_fillet_loc[0])
+        # if the suction side is defined at leading edge but pressure side is not 
+        elif self.ss_hub_fillet_loc[0] == 0 and self.ps_hub_fillet_loc[0]>0:
+            self.ps_hub_fillet.insert(0,self.ss_hub_fillet[0])
+            self.ps_hub_fillet_loc.insert(0,self.ss_hub_fillet_loc[0])
+        
+        # If the pressure side is defined at the trailing edge but suction side is not
+        if self.ps_hub_fillet_loc[-1] == 1 and self.ss_hub_fillet_loc[0]!=1:
+            self.ss_hub_fillet.append(self.ps_hub_fillet[-1])
+            self.ss_hub_fillet_loc.append(self.ps_hub_fillet_loc[-1])
+        # if the suction side fillet is defined at leading edge
+        elif self.ss_hub_fillet_loc[-1] == 1 and self.ps_hub_fillet_loc[0]!=1:
+            self.ps_hub_fillet.append(self.ss_hub_fillet[0])
+            self.ps_hub_fillet_loc.append(self.ss_hub_fillet_loc[0])
+        # Not all cases were taken into account. Users should define something at leading edge and trailing edge and have fillets be equal. 
+        
+    def fillet_shift_ps(self,t_ps:float,height:float):
+        """Gets the fillet shift on the pressure side given a height along an airfoil
+            Fillets shift must be applied perpendicular to the blade. 
             
+        Args:
+            t_ps (float): percent along pressure side
+            height (float): height of the profile
+        """
+        if height > self.fillet_r:
+            return 0
+        else:
+            t = height/self.fillet_r
+            shifts = np.array([self.ps_hub_fillet[i].get_point(t) for i in self.ps_hub_fillet])
+            shift = csapi(self.ps_hub_fillet_loc,shifts,t_ps)
+            return shift
+        
+        
+    def fillet_shift_ss(self,t_ss:float,height:float):
+        """Gets the fillet shift on the suction side given a height along an airfoil
+            Fillets shift must be applied perpendicular to the blade. 
+
+        Args:
+            t_ss (float): percent along the suction side 
+            height (float): height of the profile
+        """
+        if height > self.fillet_r:
+            return 0
+        else:
+            t = height/self.fillet_r
+            shifts = np.array([self.ss_hub_fillet[i].get_point(t) for i in self.ss_hub_fillet])
+            shift = csapi(self.ss_hub_fillet_loc,shifts,t_ss)
+            return shift
+    
+    @staticmethod
+    def __get_normal__(pts:npt.NDArray,span_indx:int,chord_indx:int):
+        """Get the outward normal for any index for a given set of points 
+
+        Args:
+            pts (npt.NDArray): Array of points NxMx3
+            span_indx (int): index of the array in N axis
+            chord_indx (int): index of the array in M axis
+
+        Returns:
+            3x1: Normal Vector 
+        """
+        max_span,max_pts,_ = pts.shape
+        normals = []
+        
+        # Bottom Left
+        if span_indx == 0 and chord_indx==0:
+            P = pts[span_indx,chord_indx,:]
+            Q = 0.5*(pts[span_indx,chord_indx,:] + pts[span_indx,chord_indx+1,:])
+            R = 0.5*(pts[span_indx,chord_indx,:] + pts[span_indx+1,chord_indx,:])
+        # Bottom
+        elif span_indx == 0 and chord_indx>0 and chord_indx<max_pts-1:
+            P = 0.5*(pts[span_indx,chord_indx-1,:]+ pts[span_indx,chord_indx,:])
+            Q = 0.5*(pts[span_indx,chord_indx+1,:] + pts[span_indx,chord_indx,:])
+            R = 0.5*(pts[span_indx+1,chord_indx,:]+ pts[span_indx,chord_indx,:])
+        # Bottom right 
+        elif span_indx==0 and chord_indx==max_pts-1:
+            P = pts[span_indx,chord_indx,:]
+            Q = 0.5*(pts[span_indx+1,chord_indx,:]+pts[span_indx,chord_indx,:])
+            R = 0.5*pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:]
+        # Top Left
+        if span_indx==max_span-1 and chord_indx==0:
+            P = pts[span_indx,chord_indx,:]
+            Q = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
+            R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
+        # Top
+        elif span_indx==max_span-1 and chord_indx>0 and chord_indx<max_pts-1:
+            P = 0.5*(pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:])
+            Q = 0.5*(pts[span_indx-1,chord_indx-1,:]+pts[span_indx,chord_indx,:])
+            R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
+        # Top Right
+        elif span_indx==max_span-1 and chord_indx==max_pts-1:
+            P = pts[span_indx,chord_indx,:]
+            Q = 0.5*(pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:])
+            R = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
+        # Left
+        elif chord_indx==0 and span_indx>0 and span_indx<max_span-1:
+            P = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
+            Q = 0.5*(pts[span_indx,chord_indx+1]+pts[span_indx,chord_indx])
+            R = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
+        # Right
+        elif chord_indx == max_pts-1 and span_indx>0 and span_indx<max_span-1:
+            P = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
+            Q = 0.5*(pts[span_indx,chord_indx-1]+pts[span_indx,chord_indx])
+            R = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
+        else:
+            # Interior
+            P=0.5*(pts[span_indx+1,chord_indx] + pts[span_indx,chord_indx])
+            Q=0.25*(
+                        pts[span_indx-1,chord_indx-1] + 
+                        pts[span_indx-1,chord_indx] +
+                        pts[span_indx,chord_indx] +
+                        pts[span_indx,chord_indx-1]
+                    )
+            R=0.25*(
+                        pts[span_indx-1,chord_indx+1] + 
+                        pts[span_indx-1,chord_indx] +
+                        pts[span_indx,chord_indx] +
+                        pts[span_indx,chord_indx+1]
+                    )
+        n = np.cross(Q-P,R-P)
+        return n/np.linalg.norm(n,ord=1) # Normal 
+    
     def __apply_fillets__(self,npts_chord:int):
         """Apply fillets 
 
         Args:
             npts_chord (int): Number of points in chord
         """
-        max_profile_indx_fillet = np.argmax(self.ss_pts[:,0,2] < self.fillet_r)
-            
-        # if the pressure side fillet is defined at leading edge
-        if self.ps_hub_fillet_loc[0] == 0 and self.ss_hub_fillet_loc[0]>0:
-            self.ss_hub_fillet.insert(0,self.ps_hub_fillet[0])
-            self.ss_hub_fillet_loc.insert(0,self.ps_hub_fillet_loc[0])
-        # if the suction side fillet is defined at leading edge
-        elif self.ss_hub_fillet_loc[0] == 0 and self.ps_hub_fillet_loc[0]>0:
-            self.ps_hub_fillet.insert(0,self.ss_hub_fillet[0])
-            self.ss_hub_fillet_loc.insert(0,self.ss_hub_fillet_loc[0])
+        t = np.linspace(0,1,self.npts_chord)
+        ss_shifts = np.zeros((self.npts_span, self.npts_chord,2))
+        ps_shifts = np.zeros((self.npts_span, self.npts_chord,2))
+        for i in range(self.npts_chord):
+            # Look along the span to get distance 
+            dx = np.diff(self.ss_pts[:,i,0])
+            dy = np.diff(self.ss_pts[:,i,1])
+            dr = np.diff(self.ss_pts[:,i,2])
+            dist = np.sqrt(dx**2+dy**2+dr**2)
+            dist_cumsum = np.cumsum(dist) # cumulative distance from the hub 
+
+            # find indices where where less than fillet radius
+            indices = np.cumsum(dist) <= self.fillet_r
+            for ind in indices: # looking up the span 
+                magnitude_of_shift = self.fillet_shift_ss(t[i],dist[ind]) 
+                n = self.__get_normal__(self.ss_pts,ind,i)
+                ss_shifts[ind,i,:] = n*magnitude_of_shift
+                
+                magnitude_of_shift = self.fillet_shift_ps(t[i],dist[ind]) 
+                n = self.__get_normal__(self.ps_pts,ind,i)
+                ps_shifts[ind,i,:] = n*magnitude_of_shift
+        self.ss_pts+=ss_shifts
+        self.ps_pts+=ps_shifts
         
-        if self.ps_hub_fillet_loc[-1] == 1 and self.ss_hub_fillet_loc[0]<1:
-            self.ss_hub_fillet.insert(0,self.ps_hub_fillet[0])
-            self.ss_hub_fillet_loc.insert(0,self.ps_hub_fillet_loc[0])
-        # if the suction side fillet is defined at leading edge
-        elif self.ss_hub_fillet_loc[-1] == 1 and self.ps_hub_fillet_loc[0]<1:
-            self.ps_hub_fillet.insert(0,self.ss_hub_fillet[0])
-            self.ss_hub_fillet_loc.insert(0,self.ss_hub_fillet_loc[0])
-        # Not all cases were taken into account. Users should define something at leading edge and trailing edge and have fillets be equal. 
-            
-        # Extract the fillet from bezier curve 
-        ss_fillet_shifts_temp = np.zeros(shape=(max_profile_indx_fillet,len(self.ss_hub_fillet),2))
-        self.ss_hub_fillet_loc = convert_to_ndarray(self.ss_hub_fillet_loc); i = 0 
-        for _,fillet in zip(self.ss_hub_fillet_loc,self.ss_hub_fillet):
-            x,r = fillet.get_point()
-            ss_fillet_shifts_temp[:,i,0] = x*self.fillet_r
-            ss_fillet_shifts_temp[:,i,1] = r*self.fillet_r
-            i+=1
-            
-        ps_fillet_shifts_temp = np.zeros(shape=(max_profile_indx_fillet,len(self.ps_hub_fillet),2))
-        self.ps_hub_fillet_loc = convert_to_ndarray(self.ps_hub_fillet_loc); i = 0 
-        for _,fillet in zip(self.ps_hub_fillet_loc,self.ps_hub_fillet):
-            x,r = fillet.get_point(np.linspace(0,1,max_profile_indx_fillet))
-            ps_fillet_shifts_temp[:,i,0] = x*self.fillet_r
-            ps_fillet_shifts_temp[:,i,1] = r*self.fillet_r
-            i+=1
-        
-        # Fillets have been defined now time to interpolate and add to the profiles
-        t = np.linspace(0,1,npts_chord)
-        ss_fillet = np.zeros(shape=(max_profile_indx_fillet, npts_chord, 2))
-        self.ss_hub_fillet_loc = convert_to_ndarray(self.ss_hub_fillet_loc)
-        for i in range(len(self.ss_hub_fillet)):
-            ss_fillet[i,:,0] = csapi(self.ss_hub_fillet_loc, ss_fillet_shifts_temp[i,:,0])(t)
-            ss_fillet[i,:,1] = csapi(self.ss_hub_fillet_loc, ss_fillet_shifts_temp[i,:,1])(t)
-            # [span,fillets,(x,y)]
-            
-        ps_fillet = np.zeros(shape=(max_profile_indx_fillet, npts_chord, 2))
-        self.ps_hub_fillet_loc = convert_to_ndarray(self.ps_hub_fillet_loc)
-        for i in range(len(self.ps_hub_fillet)):
-            ps_fillet[i,:,0] = csapi(self.ps_hub_fillet_loc, ps_fillet_shifts_temp[i,:,0])(t)
-            ps_fillet[i,:,1] = csapi(self.ps_hub_fillet_loc, ps_fillet_shifts_temp[i,:,1])(t)
-        
-        # Apply fillets 
-        for i in range(max_profile_indx_fillet):
-            self.ss_pts[i,:,0] += ss_fillet[i,:,0]
-            self.ss_pts[i,:,1] += ss_fillet[i,:,1]
-            self.ps_pts[i,:,0] += ps_fillet[i,:,0]
-            self.ps_pts[i,:,1] += ps_fillet[i,:,1]
-           
     def __apply_stacking__(self):
         if self.stacktype == StackType.centroid:
             c_x = list()
@@ -268,7 +363,7 @@ class Centrif3D():
         
     def __scale_profiles__(self,npts_span:int,npts_chord:int):
         """scale the profiles to fit into the hub and shroud 
-
+            Note: This only affects x and r and not r_theta
         Args:
             npts_span (int): number of points in the spanwise direction 
             npts_chord (int): number of points in the chordwise direction
@@ -287,6 +382,7 @@ class Centrif3D():
             xshroud = self.func_xshroud(t[:,j])
             rshroud = self.func_rshroud(t[:,j])
             l = line2D([xhub,rhub],[xshroud,rshroud])
+            
             x,r = l.get_point(np.linspace(0,1,npts_span))
             for i in range(npts_span):
                 self.ps_pts[i,j,0]=x[i]
@@ -294,17 +390,6 @@ class Centrif3D():
                 
                 self.ss_pts[i,j,0]=x[i]
                 self.ss_pts[i,j,2]=r[i]
-            
-            # # Shift all profiles
-            # for j in range(npts_chord):
-            #     l = line2D([xhub,rhub],[xshroud,rshroud])
-            #     xhub_to_shroud, rhub_to_shroud = l.get_point(np.linspace(0,1,npts_span))
-                
-            #     self.ps_pts[:,j,0]=xhub_to_shroud
-            #     self.ps_pts[:,j,2]=rhub_to_shroud
-                
-            #     self.ss_pts[:,j,0]=xhub_to_shroud
-            #     self.ss_pts[:,j,2]=rhub_to_shroud
         
         self.hub_pts = np.vstack([
                 self.func_xhub(np.linspace(0,1,npts_chord*2)),
@@ -434,13 +519,12 @@ class Centrif3D():
         self.__apply_lean__(npts_span,npts_chord)
         self.__stretch_profiles__(npts_span,npts_chord)
         
-        # Apply Fillet radius to hub 
-        if self.fillet_r>0:
-            self.__apply_fillets__(npts_chord)
-        
         # Scale the profiles for the passage 
         self.__scale_profiles__(npts_span,npts_chord)
         
+        # Apply Fillet radius to hub 
+        if self.fillet_r>0:
+            self.__apply_fillets__(npts_chord)
     
     def plot(self):
         """Plots the generated design 

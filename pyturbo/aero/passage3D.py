@@ -1,5 +1,6 @@
 
 from typing import List
+import numpy.typing as npt
 from .centrif3D import Centrif3D
 import copy 
 from itertools import combinations, combinations_with_replacement
@@ -20,6 +21,8 @@ class Passage3D:
     blades:Centrif3D = []
     splitters:Centrif3D = []
     patterns:List[PatternPairCentrif] = []
+    hub_pts: npt.NDArray
+    shroud_pts:npt.NDArray
     
     def __init__(self,blade:Centrif3D) -> None:
         """Initialize a 3D Passage 
@@ -77,6 +80,43 @@ class Passage3D:
         blade.ps_pts[:,1] = res[:,0]
         blade.ps_pts[:,2] = res[:,1]
     
+    def __rotate_hub_shroud__(self,resolution:int=20):
+        """Rotate the hub and shroud 
+
+        Args:
+            resolution (int, optional): Number of rotations. Defaults to 20.
+        """
+        rotations = np.linspace(0,1,resolution)*360
+        npts = self.blades[0].hub_pts.shape
+        
+        xhub = self.blades[0].hub_pts[:,0]
+        rhub = self.blades[0].hub_pts[:,1]
+        zhub = self.blades[0].hub_pts[:,0]*0
+        
+        xshroud = self.blades[0].shroud_pts[:,0]
+        rshroud = self.blades[0].shroud_pts[:,1]
+        zshroud = self.blades[0].shroud_pts[:,0]*0
+        
+        self.hub_pts = np.zeros((npts,resolution,3))
+        self.shroud_pts = np.zeros((npts,resolution,3))
+        
+        for i in range(len(rotations)):
+            theta = np.radians(rotations[i])
+            mat = [[np.cos(theta), -np.sin(theta)],
+                    [np.sin(theta), np.cos(theta)]]
+
+            # Rotate the hub and shroud 
+            z1,r1 = np.matmul(mat,np.hstack([zhub,rhub]))
+            z2,r2 = np.matmul(mat,np.hstack([zshroud,rshroud]))
+            
+            self.hub_pts[:,i,0] = xhub
+            self.hub_pts[:,i,1] = z1
+            self.hub_pts[:,i,2] = r1
+            
+            self.shroud_pts[:,i,0] = xshroud
+            self.shroud_pts[:,i,1] = z2
+            self.shroud_pts[:,i,2] = r2
+    
     def __apply_pattern__(self,nblades:int,blades:List[Centrif3D],rotation_angles:List[float]):
         """Apply patterns modifications to the design. The intent of this is to reduce the peaks associated with a compressor by creating small variations in the geometry. 
         
@@ -102,21 +142,22 @@ class Passage3D:
             
             end_pos -= pattern.chord_scaling
             blades[i].set_blade_position(start_pos,end_pos)
-            pattern.pitch_to_chord_scaling
             rotation_angles[i] += pattern.rotation_ajustment
             
             blades[i].build(blades[i].npts_chord,blades[i].npts_span)
             
             # Rotate the blade 
             self.__rotate_centrif3D_x__(rotation_angles[i],blades[i])
-
+                 
     
-    def build(self,nblades:int,bSplitter:bool=False):
+    def build(self,nblades:int,bSplitter:bool=False,hub_resolution:int=-1):
         """Build the centrif geometry 
 
         Args:
             nblades (int): number of blades 
             bSplitter (bool): add splitter 
+            hub_resolution (int): how many rotations of the hub and shroud. Defaults to -1 which is same as number of blades + number of splitters
+            
         """
         theta_blade = 360/nblades
         blades = [copy.deepcopy(self.blade) for _ in range(nblades)]
@@ -125,7 +166,7 @@ class Passage3D:
         for b in blades:
             self.__rotate_centrif3D_x__(theta,b)
             theta += theta_blade
-        self.blades = blades 
+        self.blades = blades
         
         if bSplitter:
             splitters = []
@@ -136,18 +177,31 @@ class Passage3D:
                 theta += theta_blade
             self.splitters = splitters
         self.__apply_pattern__() # Applies the pattern and rotates the blade 
+        
+        if hub_resolution<=0:
+            hub_resolution = len(blades)+len(splitters)
+        self.__rotate_hub_shroud__(hub_resolution)
     
     def plot(self):
         """Plots the generated design 
         """
         fig = plt.figure(num=1,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
-        for blade in self.blades:
-            ax.plot3D(blade.hub_pts[:,0],blade.hub_pts[:,0]*0,blade.hub_pts[:,2],'k')
-            ax.plot3D(blade.shroud_pts[:,0],blade.shroud_pts[:,0]*0,blade.shroud_pts[:,2],'k')
+        for i in range(len(self.blades)):
+            blade = self.blades[i]
             for i in range(blade.ss_pts.shape[0]):
                 ax.plot3D(blade.ss_pts[i,:,0],blade.ss_pts[i,:,1],blade.ss_pts[i,:,2],'r')
                 ax.plot3D(blade.ps_pts[i,:,0],blade.ps_pts[i,:,1],blade.ps_pts[i,:,2],'b')
+        
+        resolution,npts,_ = self.hub_pts.shape
+        for i in range(len(resolution)):
+            ax.plot3D(self.hub_pts[i,:,0],self.hub_pts[i,:,1],self.hub_pts[i,:,2],'k')
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.5)
+        
+        for j in range(len(npts)):
+            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k')
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.5)
+            
         ax.view_init(azim=90, elev=45)
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')

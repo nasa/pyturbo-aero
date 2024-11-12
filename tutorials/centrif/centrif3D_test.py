@@ -150,6 +150,20 @@ def test_centrif3D_rounded_te():
     comp.plot()
     
 def test_centrif_fillet():
+    # Design the Fillet
+    ps_fillet1 = bezier([0, 0, 0.3, 0.8, 1],
+                        [1, 0.6, 0.2, 0, 0])  # LE
+    
+    ps_fillet2 = bezier([0, 0, 0.2, 0.8, 1],
+                        [1, 0.6, 0.2, 0, 0])  # Mid: PS
+    
+    ps_fillet3 = bezier([0, 0, 0.5, 0.8, 1],
+                        [1, 0.6, 0.1, 0.0, 0]) # TE: PS
+    
+    ss_fillet_2 = bezier([0, 0, 0.2, 0.7, 1],
+                         [1, 0.6, 0.2, 0, 0])  # Mid: SS
+    # ss_fillet_2.plot2D()
+    # plt.show()
     hub = Centrif2D()
     hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
     # hub.plot_camber()
@@ -187,8 +201,14 @@ def test_centrif_fillet():
     comp.add_hub(xhub,rhub)
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
+    
+    comp.add_hub_bezier_fillet(ps=ps_fillet1,ps_loc=0,r=0.05) # Radius is 5% of the height from hub to shroud
+    comp.add_hub_bezier_fillet(ps=ps_fillet2,ps_loc=0.5)
+    comp.add_hub_bezier_fillet(ps=ps_fillet3,ps_loc=1)
+    comp.add_hub_bezier_fillet(ss=ss_fillet_2,ss_loc=0.5)
     comp.build(100,100)
     comp.plot()
     
 if __name__=="__main__":
-    test_centrif3D_rounded_te()
+    # test_centrif3D_rounded_te()
+    test_centrif_fillet()
