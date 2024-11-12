@@ -265,24 +265,25 @@ class Centrif3D():
         t = np.linspace(0,1,self.npts_chord)
         ss_shifts = np.zeros((self.npts_span, self.npts_chord,2))
         ps_shifts = np.zeros((self.npts_span, self.npts_chord,2))
-        for i in range(self.npts_chord):
+        for j in range(self.npts_chord):
             # Look along the span to get distance 
-            dx = np.diff(self.ss_pts[:,i,0])
-            dy = np.diff(self.ss_pts[:,i,1])
-            dr = np.diff(self.ss_pts[:,i,2])
+            dx = np.diff(self.ss_pts[:,j,0])
+            dy = np.diff(self.ss_pts[:,j,1])
+            dr = np.diff(self.ss_pts[:,j,2])
             dist = np.sqrt(dx**2+dy**2+dr**2)
             dist_cumsum = np.cumsum(dist) # cumulative distance from the hub 
 
             # find indices where where less than fillet radius
-            indices = np.cumsum(dist) <= self.fillet_r
-            for ind in indices: # looking up the span 
-                magnitude_of_shift = self.fillet_shift_ss(t[i],dist[ind]) 
-                n = self.__get_normal__(self.ss_pts,ind,i)
-                ss_shifts[ind,i,:] = n*magnitude_of_shift
+            for i in range(len(dist_cumsum <= self.fillet_r)): # looking up the span 
+                if dist_cumsum[j] > self.fillet_r:
+                    break
+                magnitude_of_shift = self.fillet_shift_ss(t[j],dist_cumsum[i]) 
+                n = self.__get_normal__(self.ss_pts,i,j)
+                ss_shifts[i,j,:] = n*magnitude_of_shift
                 
-                magnitude_of_shift = self.fillet_shift_ps(t[i],dist[ind]) 
-                n = self.__get_normal__(self.ps_pts,ind,i)
-                ps_shifts[ind,i,:] = n*magnitude_of_shift
+                magnitude_of_shift = self.fillet_shift_ps(t[j],dist[i])
+                n = self.__get_normal__(self.ps_pts,i,j)
+                ps_shifts[i,j,:] = n*magnitude_of_shift
         self.ss_pts+=ss_shifts
         self.ps_pts+=ps_shifts
         
