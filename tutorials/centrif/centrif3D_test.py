@@ -202,12 +202,12 @@ def test_centrif_fillet():
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
     
-    comp.add_hub_bezier_fillet(ps=ps_fillet1,ps_loc=0,r=0.002) # Radius is 5% of the height from hub to shroud
+    comp.add_hub_bezier_fillet(ps=ps_fillet1,ps_loc=0,r=0.005) # Radius is 5% of the height from hub to shroud
     comp.add_hub_bezier_fillet(ps=ps_fillet2,ps_loc=0.5)
     comp.add_hub_bezier_fillet(ps=ps_fillet3,ps_loc=1)
     comp.add_hub_bezier_fillet(ss=ss_fillet_2,ss_loc=0.5)
-    comp.build(100,100)
-    comp.plot()
+    comp.build(400,100)
+    comp.plot_x_slice(50)
     
 if __name__=="__main__":
     # test_centrif3D_rounded_te()

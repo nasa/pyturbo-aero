@@ -146,42 +146,35 @@ class Centrif3D():
             self.ss_hub_fillet_loc.append(self.ps_hub_fillet_loc[-1])
         # if the suction side fillet is defined at leading edge
         elif self.ss_hub_fillet_loc[-1] == 1 and self.ps_hub_fillet_loc[0]!=1:
-            self.ps_hub_fillet.append(self.ss_hub_fillet[0])
-            self.ps_hub_fillet_loc.append(self.ss_hub_fillet_loc[0])
+            self.ps_hub_fillet.append(self.ss_hub_fillet[-1])
+            self.ps_hub_fillet_loc.append(self.ss_hub_fillet_loc[-1])
         # Not all cases were taken into account. Users should define something at leading edge and trailing edge and have fillets be equal. 
         
-    def fillet_shift_ps(self,t_ps:float,height:float):
-        """Gets the fillet shift on the pressure side given a height along an airfoil
-            Fillets shift must be applied perpendicular to the blade. 
-            
-        Args:
-            t_ps (float): percent along pressure side
-            height (float): height of the profile
-        """
-        if height > self.fillet_r:
-            return 0
-        else:
-            t = height/self.fillet_r
-            shifts = np.array([self.ps_hub_fillet[i].get_point(t) for i in self.ps_hub_fillet])
-            shift = csapi(self.ps_hub_fillet_loc,shifts,t_ps)
-            return shift
-        
-        
-    def fillet_shift_ss(self,t_ss:float,height:float):
+    @staticmethod
+    def __fillet_shift__(t_ss:float,height:float,fillet_r:float,fillet_array:List[bezier],fillet_array_loc:List[float]):
         """Gets the fillet shift on the suction side given a height along an airfoil
             Fillets shift must be applied perpendicular to the blade. 
 
         Args:
             t_ss (float): percent along the suction side 
             height (float): height of the profile
+            fillet_r (float): fillet radius 
+            fillet_array (List[bezier]): Array of fillets
+            fillet_array_loc (List[float]): Location of fillets 
+        
+        Returns:
+            (float): Amount to shift the point at t_ss in the normal direction
         """
-        if height > self.fillet_r:
+        if height > fillet_r:
             return 0
         else:
-            t = height/self.fillet_r
-            shifts = np.array([self.ss_hub_fillet[i].get_point(t) for i in self.ss_hub_fillet])
-            shift = csapi(self.ss_hub_fillet_loc,shifts,t_ss)
-            return shift
+            t = height/fillet_r
+            shifts = np.zeros((len(fillet_array),1))
+            for i in range(len(fillet_array)):            # X Values are the shift; Get the shift for each fillet 
+                temp,_ = fillet_array[i].get_point(t)
+                shifts[i] = temp[0]
+            shift = csapi(fillet_array_loc,shifts,t_ss)[0]*fillet_r
+            return float(shift)
     
     @staticmethod
     def __get_normal__(pts:npt.NDArray,span_indx:int,chord_indx:int):
@@ -196,7 +189,6 @@ class Centrif3D():
             3x1: Normal Vector 
         """
         max_span,max_pts,_ = pts.shape
-        normals = []
         
         # Bottom Left
         if span_indx == 0 and chord_indx==0:
@@ -205,23 +197,23 @@ class Centrif3D():
             R = 0.5*(pts[span_indx,chord_indx,:] + pts[span_indx+1,chord_indx,:])
         # Bottom
         elif span_indx == 0 and chord_indx>0 and chord_indx<max_pts-1:
-            P = 0.5*(pts[span_indx,chord_indx-1,:]+ pts[span_indx,chord_indx,:])
+            P = 0.5*(pts[span_indx,chord_indx-1,:] + pts[span_indx,chord_indx,:])
             Q = 0.5*(pts[span_indx,chord_indx+1,:] + pts[span_indx,chord_indx,:])
-            R = 0.5*(pts[span_indx+1,chord_indx,:]+ pts[span_indx,chord_indx,:])
+            R = 0.5*(pts[span_indx+1,chord_indx,:] + pts[span_indx,chord_indx,:])
         # Bottom right 
         elif span_indx==0 and chord_indx==max_pts-1:
             P = pts[span_indx,chord_indx,:]
             Q = 0.5*(pts[span_indx+1,chord_indx,:]+pts[span_indx,chord_indx,:])
             R = 0.5*pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:]
         # Top Left
-        if span_indx==max_span-1 and chord_indx==0:
+        elif span_indx==max_span-1 and chord_indx==0:
             P = pts[span_indx,chord_indx,:]
             Q = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
             R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
         # Top
         elif span_indx==max_span-1 and chord_indx>0 and chord_indx<max_pts-1:
             P = 0.5*(pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:])
-            Q = 0.5*(pts[span_indx-1,chord_indx-1,:]+pts[span_indx,chord_indx,:])
+            Q = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
             R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
         # Top Right
         elif span_indx==max_span-1 and chord_indx==max_pts-1:
@@ -256,32 +248,31 @@ class Centrif3D():
         n = np.cross(Q-P,R-P)
         return n/np.linalg.norm(n,ord=1) # Normal 
     
-    def __apply_fillets__(self,npts_chord:int):
+    def __apply_fillets__(self):
         """Apply fillets 
-
-        Args:
-            npts_chord (int): Number of points in chord
         """
+        self.__cleanup_fillet_inputs__()
+        
         t = np.linspace(0,1,self.npts_chord)
-        ss_shifts = np.zeros((self.npts_span, self.npts_chord,2))
-        ps_shifts = np.zeros((self.npts_span, self.npts_chord,2))
+        ss_shifts = np.zeros((self.npts_span, self.npts_chord,3))
+        ps_shifts = np.zeros((self.npts_span, self.npts_chord,3))
         for j in range(self.npts_chord):
             # Look along the span to get distance 
             dx = np.diff(self.ss_pts[:,j,0])
             dy = np.diff(self.ss_pts[:,j,1])
             dr = np.diff(self.ss_pts[:,j,2])
-            dist = np.sqrt(dx**2+dy**2+dr**2)
-            dist_cumsum = np.cumsum(dist) # cumulative distance from the hub 
+            dist = np.sqrt(dx**2+dy**2+dr**2)   # Distance from point to point 
+            dist_cumsum = np.cumsum(dist)       # Cumulative distance from the hub 
 
             # find indices where where less than fillet radius
             for i in range(len(dist_cumsum <= self.fillet_r)): # looking up the span 
-                if dist_cumsum[j] > self.fillet_r:
+                if dist_cumsum[i] > self.fillet_r:
                     break
-                magnitude_of_shift = self.fillet_shift_ss(t[j],dist_cumsum[i]) 
+                magnitude_of_shift = self.__fillet_shift__(t[j],dist_cumsum[i],self.fillet_r,self.ss_hub_fillet,self.ss_hub_fillet_loc)
                 n = self.__get_normal__(self.ss_pts,i,j)
                 ss_shifts[i,j,:] = n*magnitude_of_shift
                 
-                magnitude_of_shift = self.fillet_shift_ps(t[j],dist[i])
+                magnitude_of_shift = self.__fillet_shift__(t[j],dist_cumsum[i],self.fillet_r,self.ps_hub_fillet,self.ps_hub_fillet_loc)
                 n = self.__get_normal__(self.ps_pts,i,j)
                 ps_shifts[i,j,:] = n*magnitude_of_shift
         self.ss_pts+=ss_shifts
@@ -525,8 +516,18 @@ class Centrif3D():
         
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
-            self.__apply_fillets__(npts_chord)
+            self.__apply_fillets__()
     
+    def plot_x_slice(self,j:int):
+        fig = plt.figure(num=2,dpi=150)
+        ax = fig.add_subplot(111)
+        ax.plot(self.ss_pts[:,j,1],self.ss_pts[:,j,2],'.')
+        ax.plot(self.ps_pts[:,j,1],self.ps_pts[:,j,2],'.b')
+        ax.set_xlabel('rth')
+        ax.set_ylabel('r')
+        plt.axis('scaled')
+        plt.show()
+        
     def plot(self):
         """Plots the generated design 
         """
