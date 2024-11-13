@@ -1,12 +1,13 @@
 from typing import List, Tuple, Union
 from .centrif2D import Centrif2D
-from ..helper import bezier,convert_to_ndarray, csapi, line2D
+from ..helper import bezier,convert_to_ndarray, csapi, line2D, exp_ratio
 import numpy as np 
 import numpy.typing as npt 
 from scipy.interpolate import PchipInterpolator
 from pyturbo.aero.airfoil3D import StackType
 import matplotlib.pyplot as plt 
 from plot3d import Block
+
 
 class Centrif3D():
     """Generates the 3D blade 
@@ -171,9 +172,14 @@ class Centrif3D():
             t = height/fillet_r
             shifts = np.zeros((len(fillet_array),1))
             for i in range(len(fillet_array)):            # X Values are the shift; Get the shift for each fillet 
-                temp,_ = fillet_array[i].get_point(t)
+                if fillet_array[i].get_point(0)[1]==1:    # Depends how fillets are defined 
+                    temp,_ = fillet_array[i].get_point(1-t)
+                else:
+                    temp,_ = fillet_array[i].get_point(t)
                 shifts[i] = temp[0]
-            shift = csapi(fillet_array_loc,shifts,t_ss)[0]*fillet_r
+            # shift = csapi(fillet_array_loc,shifts,t_ss)[0]*fillet_r
+            shift = fillet_array[0].get_point(1-t)[0]*fillet_r
+         
             return float(shift)
     
     @staticmethod
@@ -190,47 +196,36 @@ class Centrif3D():
         """
         max_span,max_pts,_ = pts.shape
         
-        # Bottom Left
-        if span_indx == 0 and chord_indx==0:
-            P = pts[span_indx,chord_indx,:]
-            Q = 0.5*(pts[span_indx,chord_indx,:] + pts[span_indx,chord_indx+1,:])
-            R = 0.5*(pts[span_indx,chord_indx,:] + pts[span_indx+1,chord_indx,:])
-        # Bottom
-        elif span_indx == 0 and chord_indx>0 and chord_indx<max_pts-1:
-            P = 0.5*(pts[span_indx,chord_indx-1,:] + pts[span_indx,chord_indx,:])
-            Q = 0.5*(pts[span_indx,chord_indx+1,:] + pts[span_indx,chord_indx,:])
-            R = 0.5*(pts[span_indx+1,chord_indx,:] + pts[span_indx,chord_indx,:])
+        if span_indx == 0 and chord_indx>0 and chord_indx<max_pts-1: # If bottom use the one up
+            span_indx+=1
+            
+        if span_indx == 0 and chord_indx==0: # bottom left 
+            span_indx+=1
+            chord_indx+=1    
+
         # Bottom right 
-        elif span_indx==0 and chord_indx==max_pts-1:
-            P = pts[span_indx,chord_indx,:]
-            Q = 0.5*(pts[span_indx+1,chord_indx,:]+pts[span_indx,chord_indx,:])
-            R = 0.5*pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:]
-        # Top Left
-        elif span_indx==max_span-1 and chord_indx==0:
-            P = pts[span_indx,chord_indx,:]
-            Q = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
-            R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
-        # Top
-        elif span_indx==max_span-1 and chord_indx>0 and chord_indx<max_pts-1:
-            P = 0.5*(pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:])
-            Q = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
-            R = 0.5*(pts[span_indx,chord_indx+1,:]+pts[span_indx,chord_indx,:])
-        # Top Right
-        elif span_indx==max_span-1 and chord_indx==max_pts-1:
-            P = pts[span_indx,chord_indx,:]
-            Q = 0.5*(pts[span_indx,chord_indx-1,:]+pts[span_indx,chord_indx,:])
-            R = 0.5*(pts[span_indx-1,chord_indx,:]+pts[span_indx,chord_indx,:])
-        # Left
-        elif chord_indx==0 and span_indx>0 and span_indx<max_span-1:
-            P = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
-            Q = 0.5*(pts[span_indx,chord_indx+1]+pts[span_indx,chord_indx])
-            R = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
-        # Right
-        elif chord_indx == max_pts-1 and span_indx>0 and span_indx<max_span-1:
-            P = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
-            Q = 0.5*(pts[span_indx,chord_indx-1]+pts[span_indx,chord_indx])
-            R = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
-        else:
+        if span_indx==0 and chord_indx==max_pts-1:
+            span_indx+=1
+            chord_indx-=1
+        
+        
+        if chord_indx==0 and span_indx>0 and span_indx<max_span-1: # Left
+            chord_indx+=1
+        
+        if chord_indx == max_pts-1 and span_indx>0 and span_indx<max_span-1: # Right
+            chord_indx-=1
+            
+        # # Left
+        # if chord_indx==0 and span_indx>0 and span_indx<max_span-1:
+        #     P = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
+        #     Q = 0.5*(pts[span_indx,chord_indx+1]+pts[span_indx,chord_indx])
+        #     R = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
+        # # Right
+        # if chord_indx == max_pts-1 and span_indx>0 and span_indx<max_span-1:
+        #     P = 0.5*(pts[span_indx+1,chord_indx]+pts[span_indx,chord_indx])
+        #     Q = 0.5*(pts[span_indx,chord_indx-1]+pts[span_indx,chord_indx])
+        #     R = 0.5*(pts[span_indx-1,chord_indx]+pts[span_indx,chord_indx])
+        if span_indx>0 and span_indx<max_span and chord_indx>0 and chord_indx<max_pts:
             # Interior
             P=0.5*(pts[span_indx+1,chord_indx] + pts[span_indx,chord_indx])
             Q=0.25*(
@@ -267,16 +262,24 @@ class Centrif3D():
             # find indices where where less than fillet radius
             for i in range(len(dist_cumsum <= self.fillet_r)): # looking up the span 
                 if dist_cumsum[i] > self.fillet_r:
-                    break
+                    break                
                 magnitude_of_shift = self.__fillet_shift__(t[j],dist_cumsum[i],self.fillet_r,self.ss_hub_fillet,self.ss_hub_fillet_loc)
                 n = self.__get_normal__(self.ss_pts,i,j)
                 ss_shifts[i,j,:] = n*magnitude_of_shift
                 
                 magnitude_of_shift = self.__fillet_shift__(t[j],dist_cumsum[i],self.fillet_r,self.ps_hub_fillet,self.ps_hub_fillet_loc)
-                n = self.__get_normal__(self.ps_pts,i,j)
-                ps_shifts[i,j,:] = n*magnitude_of_shift
+                n = -self.__get_normal__(self.ps_pts,i,j)
+                ps_shifts[i,j,:] = n*magnitude_of_shift    
+            
         self.ss_pts+=ss_shifts
         self.ps_pts+=ps_shifts
+        LE = 0.5*(self.ss_pts[:,0,:] + self.ps_pts[:,0,:])
+        self.ss_pts[:,0,:] = LE
+        self.ps_pts[:,0,:] = LE
+        
+        TE = 0.5*(self.ss_pts[:,-1,:] + self.ps_pts[:,-1,:])
+        self.ss_pts[:,-1,:] = TE
+        self.ps_pts[:,-1,:] = TE
         
     def __apply_stacking__(self):
         if self.stacktype == StackType.centroid:
@@ -414,6 +417,10 @@ class Centrif3D():
         t_temp = np.linspace(0,1,len(self.profiles))
         t = np.linspace(0,1,npts_span)
         
+        # Lets get a better resolution of the fillet 
+        if self.fillet_r>0:
+            self.t_span = exp_ratio(1.2,50)*0.1 + np.linspace(1.2)
+            
         for i in range(npts_chord):
             ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],t)
             ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],t)
@@ -521,11 +528,11 @@ class Centrif3D():
     def plot_x_slice(self,j:int):
         fig = plt.figure(num=2,dpi=150)
         ax = fig.add_subplot(111)
-        ax.plot(self.ss_pts[:,j,1],self.ss_pts[:,j,2],'.')
-        ax.plot(self.ps_pts[:,j,1],self.ps_pts[:,j,2],'.b')
+        ax.plot(self.ss_pts[:,j,1],self.ss_pts[:,j,2],'.r',label='suction side')
+        ax.plot(self.ps_pts[:,j,1],self.ps_pts[:,j,2],'.b',label='pressure side')
         ax.set_xlabel('rth')
         ax.set_ylabel('r')
-        plt.axis('scaled')
+        plt.axis('equal')
         plt.show()
         
     def plot(self):
