@@ -5,6 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def create_passage_compressor(bPlot:bool=False):
+    """Creates the hub and shroud curves for the compressor 
+
+    Args:
+        bPlot (bool, optional): Plots the hub and shroud curves . Defaults to False.
+
+    Returns:
+        _type_: _description_
+    """
     # Shroud is defined using a thickness offset from the hub to construct a spline
     xhub_ctrl_pts = [0.0, 0.02, 0.08, 0.11, 0.12, 0.12]
     rhub_ctrl_pts = [0.0, 0.0, 0.004, 0.06, 0.09, 0.10]
@@ -29,71 +37,7 @@ def create_passage_compressor(bPlot:bool=False):
         plt.show()
     return xhub, rhub, xshroud, rshroud
 
-def create_passage_turbine(bPlot:bool=False):
-    """_summary_
 
-    Returns:
-        Tuple: _description_
-    """
-    # Shroud is defined using a thickness offset from the hub to construct a spline
-    rhub_ctrl_pts = [0.12,0.10,0.085,
-                    0.06,0.04,
-                    0.0235, 0.0235,0.0235]
-
-    xhub_ctrl_pts = [0.0, 0.0, 0.0,
-                    0.02,0.05,
-                    0.08,0.12,0.13]
-
-    dr = [0.008, 0.008, 0.008, 
-        0.015, 0.02,
-        0.025,0.025,0.025]
-    t = [0, 0.1, 0.2,
-        0.4, 0.6,
-        0.92, 0.98, 1.0]
-
-    hub = bezier(xhub_ctrl_pts,rhub_ctrl_pts)
-    shroud_dh = bezier(t,dr)
-
-    def r2(x:float,x1:float,r1:float,slope:float):
-        return slope*(x-x1)+r1
-
-    def dh_error(x2:float,x1:float,r1:float,dx:float,dr:float,h:float):
-        slope = -dx/dr
-        r2_guess = r2(x2,x1,r1,slope)
-        return np.abs(h-np.sqrt((x1-x2)**2+(r1-r2_guess)**2))
-
-    # Build Shroud
-    npts = 30
-    xhub,rhub = hub.get_point(np.linspace(0,1,npts))
-    dx_pts = np.gradient(xhub, np.linspace(0,1,npts))
-    dr_pts = np.gradient(rhub, np.linspace(0,1,npts))
-    _, h_pts = shroud_dh.get_point(np.linspace(0,1,npts))
-    xshroud = xhub*0
-    rshroud = xhub*0; i = 0
-    for dx,dr,x1,r1,h in zip(dx_pts,dr_pts,xhub,rhub,h_pts): 
-        if abs(dx/dr) >20:
-            xshroud[i] = x1
-            rshroud[i] = r1+h
-        else:
-            res = minimize_scalar(dh_error,bounds=[x1,x1+1.5*h],args=(x1,r1,dx,dr,h))
-            if r2(res.x,x1,r1,-dx/dr)<r1:
-                res = minimize_scalar(dh_error,bounds=[x1-1.5*h,x1],args=(x1,r1,dx,dr,h))
-            
-            xshroud[i] = res.x
-            rshroud[i] = r2(xshroud[i],x1,r1,-dx/dr)
-            h_check = np.sqrt((x1-xshroud[i])**2+(r1-rshroud[i])**2)
-            # print(f"h = {h} h_check = {h_check}")
-        i+=1
-    if bPlot:
-        plt.figure(num=1,clear=True)
-        plt.plot(xhub,rhub)
-        plt.plot(xshroud,rshroud,'.')
-        plt.axis('scaled')
-        plt.xlabel('x-axial')
-        plt.ylabel('r-radial')
-        plt.show()
-    
-    return hub, rhub, xshroud, rshroud
 
 def test_centrif3D_cut_te():
     hub = Centrif2D()
@@ -106,7 +50,14 @@ def test_centrif3D_cut_te():
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_te_cut()
     hub.build(200)
-    hub.plot()
+    
+    xhub,rhub,xshroud,rshroud = create_passage_compressor()    
+    comp = Centrif3D([hub,hub,hub],StackType.leading_edge)
+    comp.add_hub(xhub,rhub)
+    comp.add_shroud(xshroud,rshroud)
+    comp.set_blade_position(0.01,0.95)
+    comp.build(100,100)
+    return hub 
 
 def test_centrif3D_rounded_te():
     hub = Centrif2D()
@@ -147,7 +98,7 @@ def test_centrif3D_rounded_te():
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
     comp.build(100,100)
-    comp.plot()
+    return comp
     
 def test_centrif_fillet():
     # Design the Fillet
@@ -202,14 +153,17 @@ def test_centrif_fillet():
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
     
-    comp.add_hub_bezier_fillet(ps=ps_fillet1,ps_loc=0,r=0.002) # Radius is 5% of the height from hub to shroud
-    comp.add_hub_bezier_fillet(ps=ps_fillet2,ps_loc=0.5)
-    comp.add_hub_bezier_fillet(ps=ps_fillet3,ps_loc=1)
-    comp.add_hub_bezier_fillet(ss=ss_fillet2,ss_loc=0.5)
-    comp.build(400,400)
+    # comp.add_hub_bezier_fillet(ps=ps_fillet1,ps_loc=0,r=0.002) # Radius is 5% of the height from hub to shroud
+    # comp.add_hub_bezier_fillet(ps=ps_fillet2,ps_loc=0.5)
+    # comp.add_hub_bezier_fillet(ps=ps_fillet3,ps_loc=1)
+    # comp.add_hub_bezier_fillet(ss=ss_fillet2,ss_loc=0.5)
+    comp.build(100,100)
     # comp.plot_x_slice(2)
-    comp.plot()
+
+    return comp 
     
 if __name__=="__main__":
     # test_centrif3D_rounded_te()
-    test_centrif_fillet()
+    blade = test_centrif_fillet()
+    blade.plot()
+    

@@ -248,7 +248,7 @@ class Centrif3D():
         """
         self.__cleanup_fillet_inputs__()
         
-        t = np.linspace(0,1,self.npts_chord)
+        t = self.t_chord
         ss_shifts = np.zeros((self.npts_span, self.npts_chord,3))
         ps_shifts = np.zeros((self.npts_span, self.npts_chord,3))
         for j in range(self.npts_chord):
@@ -322,7 +322,8 @@ class Centrif3D():
             npts_chord (int): number of points defining the chord 
         """
         # Lets get the length from start to finish
-        t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
+        t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
+        # t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
         xh = self.func_xhub(t)
         rh = self.func_rhub(t)
         
@@ -363,7 +364,6 @@ class Centrif3D():
             npts_span (int): number of points in the spanwise direction 
             npts_chord (int): number of points in the chordwise direction
         """
-        thub_to_shroud = np.linspace(0,1,npts_span)
         percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
         
         t = np.zeros((npts_span,npts_chord))
@@ -378,7 +378,7 @@ class Centrif3D():
             rshroud = self.func_rshroud(t[:,j])
             l = line2D([xhub,rhub],[xshroud,rshroud])
             
-            x,r = l.get_point(np.linspace(0,1,npts_span))
+            x,r = l.get_point(self.t_span)
             for i in range(npts_span):
                 self.ps_pts[i,j,0]=x[i]
                 self.ps_pts[i,j,2]=r[i]
@@ -415,20 +415,15 @@ class Centrif3D():
         ps_pts = np.zeros((npts_span,npts_chord,3))
         
         t_temp = np.linspace(0,1,len(self.profiles))
-        t = np.linspace(0,1,npts_span)
         
-        # Lets get a better resolution of the fillet 
-        if self.fillet_r>0:
-            self.t_span = exp_ratio(1.2,50)*0.1 + np.linspace(1.2)
-            
         for i in range(npts_chord):
-            ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],t)
-            ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],t)
-            ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],t)
+            ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],self.t_span)
+            ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],self.t_span)
+            ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],self.t_span)
             
-            ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],t)
-            ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],t)
-            ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],t)
+            ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],self.t_span)
+            ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],self.t_span)
+            ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],self.t_span)
         
         self.ps_pts = ps_pts
         self.ss_pts = ss_pts
@@ -450,13 +445,16 @@ class Centrif3D():
         camber_temp = np.zeros(shape=(npts_span,npts_chord,2))
         camber_lengths = list()
         for i in range(npts_span):
+            
             camber_temp[i,:,:] = np.vstack([(
                     self.ss_pts[i,:,0]+self.ps_pts[i,:,0])/2, 
                     (self.ss_pts[i,:,1]+self.ps_pts[i,:,1])/2]).transpose()
+            
             diff_camber = np.vstack([
                     [0,0],
                     np.vstack([np.diff(camber_temp[i,:,0]),np.diff(camber_temp[i,:,1])]).transpose()
             ])
+            
             camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
             percent_distance_along_camber = [camber_len[i]/camber_len[-1] for i in range(len(camber_len))]
             percent_distance_along_camber_for_each_profile[i,:] = percent_distance_along_camber
@@ -490,7 +488,7 @@ class Centrif3D():
             # for each lean and location 
             i = 0 
             for lean,lean_loc in zip(self.leans,self.lean_cambers):
-                lean_y_temp[:,i] = lean.get_point(np.linspace(0,1,npts_span))
+                lean_y_temp[:,i] = lean.get_point(self.t_span)
                 i+=1 
             
             # Apply lean 
@@ -508,6 +506,19 @@ class Centrif3D():
         """
         self.npts_span = npts_span
         self.npts_chord = npts_chord
+        
+        if self.fillet_r>0:
+            # Lets get a better resolution of the fillet 
+            a = 0.1 # Percent span where expansion ratio stops
+            b = 0.1 # Percent chord when expansion ratio starts and stops 
+            h1 = exp_ratio(1.2,50)*a
+            h2 = np.linspace(0,1,npts_span-50)*(1-a)+a
+            self.t_span = np.hstack([h1,h2[1:]])
+            self.t_chord = np.linspace(0,1,npts_chord)
+        else:
+            self.t_span = np.linspace(0,1,npts_span)
+            self.t_chord = np.linspace(0,1,npts_chord)
+
         
         self.__apply_stacking__()
         

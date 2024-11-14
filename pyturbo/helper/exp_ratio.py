@@ -1,24 +1,31 @@
 import numpy as np
-               
 
-def exp_ratio(ratio,npoints,maxvalue=1):
-    """
-        Expansion Ratio
-        Inputs:
-            ratio - 1 = no epxansion simple linspace 1.2 or 1.4 probably max
-            npoints - number of points to use
-            max - max value 
+
+def exp_ratio(ratio:float,npoints:int,maxvalue:float=1,flip_direction:bool=False):
+    """_summary_
+
+    Args:
+        ratio (float): _description_
+        npoints (int): _description_
+        maxvalue (float, optional): _description_. Defaults to 1.
+        flip_direction (bool, optional): _description_. Defaults to False.
+
+    Returns:
+        _type_: _description_
     """
     t = np.zeros(npoints)
     s = 0
-    for i in range(npoints):
-        s = s+ratio**i
+    for p in range(npoints-1):
+        s+=ratio**(p+1)
+    a = 1/s 
+    t[0] = 0
     
-    dt = 1/s
-    t[0] = dt
-    for i in range(1,npoints):
-       t[i] = t[i-1] + dt*ratio
-       dt = dt * ratio
+    if flip_direction:    
+        for i in range(1,npoints):
+            t[i] = t[i-1]+a*ratio**(npoints-i)
+    else:    
+        for i in range(1,npoints):
+            t[i] = t[i-1] + a*ratio**i
     
     t = maxvalue*t
     return t

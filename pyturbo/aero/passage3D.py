@@ -31,7 +31,7 @@ class Passage3D:
             blade (Centrif3D): _description_
         """
         self.blade=blade
-        self.patterns.append(PatternPairCentrif(1,1,1)) # adds a default pattern, this is no modification
+        self.patterns.append(PatternPairCentrif(1,1)) # adds a default pattern, this is no modification
         
         
     
@@ -67,8 +67,8 @@ class Passage3D:
         theta = np.radians(theta)
         
         # Rotate in the y-z axis 
-        mat = [[np.cos(theta), -np.sin(theta)],
-               [np.sin(theta), np.cos(theta)]]
+        mat = np.array([[np.cos(theta), -np.sin(theta)],
+               [np.sin(theta), np.cos(theta)]])
         
         yz = np.hstack([blade.ss_pts[:,:,1].transpose(),blade.ss_pts[:,:,2].transpose()])
         res = np.matmul(mat,yz)

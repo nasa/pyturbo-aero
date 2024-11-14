@@ -287,7 +287,7 @@ class Airfoil2D():
         """
         if (thickness_loc is None):
             if expansion_ratio: # if expansion ratio is specified              
-                t =  exp_ratio(expansion_ratio,len(thicknessArray)+2,camberPercent) # Allocate 2 extra points for continunity at the trailing edge and for flow guidance
+                t = exp_ratio(expansion_ratio,len(thicknessArray)+3,camberPercent)[1:] # Allocate 2 extra points for continunity at the trailing edge and for flow guidance
                 # Define location of bezier control points from 0 to
                 # camberPercent
             else:  
@@ -348,7 +348,7 @@ class Airfoil2D():
         # 3 Extra points is added to account for the Leading Edge being
         # computed and last 2 are for the trailing edge
         
-        ps_height_loc = exp_ratio(expansion_ratio,len(thicknessArray)+2,0.95)
+        ps_height_loc = exp_ratio(expansion_ratio,len(thicknessArray)+3,0.95)[1:]
         ps_height_loc = np.append(ps_height_loc,[1])
         t = convert_to_ndarray(ps_height_loc)
 
@@ -682,7 +682,7 @@ class Airfoil2D():
         [_, _, _, _, _, _,ts] = self.channel_get(self,self.s_c)
         
         # Limit suction side to ts
-        t = exp_ratio(self.ss_exp_ratio,len(self.SS_thickness)+2,ts)
+        t = exp_ratio(self.ss_exp_ratio,len(self.SS_thickness)+3,ts)[1:]
         indx = 2
         b = self.camberBezier                        
         for i in range(len(t)):
