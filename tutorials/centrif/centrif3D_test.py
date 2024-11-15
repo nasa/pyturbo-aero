@@ -14,12 +14,12 @@ def create_passage_compressor(bPlot:bool=False):
         _type_: _description_
     """
     # Shroud is defined using a thickness offset from the hub to construct a spline
-    xhub_ctrl_pts = [0.0, 0.02, 0.08, 0.11, 0.12, 0.12]
-    rhub_ctrl_pts = [0.0, 0.0, 0.004, 0.06, 0.09, 0.10]
+    xhub_ctrl_pts = np.array([0.0, 0.02, 0.08, 0.11, 0.12, 0.12])
+    rhub_ctrl_pts = np.array([0.0, 0.0, 0.004, 0.06, 0.09, 0.10]) + 0.02
     hub = bezier(xhub_ctrl_pts,rhub_ctrl_pts)
     
-    xshroud_ctrl_pts = [0.0, 0.02, 0.05, 0.09, 0.11, 0.11]
-    rshroud_ctrl_pts = [0.03, 0.03, 0.04, 0.055, 0.09, 0.10]
+    xshroud_ctrl_pts = np.array([0.0, 0.02, 0.05, 0.09, 0.11, 0.11])
+    rshroud_ctrl_pts = np.array([0.03, 0.03, 0.04, 0.055, 0.09, 0.10]) + 0.02
     shroud = bezier(xshroud_ctrl_pts,rshroud_ctrl_pts)
 
     xhub,rhub = hub.get_point(np.linspace(0,1,100))

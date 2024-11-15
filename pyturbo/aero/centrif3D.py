@@ -46,6 +46,8 @@ class Centrif3D():
     t_span:npt.NDArray          # Not used yet but might be in the future
     t_chord:npt.NDArray
     
+    __rotation_angle:float = 0 
+    
     @property
     def tip_clearance(self):
         return self.__tip_clearance
@@ -58,6 +60,38 @@ class Centrif3D():
             val (float, optional): tip clearance as a percentage of the hub to shroud. Defaults to 0.
         """
         self.__tip_clearance = val
+    
+    
+    @property
+    def rotation_angle(self) -> float:
+        return self.__rotation_angle
+    
+    def rotate(self,theta:float):
+        """Rotate about x axis
+
+        Args:
+            theta (float): rotation angle in degrees
+        """
+        self.__rotation_angle = theta 
+        
+        theta = np.radians(theta)
+        
+        # Rotate in the y-z axis 
+        mat = np.array([[np.cos(theta), -np.sin(theta)],
+               [np.sin(theta), np.cos(theta)]])
+        
+        for i in range(self.ss_pts.shape[0]):
+            rth_r = np.vstack([self.ss_pts[i,:,1].transpose(),self.ss_pts[i,:,2].transpose()])
+            res = np.matmul(mat,rth_r)
+            self.ss_pts[i,:,1] = res[0,:]
+            self.ss_pts[i,:,2] = res[1,:]
+            
+            rth_r = np.vstack([self.ps_pts[i,:,1].transpose(),self.ps_pts[i,:,2].transpose()])
+            res = np.matmul(mat,rth_r)
+            self.ps_pts[i,:,1] = res[0,:]
+            self.ps_pts[i,:,2] = res[1,:]
+    
+
     
     def __init__(self,profiles:List[Centrif2D],stacking:StackType=StackType.leading_edge):
         self.profiles = profiles
@@ -560,5 +594,7 @@ class Centrif3D():
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')
         ax.set_zlabel('r-radial')
+        
         plt.show()
+        
         
