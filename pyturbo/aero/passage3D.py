@@ -147,10 +147,10 @@ class Passage3D:
             
         """
         # Lets check
-        self.blade.build(100,100)
-        self.splitter.build(100,100)
-        self.blade.rotate(30)
-        self.splitter.rotate(30)
+        # self.blade.build(100,100)
+        # self.splitter.build(100,100)
+        # self.blade.rotate(30)
+        # self.splitter.rotate(30)
         
         theta_blade = 360/nblades
         blades = [copy.deepcopy(self.blade) for _ in range(nblades)]
