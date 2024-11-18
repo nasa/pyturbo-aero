@@ -57,7 +57,7 @@ def test_centrif3D_cut_te():
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
     comp.build(100,100)
-    return hub 
+    return comp 
 
 def test_centrif3D_rounded_te():
     hub = Centrif2D()

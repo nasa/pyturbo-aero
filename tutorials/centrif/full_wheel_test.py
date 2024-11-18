@@ -1,4 +1,4 @@
-from centrif3D_test import test_centrif3D_rounded_te
+from centrif3D_test import test_centrif3D_rounded_te, test_centrif3D_cut_te
 from pyturbo.aero.passage3D import Passage3D, PatternPairCentrif
 
 def fullwheel_no_fillet():

@@ -26,6 +26,7 @@ class Passage3D:
     
     blade_stagger:float
     splitter_stagger:float
+    
     def __init__(self,blade:Centrif3D) -> None:
         """Initialize a 3D Passage 
 
@@ -136,6 +137,13 @@ class Passage3D:
             self.blades[i].build(self.blades[i].npts_span,self.blades[i].npts_chord)
             self.blades[i].rotate(self.blades[i].rotation_angle+pattern.rotation_ajustment) # Rotate the blade 
                  
+    def add_cut_te(self,percent_r:float):
+        """Looks in the R-Z Plane and cuts the geometry 
+
+        Args:
+            percent_r (float): percentage of ending radius to cut the geometry
+        """
+        pass 
     
     def build(self,nblades:int,bSplitter:bool=False,hub_resolution:int=-1):
         """Build the centrif geometry 
@@ -147,11 +155,6 @@ class Passage3D:
             
         """
         # Lets check
-        # self.blade.build(100,100)
-        # self.splitter.build(100,100)
-        # self.blade.rotate(30)
-        # self.splitter.rotate(30)
-        
         theta_blade = 360/nblades
         blades = [copy.deepcopy(self.blade) for _ in range(nblades)]
         # Lets rotate the blades 

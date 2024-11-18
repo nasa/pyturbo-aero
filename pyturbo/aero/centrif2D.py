@@ -108,7 +108,6 @@ class Centrif2D:
             self.ss_x.append(thickness*(-dx/m))
             self.ss_y.append(thickness*(dy/m))
    
-
     def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """builds the pressure side 
 
@@ -142,7 +141,6 @@ class Centrif2D:
             self.ss_x.append(x[i]+dx[i]*m[i-1])
             self.ss_y.append(y[i]-dy[i]*m[i-1])
         
-
     def add_te_radius(self,radius_scale:float=0.6,wedge_ss:float=10,wedge_ps:float=10,elliptical:float=1):
         """Add a trailing edge that's rounded
 
@@ -210,7 +208,6 @@ class Centrif2D:
             self.ss_te_pts[:,0] = self.ss_te_pts[:,0]+xc
             self.ss_te_pts[:,1] = self.ss_te_pts[:,1]+yc
 
-         
     def add_te_cut(self):
         """Cuts the trailing edge instead of having a rounded TE
 

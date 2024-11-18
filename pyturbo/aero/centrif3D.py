@@ -7,7 +7,7 @@ from scipy.interpolate import PchipInterpolator
 from pyturbo.aero.airfoil3D import StackType
 import matplotlib.pyplot as plt 
 from plot3d import Block
-
+from scipy.interpolate import interp1d
 
 class Centrif3D():
     """Generates the 3D blade 
@@ -80,17 +80,16 @@ class Centrif3D():
         mat = np.array([[np.cos(theta), -np.sin(theta)],
                [np.sin(theta), np.cos(theta)]])
         
-        for i in range(self.ss_pts.shape[0]):
-            rth_r = np.vstack([self.ss_pts[i,:,1].transpose(),self.ss_pts[i,:,2].transpose()])
+        for j in range(self.ss_pts.shape[1]):
+            rth_r = np.vstack([self.ss_pts[:,j,1].transpose(),self.ss_pts[:,j,2].transpose()])
             res = np.matmul(mat,rth_r)
-            self.ss_pts[i,:,1] = res[0,:]
-            self.ss_pts[i,:,2] = res[1,:]
+            self.ss_pts[:,j,1] = res[0,:]
+            self.ss_pts[:,j,2] = res[1,:]
             
-            rth_r = np.vstack([self.ps_pts[i,:,1].transpose(),self.ps_pts[i,:,2].transpose()])
+            rth_r = np.vstack([self.ps_pts[:,j,1].transpose(),self.ps_pts[:,j,2].transpose()])
             res = np.matmul(mat,rth_r)
-            self.ps_pts[i,:,1] = res[0,:]
-            self.ps_pts[i,:,2] = res[1,:]
-    
+            self.ps_pts[:,j,1] = res[0,:]
+            self.ps_pts[:,j,2] = res[1,:]
 
     
     def __init__(self,profiles:List[Centrif2D],stacking:StackType=StackType.leading_edge):
@@ -390,7 +389,8 @@ class Centrif3D():
         self.func_rhub = PchipInterpolator(t,hub[:,1])
         self.func_xshroud = PchipInterpolator(t,shroud[:,0])
         self.func_rshroud = PchipInterpolator(t,shroud[:,1])
-        
+    
+          
     def __scale_profiles__(self,npts_span:int,npts_chord:int):
         """scale the profiles to fit into the hub and shroud 
             Note: This only affects x and r and not r_theta
@@ -429,6 +429,37 @@ class Centrif3D():
             self.func_xshroud(np.linspace(0,1,npts_chord*2))*0, 
             self.func_rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
 
+    def __splitter__(self,splitter_start:float):
+        """Adds a splitter. Look at the geometry in the X-R coordinate system. 
+        Cut the geometry at a percentage along the hub and shroud
+
+        Args:
+            splitter_start (float): _description_
+        """
+        npts_span = self.npts_span; npts_chord = self.npts_chord
+        percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
+        t = np.zeros((npts_span,npts_chord))
+
+        for i in range(npts_span):
+            t[i,:] = splitter_start+(self.blade_position[1]-splitter_start)*percent_camber[i,:]
+        
+        for j in range(npts_chord):
+            xhub = self.func_xhub(t[:,j])
+            rhub = self.func_rhub(t[:,j])
+            
+            xshroud = self.func_xshroud(t[:,j])
+            rshroud = self.func_rshroud(t[:,j])
+            l = line2D([xhub,rhub],[xshroud,rshroud])
+            
+            x,r = l.get_point(self.t_span)
+            for i in range(npts_span):
+                self.ps_pts[i,j,0]=x[i]
+                self.ps_pts[i,j,2]=r[i]
+                
+                self.ss_pts[i,j,0]=x[i]
+                self.ss_pts[i,j,2]=r[i]
+                
+                
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
 
@@ -529,8 +560,7 @@ class Centrif3D():
             for i in range(npts_span):
                 self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
                 self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-    
-    
+        
     def build(self,npts_span:int=100,npts_chord:int=100):
         """Build the 3D Blade
 
