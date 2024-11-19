@@ -8,6 +8,7 @@ from pyturbo.aero.airfoil3D import StackType
 import matplotlib.pyplot as plt 
 from plot3d import Block
 from scipy.interpolate import interp1d
+from geomdl import NURBS, knotvector
 
 class Centrif3D():
     """Generates the 3D blade 
@@ -429,35 +430,116 @@ class Centrif3D():
             self.func_xshroud(np.linspace(0,1,npts_chord*2))*0, 
             self.func_rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
 
-    def __splitter__(self,splitter_start:float):
+    def __splitter_build_profile__(self,t_pts:npt.NDArray,
+                                nose_thickness:float,
+                                t_splitter_start:float,
+                                t_wall_start:float):
+        """Builds a splitter profile
+
+        Args:
+            t_pts (npt.NDArray): percentage along the hub for reach point
+            ss_pts (npt.NDArray): suction side points 
+            ps_pts (npt.NDArray): pressure side points 
+            thickness (float): nose thickness
+            t_splitter_start (float): percentage along hub splitter starts
+            t_wall_start (float): _description_
+        """
+        def get_camber_normal(t,x,y,z):
+            dx_dt = np.gradient(x,t)
+            dy_dt = np.gradient(y,t)
+            dz_dt = np.gradient(z,t)
+            n_ps = np.array([-dx_dt, dy_dt])
+            n_ss = np.array([dx_dt, -dy_dt])
+            n_ps /= np.linalg.norm(n_ps,1)  # Unit vector
+            n_ss /= np.linalg.norm(n_ss,1)
+            return n_ps,n_ss
+        
+        # Build the point matrix
+        ss_pts = np.zeros((self.npts_chord,len(self.profiles),3))
+        ps_pts = np.zeros((self.npts_chord,self.npts_span,3))
+        for i in range(self.profiles.shape):
+            self.profiles[i].build(self.npts_chord)
+            ss_pts[:,i,:]= self.profiles[i].ss_pts
+            ps_pts[:,i,:]= self.profiles[i].ps_pts
+        
+        # Stretch in the x direction
+        
+            
+        camber_pts = 0.5*(ss_pts + ps_pts)
+        
+        n_ps, n_ss = get_camber_normal(camber_pts[:,0],camber_pts[:,1])
+        
+        ss_nose_pt1 = np.array([csapi(t_pts,ss_pts[:,0],t_splitter_start),
+                                csapi(t_pts,ss_pts[:,1],t_splitter_start)]) 
+        ps_nose_pt1 = np.array([csapi(t_pts,ps_pts[:,0],t_splitter_start),
+                                csapi(t_pts,ps_pts[:,1],t_splitter_start)])
+        
+        
+        ss_nose_pt2 = np.array([csapi(t_pts,ss_pts[:,0],t_splitter_start+0.8*(t_wall_start-t_splitter_start)),
+                                csapi(t_pts,ss_pts[:,1],t_splitter_start+0.8*(t_wall_start-t_splitter_start))])
+         
+        ps_nose_pt2 = np.array([csapi(t_pts,ps_pts[:,0],t_splitter_start+0.8*(t_wall_start-t_splitter_start)),
+                                csapi(t_pts,ps_pts[:,1],t_splitter_start+0.8*(t_wall_start-t_splitter_start))])
+        
+        nose_start = np.array([csapi(t_pts,camber_pts[:,0],t_pts), 
+                               csapi(t_pts,camber_pts[:,1],t_pts)])
+        
+        
+        
+        nose_ss = np.hstack([nose_start,
+                             nose_thickness*n_ss[0], # need to add nose_start[2] to this
+                             ss_nose_pt1,
+                             ss_nose_pt2,
+                             ss_pts[t_wall_start:]])
+        nose_ps = np.hstack([nose_start,
+                             nose_thickness*n_ps[0],
+                             ps_nose_pt1,
+                             ps_nose_pt2,
+                             ps_pts[t_wall_start:]])
+        
+        
+        ss = NURBS.Curve()
+        ss.degree = 3 # Cubic
+        ctrlpts = nose_ss
+        ctrlpts = np.column_stack([nose_ss, nose_ss[:,1]*0]) # Add empty column for z axis
+        ss.ctrlpts = ctrlpts
+        ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
+        ss.delta = 1/self.npts_chord
+        
+        ps = NURBS.Curve()
+        ps.degree = 3 # Cubic
+        ctrlpts = nose_ps
+        ctrlpts = np.column_stack([nose_ps, nose_ps[:,1]*0]) # Add empty column for z axis
+        ps.ctrlpts = ctrlpts
+        ps.knotvector = knotvector.generate(ps.degree,ctrlpts.shape[0])
+        ps.delta = 1/self.npts_chord
+        
+        return np.array(ss.evalpts), np.array(ps.evalpts)
+        
+
+    def __splitter__(self,percent_start:float,LE_Radius:float,LE_Thickness:float):
         """Adds a splitter. Look at the geometry in the X-R coordinate system. 
         Cut the geometry at a percentage along the hub and shroud
 
         Args:
-            splitter_start (float): _description_
+            start (float): Splitter start percent chord
+            LE_Radius (float): Leading edge radius as a percentage
+            LE_Thickness (float): Thickness as a percentage of suction and pressure side thicknesses
         """
         npts_span = self.npts_span; npts_chord = self.npts_chord
-        percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
-        t = np.zeros((npts_span,npts_chord))
-
-        for i in range(npts_span):
-            t[i,:] = splitter_start+(self.blade_position[1]-splitter_start)*percent_camber[i,:]
+               
+        self.func_xhub(percent_start)
+        self.func_rhub(percent_start)
+        self.func_xshroud(percent_start)
+        self.func_rshroud(percent_start)
         
-        for j in range(npts_chord):
-            xhub = self.func_xhub(t[:,j])
-            rhub = self.func_rhub(t[:,j])
+        ss,ps = np.zeros((self.npts_chord,npts_span,3)); np.zeros((self.npts_chord,npts_span,3))
+        for i in range(len(self.profiles)):
+            self.profiles[i].build(npts_chord)
+            ss,ps = self.__splitter_build_profile__(self.t_chord,)
             
-            xshroud = self.func_xshroud(t[:,j])
-            rshroud = self.func_rshroud(t[:,j])
-            l = line2D([xhub,rhub],[xshroud,rshroud])
             
-            x,r = l.get_point(self.t_span)
-            for i in range(npts_span):
-                self.ps_pts[i,j,0]=x[i]
-                self.ps_pts[i,j,2]=r[i]
-                
-                self.ss_pts[i,j,0]=x[i]
-                self.ss_pts[i,j,2]=r[i]
+             
                 
                 
     def __interpolate__(self,npts_span:int,npts_chord:int):
