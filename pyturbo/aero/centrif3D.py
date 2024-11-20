@@ -405,21 +405,19 @@ class Centrif3D():
         """
         percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
         hub_shroud_thickness = np.zeros((npts_chord))
-        t = np.zeros((npts_span,npts_chord))
-        for i in range(npts_span):
-            t[i,:] = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber[i,:]
+        t = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber[0,:]
         
         for j in range(npts_chord):
-            xhub = self.func_xhub(t[:,j])
-            rhub = self.func_rhub(t[:,j])
+            xhub = self.func_xhub(t[j])
+            rhub = self.func_rhub(t[j])
             
-            xshroud = self.func_xshroud(t[:,j])
-            rshroud = self.func_rshroud(t[:,j])
+            xshroud = self.func_xshroud(t[j])
+            rshroud = self.func_rshroud(t[j])
             l = line2D([xhub,rhub],[xshroud,rshroud])
             hub_shroud_thickness[j]=l.length
             x,r = l.get_point(self.t_span)
             for i in range(npts_span):
-                self.ps_pts[i,j,0]=x[i]
+                self.ps_pts[i,j,0]=x[i] 
                 self.ps_pts[i,j,2]=r[i]
                 
                 self.ss_pts[i,j,0]=x[i]
@@ -443,36 +441,38 @@ class Centrif3D():
             _type_: _description_
         """
         h = np.zeros((self.npts_chord))
-        f_pts = pts.copy()*0
-        temp = list()
+        flatten_pts = pts.copy()*0
+        dh_list = np.zeros((self.npts_span,self.npts_chord))
         for i in range(self.npts_span):
             dx = np.diff(pts[i,:,0])
             dr = np.diff(pts[i,:,2])
-            dl = np.cumsum(np.sqrt(dx**2+dr**2))
-            f_pts[i,:,2] = pts[i,:,2] - pts[0,:,2]
-            f_pts[i,:,0] = f_pts[i,:,0] + dl
-            temp.append(dl)
-        dl=np.array(temp)
+            dh = np.cumsum(np.sqrt(dx**2+dr**2))
+            flatten_pts[i,:,2] = pts[i,:,2] - pts[0,:,2]
+            flatten_pts[i,:,0] = dh
+            dh_list[i,:] = dh
+        
+        # Makes profile gap the same
+        for j in range(self.npts_chord):
+            flatten_pts[i,:,2] *= self.hub_shroud_thickness[0]/self.hub_shroud_thickness[j]
+
         r_offset = pts[0,:,2]
         # Scale each radius so each profile has same radius
         # Use distribution at the inlet height
         
         print('check')
-            
+        return flatten_pts,dh,r_offset
         
         
-        return f_pts,dl,r_offset
-        
-        
-    def __splitter_build_profile__(self,t_pts:npt.NDArray,
-                                nose_thickness:float,
-                                t_splitter_start:float,
-                                t_wall_start:float):
+    def __splitter_build_profile__(self,ss_flattened:npt.NDArray,
+                                    ps_flattened:npt.NDArray,
+                                    nose_thickness:float,
+                                    t_splitter_start:float,
+                                    t_wall_start:float):
         """Builds a splitter profile
         
 
         Args:
-            t_pts (npt.NDArray): percentage along the hub for reach point
+            t_pts (npt.NDArray): percentage along the hub for each point
             ss_pts (npt.NDArray): suction side points 
             ps_pts (npt.NDArray): pressure side points 
             thickness (float): nose thickness
@@ -703,7 +703,10 @@ class Centrif3D():
         if self.fillet_r>0:
             self.__apply_fillets__()
     
-    def __build_splitter__(self):
+    def build_splitter(self):
+        self.__flatten__(self.ss_pts)
+        self.__flatten__(self.ps_pts)
+        self.__splitter_build_profile__()
         pass
         
     def plot_x_slice(self,j:int):
