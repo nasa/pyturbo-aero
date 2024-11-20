@@ -454,8 +454,10 @@ class Centrif3D():
             temp.append(dl)
         dl=np.array(temp)
         r_offset = pts[0,:,2]
-        # Scale each radius so each profile has same radius 
-        for j in range(self.npts_chord):
+        # Scale each radius so each profile has same radius
+        # Use distribution at the inlet height
+        
+        print('check')
             
         
         
