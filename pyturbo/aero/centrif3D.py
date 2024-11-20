@@ -29,11 +29,15 @@ class Centrif3D():
     ps_hub_fillet:List[bezier] = []
     fillet_r:float 
     
+    ss_profile_pts:npt.NDArray
+    ps_profile_pts:npt.NDArray
+    
     ss_pts:npt.NDArray
     ps_pts:npt.NDArray
 
     hub_pts:npt.NDArray
     shroud_pts:npt.NDArray
+    hub_shroud_thickness:npt.NDArray # Hub to shroud stretch ratio relative to hub. 
     
     __tip_clearance:float = 0 
     
@@ -400,7 +404,7 @@ class Centrif3D():
             npts_chord (int): number of points in the chordwise direction
         """
         percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
-        
+        hub_shroud_thickness = np.zeros((npts_chord))
         t = np.zeros((npts_span,npts_chord))
         for i in range(npts_span):
             t[i,:] = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber[i,:]
@@ -412,7 +416,7 @@ class Centrif3D():
             xshroud = self.func_xshroud(t[:,j])
             rshroud = self.func_rshroud(t[:,j])
             l = line2D([xhub,rhub],[xshroud,rshroud])
-            
+            hub_shroud_thickness[j]=l.length
             x,r = l.get_point(self.t_span)
             for i in range(npts_span):
                 self.ps_pts[i,j,0]=x[i]
@@ -420,7 +424,8 @@ class Centrif3D():
                 
                 self.ss_pts[i,j,0]=x[i]
                 self.ss_pts[i,j,2]=r[i]
-        
+        self.hub_shroud_thickness = hub_shroud_thickness
+        # Build the hub and shroud 
         self.hub_pts = np.vstack([
                 self.func_xhub(np.linspace(0,1,npts_chord*2)),
                 self.func_xhub(np.linspace(0,1,npts_chord*2))*0, 
@@ -430,11 +435,39 @@ class Centrif3D():
             self.func_xshroud(np.linspace(0,1,npts_chord*2))*0, 
             self.func_rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
 
+    def __flatten__(self,pts:npt.NDArray):
+        """Each of the profile in ss_pts and ps_pts follow the hub and shroud.
+        This code flattens it at constant radius but keeps the length 
+
+        Returns:
+            _type_: _description_
+        """
+        h = np.zeros((self.npts_chord))
+        f_pts = pts.copy()*0
+        temp = list()
+        for i in range(self.npts_span):
+            dx = np.diff(pts[i,:,0])
+            dr = np.diff(pts[i,:,2])
+            dl = np.cumsum(np.sqrt(dx**2+dr**2))
+            f_pts[i,:,2] = pts[i,:,2] - pts[0,:,2]
+            f_pts[i,:,0] = f_pts[i,:,0] + dl
+            temp.append(dl)
+        dl=np.array(temp)
+        r_offset = pts[0,:,2]
+        # Scale each radius so each profile has same radius 
+        for j in range(self.npts_chord):
+            
+        
+        
+        return f_pts,dl,r_offset
+        
+        
     def __splitter_build_profile__(self,t_pts:npt.NDArray,
                                 nose_thickness:float,
                                 t_splitter_start:float,
                                 t_wall_start:float):
         """Builds a splitter profile
+        
 
         Args:
             t_pts (npt.NDArray): percentage along the hub for reach point
@@ -454,15 +487,24 @@ class Centrif3D():
             n_ss /= np.linalg.norm(n_ss,1)
             return n_ps,n_ss
         
-        # Build the point matrix
-        ss_pts = np.zeros((self.npts_chord,len(self.profiles),3))
-        ps_pts = np.zeros((self.npts_chord,self.npts_span,3))
-        for i in range(self.profiles.shape):
-            self.profiles[i].build(self.npts_chord)
-            ss_pts[:,i,:]= self.profiles[i].ss_pts
-            ps_pts[:,i,:]= self.profiles[i].ps_pts
+        def make_denser(ss_pts_temp,ps_pts_temp):
+            # Construct the new denser ss and ps 
+            ss_pts = np.zeros((self.npts_span,self.npts_chord,3))
+            ps_pts = np.zeros((self.npts_span,self.npts_chord,3))
+            
+            t_temp = np.linspace(0,1,len(self.profiles))
+            
+            for i in range(self.npts_chord):
+                ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],self.t_span)
+                ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],self.t_span)
+                ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],self.t_span)
+                
+                ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],self.t_span)
+                ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],self.t_span)
+                ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],self.t_span)
+            return ss_pts,ps_pts 
         
-        # Stretch in the x direction
+
         
             
         camber_pts = 0.5*(ss_pts + ps_pts)
@@ -515,33 +557,7 @@ class Centrif3D():
         ps.delta = 1/self.npts_chord
         
         return np.array(ss.evalpts), np.array(ps.evalpts)
-        
-
-    def __splitter__(self,percent_start:float,LE_Radius:float,LE_Thickness:float):
-        """Adds a splitter. Look at the geometry in the X-R coordinate system. 
-        Cut the geometry at a percentage along the hub and shroud
-
-        Args:
-            start (float): Splitter start percent chord
-            LE_Radius (float): Leading edge radius as a percentage
-            LE_Thickness (float): Thickness as a percentage of suction and pressure side thicknesses
-        """
-        npts_span = self.npts_span; npts_chord = self.npts_chord
-               
-        self.func_xhub(percent_start)
-        self.func_rhub(percent_start)
-        self.func_xshroud(percent_start)
-        self.func_rshroud(percent_start)
-        
-        ss,ps = np.zeros((self.npts_chord,npts_span,3)); np.zeros((self.npts_chord,npts_span,3))
-        for i in range(len(self.profiles)):
-            self.profiles[i].build(npts_chord)
-            ss,ps = self.__splitter_build_profile__(self.t_chord,)
-            
-            
-             
-                
-                
+                             
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
 
@@ -556,6 +572,9 @@ class Centrif3D():
             self.profiles[i].build(npts_chord)
             ss_pts_temp[i,:,:] = self.profiles[i].ss_pts
             ps_pts_temp[i,:,:] = self.profiles[i].ps_pts    
+        
+        self.ss_profile_pts = ss_pts_temp
+        self.ps_profile_pts = ps_pts_temp
         
         # Construct the new denser ss and ps 
         ss_pts = np.zeros((npts_span,npts_chord,3))
@@ -682,6 +701,9 @@ class Centrif3D():
         if self.fillet_r>0:
             self.__apply_fillets__()
     
+    def __build_splitter__(self):
+        pass
+        
     def plot_x_slice(self,j:int):
         fig = plt.figure(num=2,dpi=150)
         ax = fig.add_subplot(111)
