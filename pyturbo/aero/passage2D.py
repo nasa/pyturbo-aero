@@ -11,10 +11,10 @@ import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-class passage2D:
+class Passage2D:
     """Passage2D fits 3D blades inside of a channel
     """
-    def __init__(self,airfoil_array,spacing_array,periodicity_array):
+    def __init__(self,airfoil_array,spacing_array):
         '''
         Initialize the passage with airfoils and spacing array
             airfoil_array = array of airfoil3D objects
@@ -24,7 +24,6 @@ class passage2D:
         '''
         self.airfoils=airfoil_array
         self.spacing=spacing_array
-        self.periodicity_array = periodicity_array
 
 
     def add_endwalls(self,zhub:List[float],rhub:List[float],zshroud:List[float],rshroud:List[float],zhub_control:List[float]=[],rhub_control:List[float]=[],zshroud_control:List[float]=[],rshroud_control:List[float]=[]):

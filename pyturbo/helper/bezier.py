@@ -146,7 +146,7 @@ class bezier():
                 tempy = self.y[1]- self.y[0]          
             else:
                 for j in range(self.n-1): # n-1      
-                    b = (comb(self.n-2,j,True)*t[i]**j) * (1-t[i])**(self.n-2-j)    # Bn-1                    
+                    b = (comb(self.n-2,j,exact=True)*t[i]**j) * (1-t[i])**(self.n-2-j)    # Bn-1                    
                     tempx = tempx + b*(self.x[j+1]-self.x[j]) # Note: j+1 = j
                     tempy = tempy + b*(self.y[j+1]-self.y[j])                   
                 
