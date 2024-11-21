@@ -4,6 +4,7 @@ from ..helper import bezier,convert_to_ndarray, csapi, line2D, exp_ratio
 import numpy as np 
 import numpy.typing as npt 
 from scipy.interpolate import PchipInterpolator
+from scipy.optimize import minimize_scalar
 from pyturbo.aero.airfoil3D import StackType
 import matplotlib.pyplot as plt 
 from plot3d import Block
@@ -438,36 +439,79 @@ class Centrif3D():
         This code flattens it at constant radius but keeps the length 
 
         Returns:
-            _type_: _description_
+            Tuple: containing
+            
+                *flatten_pts* (npt.NDArray): flatten points
+                *dx* (npt.NDArray): matrix of dx between points 
         """
-        h = np.zeros((self.npts_chord))
         flatten_pts = pts.copy()*0
-        dh_list = np.zeros((self.npts_span,self.npts_chord))
+        dx_list = np.zeros((self.npts_span,self.npts_chord))
+        dr_list = np.zeros((self.npts_span,self.npts_chord))
         for i in range(self.npts_span):
             dx = np.diff(pts[i,:,0])
             dr = np.diff(pts[i,:,2])
-            dh = np.cumsum(np.sqrt(dx**2+dr**2))
-            flatten_pts[i,:,2] = pts[i,:,2] - pts[0,:,2]
-            flatten_pts[i,:,0] = dh
-            dh_list[i,:] = dh
-        
-        # Makes profile gap the same
-        for j in range(self.npts_chord):
-            flatten_pts[i,:,2] *= self.hub_shroud_thickness[0]/self.hub_shroud_thickness[j]
+            dh = np.hstack([[0], np.cumsum(np.sqrt(dx**2+dr**2))])
+            dx = np.hstack([[0], np.cumsum(dx)])
+            flatten_pts[i,:,0] = pts[i,0,0]+dh
+            flatten_pts[i,:,2] = pts[i,0,2]
+            dx_list[i,:] = dx
+            dr_list[i,:] = dr
+        return flatten_pts,dx_list,dr_list
+    
+    def __unflatten__(self,flatten_pts:npt.NDArray,dx_list:npt.NDArray,dr_list:npt.NDArray):
+        """unflatten the geometry 
 
-        r_offset = pts[0,:,2]
-        # Scale each radius so each profile has same radius
-        # Use distribution at the inlet height
+        Args:
+            flatten_pts (npt.NDArray): _description_
+            dx (npt.NDArray): _description_
+        """
+        pts = np.zeros((self.npts_span,self.npts_chord))
+        for i in range(self.npts_span):
+            pts[i,:,0] = flatten_pts[i,0,0]+dx_list[i,:]
+            pts[i,:,2] = flatten_pts[i,0,2]+dr_list[i,:]
+    
+    def build_splitter(self,nose_thickness:float=0.1,
+                       splitter_start:float=0.5,
+                       wall_start:float=0.54):
+        """Build splitter
+
+        Args:
+            nose_thickness (float, optional): nose thickness as a percent of thickness. Defaults to 0.1.
+            splitter_start (float, optional): splitter starting position. Defaults to 0.5.
+            wall_start (float, optional): wall start position. Defaults to 0.54.
+
+        Returns:
+            Centrif3D: splitter object 
+        """
+        sp_ss_pts = self.ss_pts.copy()*0
+        sp_ps_pts = self.ss_pts.copy()*0
         
-        print('check')
-        return flatten_pts,dh,r_offset
-        
-        
-    def __splitter_build_profile__(self,ss_flattened:npt.NDArray,
-                                    ps_flattened:npt.NDArray,
+        ss_pts = self.ss_pts
+        ps_pts = self.ps_pts
+        for i in range(self.npts_span):
+            ss,ps = self.__splitter_build_profile__(ss_pts=ss_pts[i,:,:],
+                                            ps_pts=ps_pts[i,:,:],
+                                            nose_thickness=nose_thickness,
+                                            t_splitter_start=splitter_start,
+                                            t_wall_start=wall_start,
+                                            t_span=self.t_span[i])
+            sp_ss_pts[i,:,:] = ss
+            sp_ps_pts[i,:,:] = ps
+        splitter = Centrif3D(self.profiles,self.stacktype)
+        splitter.ss_pts = sp_ss_pts
+        splitter.ps_pts = sp_ps_pts
+        splitter.npts_chord = self.npts_chord
+        splitter.npts_span = self.npts_span
+        splitter.t_chord = self.t_chord
+        splitter.t_span = self.t_span
+        return splitter
+            
+    def __splitter_build_profile__(self,ss_pts:npt.NDArray,
+                                    ps_pts:npt.NDArray,
                                     nose_thickness:float,
                                     t_splitter_start:float,
-                                    t_wall_start:float):
+                                    t_wall_start:float,
+                                    t_span:float):
         """Builds a splitter profile
         
 
@@ -477,74 +521,68 @@ class Centrif3D():
             ps_pts (npt.NDArray): pressure side points 
             thickness (float): nose thickness
             t_splitter_start (float): percentage along hub splitter starts
-            t_wall_start (float): _description_
         """
-        def get_camber_normal(t,x,y,z):
-            dx_dt = np.gradient(x,t)
-            dy_dt = np.gradient(y,t)
-            dz_dt = np.gradient(z,t)
-            n_ps = np.array([-dx_dt, dy_dt])
-            n_ss = np.array([dx_dt, -dy_dt])
-            n_ps /= np.linalg.norm(n_ps,1)  # Unit vector
-            n_ss /= np.linalg.norm(n_ss,1)
-            return n_ps,n_ss
-        
-        def make_denser(ss_pts_temp,ps_pts_temp):
-            # Construct the new denser ss and ps 
-            ss_pts = np.zeros((self.npts_span,self.npts_chord,3))
-            ps_pts = np.zeros((self.npts_span,self.npts_chord,3))
-            
-            t_temp = np.linspace(0,1,len(self.profiles))
-            
-            for i in range(self.npts_chord):
-                ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],self.t_span)
-                ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],self.t_span)
-                ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],self.t_span)
-                
-                ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],self.t_span)
-                ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],self.t_span)
-                ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],self.t_span)
-            return ss_pts,ps_pts 
-        
-
-        
-            
         camber_pts = 0.5*(ss_pts + ps_pts)
+
+        def get_thickness(p:float):
+            """Get the thickness 
+
+            Args:
+                p (float): Percent between splitter start and wall start 
+
+            Returns:
+                _type_: _description_
+            """
+            
+            ss_nose_pt = np.array([csapi(self.t_chord,ss_pts[:,0],t_splitter_start+p*(t_wall_start-t_splitter_start)),
+                                    csapi(self.t_chord,ss_pts[:,1],t_splitter_start+p*(t_wall_start-t_splitter_start))])
+
+            ps_nose_pt = np.array([csapi(self.t_chord,ps_pts[:,0],t_splitter_start+p*(t_wall_start-t_splitter_start)),
+                                    csapi(self.t_chord,ps_pts[:,1],t_splitter_start+p*(t_wall_start-t_splitter_start))])
         
-        n_ps, n_ss = get_camber_normal(camber_pts[:,0],camber_pts[:,1])
+            camber_pt = np.array([csapi(self.t_chord,camber_pts[:,0], t_splitter_start+p*(t_wall_start-t_splitter_start)), 
+                                csapi(self.t_chord,camber_pts[:,1], t_splitter_start+p*(t_wall_start-t_splitter_start))])
+            ss_thck = ss_nose_pt - camber_pt # dx,dy basically 
+            ps_thck = ps_nose_pt - camber_pt
+            return ss_thck, ps_thck, camber_pt
         
-        ss_nose_pt1 = np.array([csapi(t_pts,ss_pts[:,0],t_splitter_start),
-                                csapi(t_pts,ss_pts[:,1],t_splitter_start)]) 
-        ps_nose_pt1 = np.array([csapi(t_pts,ps_pts[:,0],t_splitter_start),
-                                csapi(t_pts,ps_pts[:,1],t_splitter_start)])
+        # Cut the blade based on a percentage of the hub  
+        nose_start = np.array([csapi(self.t_chord,camber_pts[:,0], t_splitter_start), 
+                                csapi(self.t_chord,camber_pts[:,1], t_splitter_start)])
+        t_splitter = np.linspace(t_splitter_start,self.blade_position[1],self.npts_chord)
+        ss_thck_1, ps_thck_1,c1 = get_thickness(0)
+        ss_thck_2, ps_thck_2,c2 = get_thickness(0.5)
+        ss_thck_3, ps_thck_3,c3 = get_thickness(0.8)
         
+        t_wall = np.linspace(t_wall_start,1,self.npts_chord)
+        ss_pts_int = np.array([csapi(self.t_chord,ss_pts[:,0],t_wall),
+                            csapi(self.t_chord,ss_pts[:,1],t_wall)]).transpose()
+        ps_pts_int = np.array([csapi(self.t_chord,ps_pts[:,0],t_wall),
+                            csapi(self.t_chord,ps_pts[:,1],t_wall)]).transpose()
         
-        ss_nose_pt2 = np.array([csapi(t_pts,ss_pts[:,0],t_splitter_start+0.8*(t_wall_start-t_splitter_start)),
-                                csapi(t_pts,ss_pts[:,1],t_splitter_start+0.8*(t_wall_start-t_splitter_start))])
-         
-        ps_nose_pt2 = np.array([csapi(t_pts,ps_pts[:,0],t_splitter_start+0.8*(t_wall_start-t_splitter_start)),
-                                csapi(t_pts,ps_pts[:,1],t_splitter_start+0.8*(t_wall_start-t_splitter_start))])
+        nose_ss = np.vstack([nose_start,
+                             ss_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
+                             ss_thck_2*0.5*(1-nose_thickness)+c2,
+                             ss_thck_3*0.9*(1-nose_thickness)+c3])
+        nose_ss = np.vstack([nose_ss,ss_pts_int])
         
-        nose_start = np.array([csapi(t_pts,camber_pts[:,0],t_pts), 
-                               csapi(t_pts,camber_pts[:,1],t_pts)])
+        nose_ps = np.vstack([nose_start,
+                        ps_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
+                        ps_thck_2*0.5*(1-nose_thickness)+c2,
+                        ps_thck_3*0.9*(1-nose_thickness)+c3])
+        nose_ps = np.vstack([nose_ps,ps_pts_int])
         
-        
-        
-        nose_ss = np.hstack([nose_start,
-                             nose_thickness*n_ss[0], # need to add nose_start[2] to this
-                             ss_nose_pt1,
-                             ss_nose_pt2,
-                             ss_pts[t_wall_start:]])
-        nose_ps = np.hstack([nose_start,
-                             nose_thickness*n_ps[0],
-                             ps_nose_pt1,
-                             ps_nose_pt2,
-                             ps_pts[t_wall_start:]])
-        
-        
+        # lets get the radius 
+        radius = np.zeros((self.npts_chord))
+        for i,t in enumerate(t_splitter):
+            l = line2D([self.func_xhub(t),self.func_rhub(t)],
+                    [self.func_xshroud(t),self.func_rhub(t)])
+            _,r = l.get_point(t_span)
+            radius[i] = r
+            
+        # Create the nurbs
         ss = NURBS.Curve()
         ss.degree = 3 # Cubic
-        ctrlpts = nose_ss
         ctrlpts = np.column_stack([nose_ss, nose_ss[:,1]*0]) # Add empty column for z axis
         ss.ctrlpts = ctrlpts
         ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
@@ -552,13 +590,17 @@ class Centrif3D():
         
         ps = NURBS.Curve()
         ps.degree = 3 # Cubic
-        ctrlpts = nose_ps
         ctrlpts = np.column_stack([nose_ps, nose_ps[:,1]*0]) # Add empty column for z axis
         ps.ctrlpts = ctrlpts
         ps.knotvector = knotvector.generate(ps.degree,ctrlpts.shape[0])
         ps.delta = 1/self.npts_chord
         
-        return np.array(ss.evalpts), np.array(ps.evalpts)
+        ss_pts = np.hstack([np.array(ss.evalpts),r])
+        ps_pts = np.hstack([np.array(ps.evalpts),r])
+        
+        plt.plot(ss_pts[:,0],ss_pts[:,1])
+        plt.show()
+        return ss_pts,ps_pts
                              
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -703,11 +745,7 @@ class Centrif3D():
         if self.fillet_r>0:
             self.__apply_fillets__()
     
-    def build_splitter(self):
-        self.__flatten__(self.ss_pts)
-        self.__flatten__(self.ps_pts)
-        self.__splitter_build_profile__()
-        pass
+    
         
     def plot_x_slice(self,j:int):
         fig = plt.figure(num=2,dpi=150)

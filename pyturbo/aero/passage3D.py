@@ -166,19 +166,19 @@ class Passage3D:
         
         theta = 0
         if bSplitter:
-            self.blades[0].build_splitter()
-            
-            # splitters = []
-            # theta = theta_blade/2
-            # while theta<=360:
-            #     splitters.append(copy.deepcopy(self.splitter))
-            #     splitters[-1].rotate(theta)
-            #     theta += theta_blade
-            # self.splitters = splitters
+            splitter = self.blades[0].build_splitter()
+
+            splitters = []
+            theta = theta_blade/2
+            while theta<=360:
+                splitters.append(copy.deepcopy(splitter))
+                splitters[-1].rotate(theta)
+                theta += theta_blade
+            self.splitters = splitters
         # self.__apply_pattern__() # Applies the pattern and rotates the blade 
         
         if hub_resolution<=0:
-            hub_resolution = len(blades)+len(splitters)
+            hub_resolution = len(blades) # +len(splitters)
         self.__rotate_hub_shroud__(hub_resolution)
     
     def plot(self):
