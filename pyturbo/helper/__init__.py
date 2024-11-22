@@ -19,3 +19,4 @@ from .rotate_array_values import rotate_array_vals
 from .stacking import StackType
 from .unique_xy import uniqueXY
 from .wave import wave_control
+from .interparc import interpcurve

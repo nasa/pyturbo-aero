@@ -166,7 +166,7 @@ class Passage3D:
         
         theta = 0
         if bSplitter:
-            splitter = self.blades[0].build_splitter()
+            splitter = self.blades[0].build_splitter(splitter_start=0.01)
 
             splitters = []
             theta = theta_blade/2

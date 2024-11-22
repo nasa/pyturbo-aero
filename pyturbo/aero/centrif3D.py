@@ -1,6 +1,6 @@
 from typing import List, Tuple, Union
 from .centrif2D import Centrif2D
-from ..helper import bezier,convert_to_ndarray, csapi, line2D, exp_ratio
+from ..helper import bezier,convert_to_ndarray, csapi, line2D, exp_ratio,interpcurve
 import numpy as np 
 import numpy.typing as npt 
 from scipy.interpolate import PchipInterpolator
@@ -470,9 +470,9 @@ class Centrif3D():
             pts[i,:,0] = flatten_pts[i,0,0]+dx_list[i,:]
             pts[i,:,2] = flatten_pts[i,0,2]+dr_list[i,:]
     
-    def build_splitter(self,nose_thickness:float=0.1,
-                       splitter_start:float=0.5,
-                       wall_start:float=0.54):
+    def build_splitter(self,nose_thickness:float=0.5,
+                       splitter_start:float=0.45,
+                       wall_start:float=0.6):
         """Build splitter
 
         Args:
@@ -488,6 +488,7 @@ class Centrif3D():
         
         ss_pts = self.ss_pts
         ps_pts = self.ps_pts
+        plt.figure(num=1)
         for i in range(self.npts_span):
             ss,ps = self.__splitter_build_profile__(ss_pts=ss_pts[i,:,:],
                                             ps_pts=ps_pts[i,:,:],
@@ -497,6 +498,9 @@ class Centrif3D():
                                             t_span=self.t_span[i])
             sp_ss_pts[i,:,:] = ss
             sp_ps_pts[i,:,:] = ps
+            plt.plot(sp_ps_pts[i,:,0],sp_ps_pts[i,:,2],'r')
+            plt.show()
+        
         splitter = Centrif3D(self.profiles,self.stacktype)
         splitter.ss_pts = sp_ss_pts
         splitter.ps_pts = sp_ps_pts
@@ -504,6 +508,9 @@ class Centrif3D():
         splitter.npts_span = self.npts_span
         splitter.t_chord = self.t_chord
         splitter.t_span = self.t_span
+        splitter.hub_pts = self.hub_pts
+        splitter.shroud_pts = self.shroud_pts
+        splitter.plot()
         return splitter
             
     def __splitter_build_profile__(self,ss_pts:npt.NDArray,
@@ -553,54 +560,73 @@ class Centrif3D():
         ss_thck_1, ps_thck_1,c1 = get_thickness(0)
         ss_thck_2, ps_thck_2,c2 = get_thickness(0.5)
         ss_thck_3, ps_thck_3,c3 = get_thickness(0.8)
+        ss_thck_4, ps_thck_4,c4 = get_thickness(0.9)    # Use this point to match slope
         
-        t_wall = np.linspace(t_wall_start,1,self.npts_chord)
+        nose_resolution = int(self.npts_chord*(1-t_wall_start))+1
+        wall_resolution = self.npts_chord-nose_resolution
+        
+        t_wall = np.linspace(t_wall_start,1,wall_resolution)
+        
         ss_pts_int = np.array([csapi(self.t_chord,ss_pts[:,0],t_wall),
                             csapi(self.t_chord,ss_pts[:,1],t_wall)]).transpose()
         ps_pts_int = np.array([csapi(self.t_chord,ps_pts[:,0],t_wall),
                             csapi(self.t_chord,ps_pts[:,1],t_wall)]).transpose()
         
-        nose_ss = np.vstack([nose_start,
+        # Nose Suction side 
+        nose_ss_ctrl_pts = np.vstack([nose_start,
                              ss_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
-                             ss_thck_2*0.5*(1-nose_thickness)+c2,
-                             ss_thck_3*0.9*(1-nose_thickness)+c3])
-        nose_ss = np.vstack([nose_ss,ss_pts_int])
+                             ss_thck_2*0.4+c2,
+                             ss_thck_3*0.7+c3,
+                             ss_thck_4*1.0+c4])
+        nose_ss = NURBS.Curve()
+        nose_ss.degree = 3 # Cubic
+        nose_ss.ctrlpts = nose_ss_ctrl_pts
+        nose_ss.knotvector = knotvector.generate(nose_ss.degree,nose_ss_ctrl_pts.shape[0])
+        nose_ss.delta = 1/nose_resolution
         
-        nose_ps = np.vstack([nose_start,
+        ss_pts2 = np.vstack([nose_ss.evalpts,ss_pts_int])
+        
+        # Nose Pressure side 
+        nose_ps_ctrl_pts = np.vstack([nose_start,
                         ps_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
-                        ps_thck_2*0.5*(1-nose_thickness)+c2,
-                        ps_thck_3*0.9*(1-nose_thickness)+c3])
-        nose_ps = np.vstack([nose_ps,ps_pts_int])
+                        ps_thck_2*0.4+c2,
+                        ps_thck_3*0.7+c3,
+                        ps_thck_4*1.0+c4])
+        nose_ps = NURBS.Curve()
+        nose_ps.degree = 3 # Cubic
+        nose_ps.ctrlpts = nose_ps_ctrl_pts
+        nose_ps.knotvector = knotvector.generate(nose_ps.degree,nose_ps_ctrl_pts.shape[0])
+        nose_ps.delta = 1/nose_resolution
+        
+        ps_pts2 = np.vstack([nose_ps.evalpts,ps_pts_int])
         
         # lets get the radius 
-        radius = np.zeros((self.npts_chord))
-        for i,t in enumerate(t_splitter):
-            l = line2D([self.func_xhub(t),self.func_rhub(t)],
-                    [self.func_xshroud(t),self.func_rhub(t)])
-            _,r = l.get_point(t_span)
-            radius[i] = r
+        # radius = np.zeros((self.npts_chord,1))
+        # for i,t in enumerate(t_splitter):
+        #     l = line2D([self.func_xhub(t),self.func_rhub(t)],
+        #             [self.func_xshroud(t),self.func_rshroud(t)])
+        #     _,r = l.get_point(t_span)
+        #     radius[i] = r
             
         # Create the nurbs
-        ss = NURBS.Curve()
-        ss.degree = 3 # Cubic
-        ctrlpts = np.column_stack([nose_ss, nose_ss[:,1]*0]) # Add empty column for z axis
-        ss.ctrlpts = ctrlpts
-        ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
-        ss.delta = 1/self.npts_chord
+        # ss_pts2 = interpcurve(self.npts_chord,nose_ss[:,0],nose_ss[:,1])
+        # ps_pts2 = interpcurve(self.npts_chord,nose_ps[:,0],nose_ps[:,1])
         
-        ps = NURBS.Curve()
-        ps.degree = 3 # Cubic
-        ctrlpts = np.column_stack([nose_ps, nose_ps[:,1]*0]) # Add empty column for z axis
-        ps.ctrlpts = ctrlpts
-        ps.knotvector = knotvector.generate(ps.degree,ctrlpts.shape[0])
-        ps.delta = 1/self.npts_chord
+        # ss_pts2 = np.hstack([ss_pts2,radius])
+        # ps_pts2 = np.hstack([ps_pts2,radius])
         
-        ss_pts = np.hstack([np.array(ss.evalpts),r])
-        ps_pts = np.hstack([np.array(ps.evalpts),r])
-        
-        plt.plot(ss_pts[:,0],ss_pts[:,1])
+        plt.plot(nose_ss_ctrl_pts[:,0],nose_ss_ctrl_pts[:,1],nose_ps_ctrl_pts[:,0],nose_ps_ctrl_pts[:,1])
         plt.show()
-        return ss_pts,ps_pts
+        fig = plt.figure(num=1,dpi=150)
+        ax = fig.add_subplot(111, projection='3d')
+        ax.plot3D(ss_pts2[:,0],ss_pts2[:,1],ss_pts2[:,2])
+        ax.plot3D(ps_pts2[:,0],ps_pts2[:,1],ps_pts2[:,2])
+        ax.set_xlabel('x-axial')
+        ax.set_ylabel('rth')
+        ax.set_zlabel('r-radial')
+        plt.axis('scaled')
+        plt.show()
+        return ss_pts2,ps_pts2
                              
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -771,7 +797,7 @@ class Centrif3D():
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')
         ax.set_zlabel('r-radial')
-        
+        plt.axis('scaled')
         plt.show()
         
         
