@@ -18,7 +18,6 @@ class Centrif3D():
     stacktype:StackType 
     leans:List[bezier]
     lean_percent_spans:List[float]
-    splitters:List[np.ndarray]
     
     hub:npt.NDArray
     shroud:npt.NDArray
@@ -353,7 +352,7 @@ class Centrif3D():
                 p.ss_pts[:,0]+=te_x[0]-te_x[i]
                 p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
     
-    def __stretch_profiles__(self,npts_span:int,npts_chord:int):
+    def __stretch_profiles__(self,npts_span:int,npts_chord:int,main_blade=None):
         """Stretch the profiles in the x and y direction to match camber
 
         Args:
@@ -367,7 +366,10 @@ class Centrif3D():
         rh = self.func_rhub(t)
         
         hub_length_of_blade = np.sum(np.sqrt(np.diff(xh)**2+np.diff(rh)**2))
-        _,cambers = self.__percent_camber__(npts_span,npts_chord)
+        if main_blade is not None:
+            _,cambers = main_blade.__percent_camber__(main_blade.npts_span,main_blade.npts_chord)
+        else:
+            _,cambers = self.__percent_camber__(npts_span,npts_chord)
         for i in range(cambers.shape[0]):
             self.ss_pts[i,:]*=hub_length_of_blade/cambers[-1]  # Scale the blade profiles to the hub length 
             self.ps_pts[i,:]*=hub_length_of_blade/cambers[-1]
@@ -397,14 +399,18 @@ class Centrif3D():
         self.func_rshroud = PchipInterpolator(t,shroud[:,1])
     
           
-    def __scale_profiles__(self,npts_span:int,npts_chord:int):
+    def __scale_profiles__(self,npts_span:int,npts_chord:int,main_blade=None):
         """scale the profiles to fit into the hub and shroud 
             Note: This only affects x and r and not r_theta
         Args:
             npts_span (int): number of points in the spanwise direction 
             npts_chord (int): number of points in the chordwise direction
+            main_blade (Centrif3D): main blade use only if you are working with a splitter
         """
-        percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
+        if main_blade is not None:
+            percent_camber,_ = main_blade.__percent_camber__(npts_span,npts_chord)
+        else:
+            percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
         hub_shroud_thickness = np.zeros((npts_chord))
         t = self.blade_position[0]+(self.blade_position[1]-self.blade_position[0])*percent_camber[0,:]
         
@@ -469,164 +475,6 @@ class Centrif3D():
         for i in range(self.npts_span):
             pts[i,:,0] = flatten_pts[i,0,0]+dx_list[i,:]
             pts[i,:,2] = flatten_pts[i,0,2]+dr_list[i,:]
-    
-    def build_splitter(self,nose_thickness:float=0.5,
-                       splitter_start:float=0.45,
-                       wall_start:float=0.6):
-        """Build splitter
-
-        Args:
-            nose_thickness (float, optional): nose thickness as a percent of thickness. Defaults to 0.1.
-            splitter_start (float, optional): splitter starting position. Defaults to 0.5.
-            wall_start (float, optional): wall start position. Defaults to 0.54.
-
-        Returns:
-            Centrif3D: splitter object 
-        """
-        sp_ss_pts = self.ss_pts.copy()*0
-        sp_ps_pts = self.ss_pts.copy()*0
-        
-        ss_pts = self.ss_pts
-        ps_pts = self.ps_pts
-        plt.figure(num=1)
-        for i in range(self.npts_span):
-            ss,ps = self.__splitter_build_profile__(ss_pts=ss_pts[i,:,:],
-                                            ps_pts=ps_pts[i,:,:],
-                                            nose_thickness=nose_thickness,
-                                            t_splitter_start=splitter_start,
-                                            t_wall_start=wall_start,
-                                            t_span=self.t_span[i])
-            sp_ss_pts[i,:,:] = ss
-            sp_ps_pts[i,:,:] = ps
-            plt.plot(sp_ps_pts[i,:,0],sp_ps_pts[i,:,2],'r')
-            plt.show()
-        
-        splitter = Centrif3D(self.profiles,self.stacktype)
-        splitter.ss_pts = sp_ss_pts
-        splitter.ps_pts = sp_ps_pts
-        splitter.npts_chord = self.npts_chord
-        splitter.npts_span = self.npts_span
-        splitter.t_chord = self.t_chord
-        splitter.t_span = self.t_span
-        splitter.hub_pts = self.hub_pts
-        splitter.shroud_pts = self.shroud_pts
-        splitter.plot()
-        return splitter
-            
-    def __splitter_build_profile__(self,ss_pts:npt.NDArray,
-                                    ps_pts:npt.NDArray,
-                                    nose_thickness:float,
-                                    t_splitter_start:float,
-                                    t_wall_start:float,
-                                    t_span:float):
-        """Builds a splitter profile
-        
-
-        Args:
-            t_pts (npt.NDArray): percentage along the hub for each point
-            ss_pts (npt.NDArray): suction side points 
-            ps_pts (npt.NDArray): pressure side points 
-            thickness (float): nose thickness
-            t_splitter_start (float): percentage along hub splitter starts
-        """
-        camber_pts = 0.5*(ss_pts + ps_pts)
-
-        def get_thickness(p:float):
-            """Get the thickness 
-
-            Args:
-                p (float): Percent between splitter start and wall start 
-
-            Returns:
-                _type_: _description_
-            """
-            
-            ss_nose_pt = np.array([csapi(self.t_chord,ss_pts[:,0],t_splitter_start+p*(t_wall_start-t_splitter_start)),
-                                    csapi(self.t_chord,ss_pts[:,1],t_splitter_start+p*(t_wall_start-t_splitter_start))])
-
-            ps_nose_pt = np.array([csapi(self.t_chord,ps_pts[:,0],t_splitter_start+p*(t_wall_start-t_splitter_start)),
-                                    csapi(self.t_chord,ps_pts[:,1],t_splitter_start+p*(t_wall_start-t_splitter_start))])
-        
-            camber_pt = np.array([csapi(self.t_chord,camber_pts[:,0], t_splitter_start+p*(t_wall_start-t_splitter_start)), 
-                                csapi(self.t_chord,camber_pts[:,1], t_splitter_start+p*(t_wall_start-t_splitter_start))])
-            ss_thck = ss_nose_pt - camber_pt # dx,dy basically 
-            ps_thck = ps_nose_pt - camber_pt
-            return ss_thck, ps_thck, camber_pt
-        
-        # Cut the blade based on a percentage of the hub  
-        nose_start = np.array([csapi(self.t_chord,camber_pts[:,0], t_splitter_start), 
-                                csapi(self.t_chord,camber_pts[:,1], t_splitter_start)])
-        t_splitter = np.linspace(t_splitter_start,self.blade_position[1],self.npts_chord)
-        ss_thck_1, ps_thck_1,c1 = get_thickness(0)
-        ss_thck_2, ps_thck_2,c2 = get_thickness(0.5)
-        ss_thck_3, ps_thck_3,c3 = get_thickness(0.8)
-        ss_thck_4, ps_thck_4,c4 = get_thickness(0.9)    # Use this point to match slope
-        
-        nose_resolution = int(self.npts_chord*(1-t_wall_start))+1
-        wall_resolution = self.npts_chord-nose_resolution
-        
-        t_wall = np.linspace(t_wall_start,1,wall_resolution)
-        
-        ss_pts_int = np.array([csapi(self.t_chord,ss_pts[:,0],t_wall),
-                            csapi(self.t_chord,ss_pts[:,1],t_wall)]).transpose()
-        ps_pts_int = np.array([csapi(self.t_chord,ps_pts[:,0],t_wall),
-                            csapi(self.t_chord,ps_pts[:,1],t_wall)]).transpose()
-        
-        # Nose Suction side 
-        nose_ss_ctrl_pts = np.vstack([nose_start,
-                             ss_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
-                             ss_thck_2*0.4+c2,
-                             ss_thck_3*0.7+c3,
-                             ss_thck_4*1.0+c4])
-        nose_ss = NURBS.Curve()
-        nose_ss.degree = 3 # Cubic
-        nose_ss.ctrlpts = nose_ss_ctrl_pts
-        nose_ss.knotvector = knotvector.generate(nose_ss.degree,nose_ss_ctrl_pts.shape[0])
-        nose_ss.delta = 1/nose_resolution
-        
-        ss_pts2 = np.vstack([nose_ss.evalpts,ss_pts_int])
-        
-        # Nose Pressure side 
-        nose_ps_ctrl_pts = np.vstack([nose_start,
-                        ps_thck_1*nose_thickness+c1, # need to add nose_start[2] to this
-                        ps_thck_2*0.4+c2,
-                        ps_thck_3*0.7+c3,
-                        ps_thck_4*1.0+c4])
-        nose_ps = NURBS.Curve()
-        nose_ps.degree = 3 # Cubic
-        nose_ps.ctrlpts = nose_ps_ctrl_pts
-        nose_ps.knotvector = knotvector.generate(nose_ps.degree,nose_ps_ctrl_pts.shape[0])
-        nose_ps.delta = 1/nose_resolution
-        
-        ps_pts2 = np.vstack([nose_ps.evalpts,ps_pts_int])
-        
-        # lets get the radius 
-        # radius = np.zeros((self.npts_chord,1))
-        # for i,t in enumerate(t_splitter):
-        #     l = line2D([self.func_xhub(t),self.func_rhub(t)],
-        #             [self.func_xshroud(t),self.func_rshroud(t)])
-        #     _,r = l.get_point(t_span)
-        #     radius[i] = r
-            
-        # Create the nurbs
-        # ss_pts2 = interpcurve(self.npts_chord,nose_ss[:,0],nose_ss[:,1])
-        # ps_pts2 = interpcurve(self.npts_chord,nose_ps[:,0],nose_ps[:,1])
-        
-        # ss_pts2 = np.hstack([ss_pts2,radius])
-        # ps_pts2 = np.hstack([ps_pts2,radius])
-        
-        plt.plot(nose_ss_ctrl_pts[:,0],nose_ss_ctrl_pts[:,1],nose_ps_ctrl_pts[:,0],nose_ps_ctrl_pts[:,1])
-        plt.show()
-        fig = plt.figure(num=1,dpi=150)
-        ax = fig.add_subplot(111, projection='3d')
-        ax.plot3D(ss_pts2[:,0],ss_pts2[:,1],ss_pts2[:,2])
-        ax.plot3D(ps_pts2[:,0],ps_pts2[:,1],ps_pts2[:,2])
-        ax.set_xlabel('x-axial')
-        ax.set_ylabel('rth')
-        ax.set_zlabel('r-radial')
-        plt.axis('scaled')
-        plt.show()
-        return ss_pts2,ps_pts2
                              
     def __interpolate__(self,npts_span:int,npts_chord:int):
         """Interpolate the geometry to make it denser
@@ -681,7 +529,6 @@ class Centrif3D():
         camber_temp = np.zeros(shape=(npts_span,npts_chord,2))
         camber_lengths = list()
         for i in range(npts_span):
-            
             camber_temp[i,:,:] = np.vstack([(
                     self.ss_pts[i,:,0]+self.ps_pts[i,:,0])/2, 
                     (self.ss_pts[i,:,1]+self.ps_pts[i,:,1])/2]).transpose()
@@ -732,12 +579,13 @@ class Centrif3D():
                 self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
                 self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
         
-    def build(self,npts_span:int=100,npts_chord:int=100):
+    def build(self,npts_span:int=100,npts_chord:int=100,main_blade=None):
         """Build the 3D Blade
 
         Args:
             npts_span (int, optional): number of points defining the span. Defaults to 100.
             npts_chord (int, optional): number of points defining the chord. Defaults to 100.
+            main_blade (Centrif3D): main_blade. Include this only if you are using a splitter.
         """
         self.npts_span = npts_span
         self.npts_chord = npts_chord
@@ -762,10 +610,10 @@ class Centrif3D():
         self.__apply_tip_gap__()
         
         self.__apply_lean__(npts_span,npts_chord)
-        self.__stretch_profiles__(npts_span,npts_chord)
+        self.__stretch_profiles__(npts_span,npts_chord,main_blade)
         
         # Scale the profiles for the passage 
-        self.__scale_profiles__(npts_span,npts_chord)
+        self.__scale_profiles__(npts_span,npts_chord,main_blade)
         
         # Apply Fillet radius to hub 
         if self.fillet_r>0:

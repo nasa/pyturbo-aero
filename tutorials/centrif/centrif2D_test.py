@@ -44,6 +44,17 @@ def test_centrif_ellispe_te():
     hub.add_te_radius(0.5,5,5,1.4)
     hub.build(200)
     hub.plot()
+
+    
+def test_centrif_splitter():
+    splitter = Centrif2D(splitter_camber_start=0.4)
+    splitter.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    splitter.add_le_thickness(0.02)
+    splitter.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter.add_te_radius(0.5,5,5,1)
+    splitter.build(200)
+    return splitter
     
 def test_ellispe():
     a = ellispe(0.5,0.5,1.2,1,180,-180)
@@ -51,8 +62,9 @@ def test_ellispe():
     a.plot()
     
 if __name__=="__main__":
-    test_centrif2D_cut_te()
-    test_centrif2D_rounded_te()
-    test_ellispe()
-    test_centrif_ellispe_te()
+    test_centrif_splitter()
+    # test_centrif2D_cut_te()
+    # test_centrif2D_rounded_te()
+    # test_ellispe()
+    # test_centrif_ellispe_te()
     

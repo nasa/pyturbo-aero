@@ -14,9 +14,9 @@ class PatternPairCentrif:
     rotation_ajustment:float
     
 class Passage3D:
-    blade:Centrif3D
+    blade:Centrif3D = None
     s_c:List[float]
-    splitter:Centrif3D 
+    splitter:Centrif3D = None 
     
     blades:Centrif3D = []
     splitters:Centrif3D = []
@@ -24,8 +24,6 @@ class Passage3D:
     hub_pts: npt.NDArray
     shroud_pts:npt.NDArray
     
-    blade_stagger:float
-    splitter_stagger:float
     
     def __init__(self,blade:Centrif3D) -> None:
         """Initialize a 3D Passage 
@@ -41,24 +39,7 @@ class Passage3D:
         
         
     
-    def add_splitter(self,hub_start:float=0.5,hub_end:float=1):
-        """Add a splitter blade 
-
-        Args:
-            hub_start (float): starting location along the hub. Defaults to 0.5
-            hub_end (float): ending location along the hub. Defaults to 1
-            
-        """
-        splitter = copy.deepcopy(self.blade)
-        splitter.set_blade_position(hub_start,self.blade.blade_position[1])
-        splitter.build(self.blade.npts_span,self.blade.npts_chord)
-        
-        dx = splitter.ss_pts[0,-1,0] - splitter.ss_pts[0,0,0]
-        drth = splitter.ss_pts[0,-1,1] 
-        self.splitter_stagger = np.degrees(np.arctan2(drth,dx))
-        
-        offset = np.abs(self.blade_stagger-self.splitter_stagger)
-        splitter.rotate(offset)
+    def add_splitter(self,splitter:Centrif3D):
         self.splitter = splitter
     
     def add_pattern_pair(self,pair:PatternPairCentrif):
@@ -145,12 +126,11 @@ class Passage3D:
         """
         pass 
     
-    def build(self,nblades:int,bSplitter:bool=False,hub_resolution:int=-1):
+    def build(self,nblades:int,hub_resolution:int=-1):
         """Build the centrif geometry 
 
         Args:
             nblades (int): number of blades 
-            bSplitter (bool): add splitter 
             hub_resolution (int): how many rotations of the hub and shroud. Defaults to -1 which is same as number of blades + number of splitters
             
         """
@@ -165,13 +145,11 @@ class Passage3D:
         self.blades = blades
         
         theta = 0
-        if bSplitter:
-            splitter = self.blades[0].build_splitter(splitter_start=0.01)
-
+        if self.splitter is not None:
             splitters = []
             theta = theta_blade/2
             while theta<=360:
-                splitters.append(copy.deepcopy(splitter))
+                splitters.append(copy.deepcopy(self.splitter))
                 splitters[-1].rotate(theta)
                 theta += theta_blade
             self.splitters = splitters

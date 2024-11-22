@@ -10,6 +10,8 @@ class Centrif2D:
     """Constructing the 2D profiles for a centrif compressor or turbine
     Profiles are constructed in the meridional plane and fitted between hub and shroud
     """
+    splitter_camber_start:float=0
+    
     camber:bezier
     alpha1:float
     alpha2:float
@@ -25,11 +27,13 @@ class Centrif2D:
     ss_bezier_te:NURBS.BSpline
     ss_x:List[float]
     ss_y:List[float]    # this is rtheta
+    ss_thickness_array:List[float]
     
     ps_bezier:NURBS.BSpline
     ps_bezier_te:NURBS.BSpline
     ps_x:List[float]
     ps_y:List[float]
+    ps_thickness_array:List[float]
     
     ss_pts:npt.NDArray
     ps_pts:npt.NDArray
@@ -37,8 +41,13 @@ class Centrif2D:
     ps_te_pts:npt.NDArray
     te_cut:bool
     
-    def __init__(self) -> None:
-        pass
+    def __init__(self,splitter_camber_start:float=0) -> None:
+        """Creates a 2D Centrif blade profile
+
+        Args:
+            splitter_camber_start (float, optional): Starting percent on the camber. Defaults to 0.
+        """
+        self.splitter_camber_start = splitter_camber_start
     
     def add_camber(self,alpha1:float,alpha2:float,
                    stagger:float,x1:float=0.1,x2:float=0.85,aggressivity:Tuple[float,float]=(0.8,0.9)) -> None:
@@ -67,7 +76,6 @@ class Centrif2D:
         
         np.tan(self.stagger)-(x2-x1)*np.tan(self.alpha2)
         
-        
         xm = [x1+(x2-x1)*aggressivity[0]]
         hm = [rtheta[1] + (h-rtheta[1])*(aggressivity[1])]
         
@@ -89,24 +97,28 @@ class Centrif2D:
         Args:
             thickness (float): thickness as a percent of the axial chord 
         """
-        dx,dy = self.camber.get_point_dt(0)
+        cx,cy = self.camber.get_point(self.splitter_camber_start)    
+        dx,dy = self.camber.get_point_dt(self.splitter_camber_start)
         m = np.sqrt(dx**2 + dy**2) # magnitude
 
-        self.ss_x.append(0); self.ss_y.append(0)
-        self.ps_x.append(0); self.ps_y.append(0)
+        self.ss_x.append(cx); self.ss_y.append(cy)
+        self.ps_x.append(cx); self.ps_y.append(cy)
         
         self.le_thickness = thickness
         if abs(dy) <1E-6:
-            self.ss_x.append(0)
-            self.ss_y.append(-thickness)
-            self.ps_x.append(0)
-            self.ps_y.append(thickness)
-        else:
-            self.ps_x.append(thickness*(dx/m))
-            self.ps_y.append(thickness*(-dy/m))
+            self.ss_x.append(cx)
+            self.ss_y.append(cy-thickness)
             
-            self.ss_x.append(thickness*(-dx/m))
-            self.ss_y.append(thickness*(dy/m))
+            self.ps_x.append(cx)
+            self.ps_y.append(cy+thickness)
+        else:
+            self.ss_x.append(cx+thickness*(dx/m))
+            self.ss_y.append(cy+thickness*(-dy/m))
+            
+            self.ps_x.append(cx+thickness*(-dx/m))
+            self.ps_y.append(cy+thickness*(dy/m))
+
+            
    
     def add_ps_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """builds the pressure side 
@@ -116,7 +128,7 @@ class Centrif2D:
             expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
         thickness_array = convert_to_ndarray(thickness_array)
-        t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1) # 1 point for the leading edge and 1 for TE starting point before radius is added
+        t = self.splitter_camber_start + exp_ratio(expansion_ratio,len(thickness_array)+2,1-self.splitter_camber_start) # 1 point for the leading edge and 1 for TE starting point before radius is added
         x, y = self.camber.get_point(t)
         dx, dy = self.camber.get_point_dt(t)
         m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
@@ -132,7 +144,7 @@ class Centrif2D:
             expansion_ratio (float, optional): Expansion ratio where thickness arrays are defined. Defaults to 1.2.
         """
         thickness_array = convert_to_ndarray(thickness_array)
-        t =  exp_ratio(expansion_ratio,len(thickness_array)+2,1)
+        t =  self.splitter_camber_start + exp_ratio(expansion_ratio,len(thickness_array)+2,1-self.splitter_camber_start)
         x, y = self.camber.get_point(t)
         dx, dy = self.camber.get_point_dt(t)
         # m^2 * (dx^2+dy^2) = thickness^2
@@ -221,6 +233,7 @@ class Centrif2D:
         
         self.ss_te_pts = np.concat([1+0*np.linspace(y-radius,y,10), np.linspace(y-radius,y,10)],axis=1)
         self.ps_te_pts = np.flipud(np.concat([1+0*np.linspace(y+radius,y,10), np.linspace(y,y+radius,10)],axis=1))
+     
         
     def build(self,npts:int):
         """Build the 2D Geometry 
@@ -229,6 +242,10 @@ class Centrif2D:
             npts (int): number of points to define the pressure and suction sides
             npt_te (int, optional): number of points used to define trailing edge. Defaults to 20.
         """    
+        self.ss_x = [float(x) for x in self.ss_x]
+        self.ss_y = [float(y) for y in self.ss_y]
+        self.ps_x = [float(x) for x in self.ps_x]
+        self.ps_y = [float(y) for y in self.ps_y]
         ps = NURBS.Curve(); # knots = # control points + order of curve
         ps.degree = 3 # cubic
         ctrlpts = np.concatenate([ 

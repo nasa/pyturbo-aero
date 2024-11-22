@@ -99,7 +99,41 @@ def test_centrif3D_rounded_te():
     comp.set_blade_position(0.01,0.95)
     comp.build(100,100)
     return comp
+
+def test_centrif_splitter():
+    xhub,rhub,xshroud,rshroud = create_passage_compressor()      
+    hub = Centrif2D()
+    hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    hub.add_le_thickness(0.02)
+    hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    hub.add_te_radius(0.5,5,5,1)
+    hub.build(200)
+
+    comp = Centrif3D([hub,hub,hub],StackType.leading_edge)
+    comp.add_hub(xhub,rhub)
+    comp.add_shroud(xshroud,rshroud)
+    comp.set_blade_position(0.01,0.95)
+    comp.build(100,100)
     
+    splitter_hub = Centrif2D(splitter_camber_start=0.4)
+    splitter_hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    splitter_hub.add_le_thickness(0.02)
+    splitter_hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter_hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter_hub.add_te_radius(0.5,5,5,1)
+    splitter_hub.build(200)
+
+    splitter = Centrif3D([splitter_hub,splitter_hub,splitter_hub],StackType.leading_edge)
+    splitter.add_hub(xhub,rhub)
+    splitter.add_shroud(xshroud,rshroud)
+    splitter.set_blade_position(0.01,0.95)
+    splitter.build(100,100,comp)
+    splitter.plot()    
+    
+    return comp,splitter
+
+
 def test_centrif_fillet():
     # Design the Fillet
     ps_fillet1 = bezier([0, 0, 0.3, 0.8, 1],
@@ -164,6 +198,5 @@ def test_centrif_fillet():
     
 if __name__=="__main__":
     # test_centrif3D_rounded_te()
-    blade = test_centrif_fillet()
-    blade.plot()
+    blade,splitter = test_centrif_splitter()
     

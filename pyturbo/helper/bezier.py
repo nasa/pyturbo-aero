@@ -23,12 +23,8 @@ class bezier():
 
     def __init__(self, x,y):
         self.n = len(x)
-        self.c = np.zeros(self.n) 
         self.x = convert_to_ndarray(x)
         self.y = convert_to_ndarray(y)
-
-        for i in range(0,self.n):
-            self.c[i] = comb(self.n-1, i, exact=False) # use floating point
 
     def flip(self):
         '''
@@ -85,6 +81,9 @@ class bezier():
     def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
         return self.get_point(t,equal_space)
     
+    @staticmethod
+    def __B__(n:int,i:int,t:float):
+        return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
     
     def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
         """
@@ -96,39 +95,16 @@ class bezier():
                 Bx, By - scalar or numpy array
         """
         t = convert_to_ndarray(t)
-        Bx,By = np.zeros(t.size),np.zeros(t.size)
-        for i in range(len(t)):
-            tempx,tempy = 0.0, 0.0
-            for j in range(0,self.n):
-                u = self.c[j]*pow(1-t[i], self.n-j-1)*pow(t[i],j)
-                tempx += u*self.x[j]
-                tempy += u*self.y[j]
-                
-            Bx[i],By[i] = tempx,tempy
-
-        if (equal_space and len(Bx)>2):
-            Bx,By = self.__equal_space__(t,Bx,By)
-            return Bx,By
-        return Bx,By
-
-    def plot2D(self,equal_space=False):
-        """Creates a 2D Plot of a bezier curve 
-
-        Args:            
-            equal_space (bool, optional): Equally spaces the points using arc length. Defaults to False.
-            figure_num (int, optional): if you want plots to be on the same figure. Defaults to None.
-        """
-
+        x = 0; y = 0  
+        for i in range(self.n):
+            x += self.__B__(self.n-1,i,t)*self.x[i]
+            y += self.__B__(self.n-1,i,t)*self.y[i]
         
-        t = np.linspace(0,1,100)
-        [x,y] = self.get_point(t,equal_space)        
-        plt.plot(x, y,'-b')
-        plt.plot(self.x, self.y,'or')
-
-        plt.xlabel("x-label")
-        plt.ylabel("y-label")
-        plt.axis('scaled')
-        
+        if (equal_space and len(x)>2):
+            x,y = self.__equal_space__(t,x,y)
+            return x,y
+        return x,y
+    
     def get_point_dt(self,t:Union[npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
 
@@ -141,17 +117,16 @@ class bezier():
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
         """
-        def B(n:int,i:int,t:float):
-            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
-            return c*t**i *(1-t)**(n-i)
+
         
         t = convert_to_ndarray(t)
         
         dx = t*0; dy = t*0
         for i in range(self.n-1):
-            dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
-            dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
-        
+            dx += self.__B__(self.n-2,i,t)*(self.x[i+1]-self.x[i])
+            dy += self.__B__(self.n-2,i,t)*(self.y[i+1]-self.y[i])
+        dx*=self.n-1
+        dy*=self.n-1
         return dx,dy
 
     def get_point_dt2(self,t:Union[npt.NDArray]):
@@ -178,6 +153,24 @@ class bezier():
         ans = (rot_matrix*self.x.transpose()).transpose()
         self.x = ans[:,0]
         self.y = ans[:,1]
+        
+    def plot2D(self,equal_space=False):
+        """Creates a 2D Plot of a bezier curve 
+
+        Args:            
+            equal_space (bool, optional): Equally spaces the points using arc length. Defaults to False.
+            figure_num (int, optional): if you want plots to be on the same figure. Defaults to None.
+        """
+
+        
+        t = np.linspace(0,1,100)
+        [x,y] = self.get_point(t,equal_space)        
+        plt.plot(x, y,'-b')
+        plt.plot(self.x, self.y,'or')
+
+        plt.xlabel("x-label")
+        plt.ylabel("y-label")
+        plt.axis('scaled')
 
 
 class bezier3:
