@@ -352,51 +352,57 @@ class Centrif3D():
                 p.ss_pts[:,0]+=te_x[0]-te_x[i]
                 p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
     
-    def __match_aspect_ratio__(self,npts_span:int,npts_chord:int):
+    def __match_aspect_ratio__(self):
         """Stretch the profiles in the x and y direction to match the height of the hub and shroud 
-
-        Args:
-            npts_span (int): number of points defining the span
-            npts_chord (int): number of points defining the chord 
         """
         # Lets get the length from start to finish
         t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         # t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
         
         # Build a database of xr for the profiles in the spanwise direction 
-        xh = self.func_xhub(t)
-        rh = self.func_rhub(t)
+        xh = self.func_xhub(t); xsh = self.func_xshroud(t)
+        rh = self.func_rhub(t); rsh = self.func_rshroud(t)
         x_rth = np.zeros((self.npts_span,self.npts_chord,2))
-        chord_lens = np.zeros((self.npts_span,1))
-        for t_chord in range(self.t_chord):
-            x,r = line2D(xh[t_chord],rh[t_chord]).l.get_point(self.t_span)
-            x_rth[:,t_chord,0] = x
-            x_rth[:,t_chord,1] = r 
+        for j in range(len(self.t_chord)):
+            x,r = line2D([xh[j],rh[j]],[xsh[j],rsh[j]]).get_point(self.t_span)
+            x_rth[:,j,0] = x
+            x_rth[:,j,1] = r 
 
         x_hub = x_rth[0,0,0]
         rth_hub = x_rth[0,0,1]
         # Get the aspect ratio
         for i in range(self.npts_span):
-            chord_lens[i] = np.sum(np.sqrt(np.diff(x_rth[i,:,0])**2 + np.diff(x_rth[i,:,1])**2))
-            dx = self.ss_pts[:,i,0].max()-self.ss_pts[:,i,0].min()
-            drth = self.ps_pts[:,i,1].max()-self.ps_pts[:,i,1].min()
-            
             # Shift the x coordinates to start at hub starting location
-            self.ss_pts[i,:,0] = (self.ss_pts[i,:,0] - self.ss_pts[i,0,0]) + x_hub      
+            x_scale = x_rth[i,-1,0]-x_rth[i,0,0]
+            self.ss_pts[i,:,0] = (self.ss_pts[i,:,0] - self.ss_pts[i,0,0]) + x_hub
+            self.ps_pts[i,:,0] = (self.ps_pts[i,:,0] - self.ps_pts[i,0,0]) + x_hub
+
+            xmax = max(self.ps_pts[i,:,0].max(),self.ss_pts[:,i,0].max()); xmin = min(self.ps_pts[i,:,0].min(),self.ss_pts[i,:,0].min())
+            dx = xmax - xmin
+            rth_max = max(self.ps_pts[i,:,1].max(),self.ss_pts[i,:,1].max()); rth_min = min(self.ps_pts[i,:,1].min(),self.ss_pts[i,:,1].min())
+            drth = rth_max - rth_min
             
+            AR = (rth_max-rth_min)/(xmax-xmin)
             # Calculate the centroid
-            cx = dx/2+self.ss_pts[:,i,0].min()
-            crth = drth/2+self.ss_pts[:,i,1].min()
+            cx = dx/2+xmin
+            crth = drth/2+rth_min
+            x_le = self.ss_pts[i,0,0]
+            rth_le = self.ss_pts[i,0,1]
             
-            self.ss_pts[i,:,0] = (self.ss_pts[i,:,0]-cx) * chord_lens[i]/dx + cx
-            self.ss_pts[i,:,1] = (self.ss_pts[i,:,1]-crth) * chord_lens[i]/dx + crth
+            self.ss_pts[i,:,0] = (self.ss_pts[i,:,0]-cx) * x_scale/dx
+            self.ss_pts[i,:,1] = (self.ss_pts[i,:,1]-crth) * AR*x_scale/dx
             
-            self.ps_pts[i,:,0] = (self.ps_pts[i,:,0]-cx) * chord_lens[i]/dx + cx
-            self.ps_pts[i,:,1] = (self.ps_pts[i,:,1]-crth) * chord_lens[i]/dx + crth
+            self.ps_pts[i,:,0] = (self.ps_pts[i,:,0]-cx) * x_scale/dx
+            self.ps_pts[i,:,1] = (self.ps_pts[i,:,1]-crth) * AR*x_scale/dx
+            
+            self.ss_pts[i,:,0] = self.ss_pts[i,:,0]+(x_le-self.ss_pts[i,0,0])
+            self.ss_pts[i,:,1] = self.ss_pts[i,:,1]+(rth_le-self.ss_pts[i,0,1])
+            self.ps_pts[i,:,0] = self.ps_pts[i,:,0]+(x_le-self.ps_pts[i,0,0])
+            self.ps_pts[i,:,1] = self.ps_pts[i,:,1]+(rth_le-self.ps_pts[i,0,1])
             
             # Move the points to the r values of passage
-            self.ss_pts[i,:,2] = x_rth[i,:,2]
-            self.ps_pts[i,:,2] = x_rth[i,:,2]
+            self.ss_pts[i,:,2] = x_rth[i,:,1]
+            self.ps_pts[i,:,2] = x_rth[i,:,1]
             
     def __apply_tip_gap__(self):
         """Apply tip gap and construct new functions that define the hub and shroud 
@@ -575,7 +581,6 @@ class Centrif3D():
         if self.fillet_r>0:
             # Lets get a better resolution of the fillet 
             a = 0.1 # Percent span where expansion ratio stops
-            b = 0.1 # Percent chord when expansion ratio starts and stops 
             h1 = exp_ratio(1.2,50)*a
             h2 = np.linspace(0,1,npts_span-50)*(1-a)+a
             self.t_span = np.hstack([h1,h2[1:]])
@@ -586,13 +591,24 @@ class Centrif3D():
 
         
         self.__apply_stacking__()
-        
         # interpolate the geometry
         self.__interpolate__(npts_span,npts_chord)
+        self.plot(blade_only=True)
+
         self.__apply_tip_gap__()
         
         self.__apply_lean__(npts_span,npts_chord)
-        self.__match_aspect_ratio__(npts_span,npts_chord,main_blade)
+        self.__match_aspect_ratio__()
+        
+        # Build the hub and shroud 
+        self.hub_pts = np.vstack([
+                self.func_xhub(np.linspace(0,1,npts_chord*2)),
+                self.func_xhub(np.linspace(0,1,npts_chord*2))*0, 
+                self.func_rhub(np.linspace(0,1,npts_chord*2))]).transpose()
+        self.shroud_pts = np.vstack([
+            self.func_xshroud(np.linspace(0,1,npts_chord*2)),
+            self.func_xshroud(np.linspace(0,1,npts_chord*2))*0, 
+            self.func_rshroud(np.linspace(0,1,npts_chord*2))]).transpose()
         
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
@@ -610,13 +626,14 @@ class Centrif3D():
         plt.axis('equal')
         plt.show()
         
-    def plot(self):
+    def plot(self,blade_only:bool=False):
         """Plots the generated design 
         """
         fig = plt.figure(num=1,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
-        ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
-        ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
+        if not blade_only:
+            ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
+            ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
         for i in range(self.ss_pts.shape[0]):
             ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,1],self.ss_pts[i,:,2],'r')
             ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,1],self.ps_pts[i,:,2],'b')
@@ -626,5 +643,6 @@ class Centrif3D():
         ax.set_zlabel('r-radial')
         plt.axis('scaled')
         plt.show()
+    
         
         

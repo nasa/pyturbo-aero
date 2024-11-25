@@ -117,29 +117,23 @@ class bezier():
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
         """
-
-        
         t = convert_to_ndarray(t)
         
         dx = t*0; dy = t*0
         for i in range(self.n-1):
             dx += self.__B__(self.n-2,i,t)*(self.x[i+1]-self.x[i])
             dy += self.__B__(self.n-2,i,t)*(self.y[i+1]-self.y[i])
-        dx*=self.n-1
-        dy*=self.n-1
+        dx*=self.n
+        dy*=self.n
         return dx,dy
 
     def get_point_dt2(self,t:Union[npt.NDArray]):
         t = convert_to_ndarray(t)
         
-        def B(n:int,i:int,t:float):
-            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
-            return c*t**i *(1-t)**(n-i)
-        
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
-            dx2 = B(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
-            dy2 = B(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+            dx2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
         return dx2,dy2
     
     def rotate(self,angle:float):

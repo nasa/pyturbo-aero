@@ -130,11 +130,14 @@ class Centrif2D:
         thickness_array = convert_to_ndarray(thickness_array)
         t = self.splitter_camber_start + exp_ratio(expansion_ratio,len(thickness_array)+2,1-self.splitter_camber_start) # 1 point for the leading edge and 1 for TE starting point before radius is added
         x, y = self.camber.get_point(t)
-        dx, dy = self.camber.get_point_dt(t)
-        m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
+        dx,dy = self.camber.get_point_dt(t)
+        
+        m = np.sqrt(dx**2 + dy**2)
+        dx /= m; dy /= m
+        
         for i in range(1,len(t)-1):
-            self.ps_x.append(x[i]-dx[i]*m[i-1])
-            self.ps_y.append(y[i]+dy[i]*m[i-1])
+            self.ps_x.append(x[i]-np.sign(thickness_array[i-1])*thickness_array[i-1]*dy[i])
+            self.ps_y.append(y[i]+np.sign(thickness_array[i-1])*thickness_array[i-1]*dx[i])
             
     def add_ss_thickness(self,thickness_array:List[float],expansion_ratio:float=1.2):
         """Builds the suction side
@@ -147,11 +150,11 @@ class Centrif2D:
         t =  self.splitter_camber_start + exp_ratio(expansion_ratio,len(thickness_array)+2,1-self.splitter_camber_start)
         x, y = self.camber.get_point(t)
         dx, dy = self.camber.get_point_dt(t)
-        # m^2 * (dx^2+dy^2) = thickness^2
-        m = np.sign(thickness_array)*np.sqrt(thickness_array**2/(dx[1:-1]**2 + dy[1:-1]**2)) # magnitude
+        m = np.sqrt(dx**2 + dy**2)
+        dx /= m; dy /= m
         for i in range(1,len(t)-1):
-            self.ss_x.append(x[i]+dx[i]*m[i-1])
-            self.ss_y.append(y[i]-dy[i]*m[i-1])
+            self.ss_x.append(x[i]+np.sign(thickness_array[i-1])*thickness_array[i-1]*dy[i])
+            self.ss_y.append(y[i]-np.sign(thickness_array[i-1])*thickness_array[i-1]*dx[i])
         
     def add_te_radius(self,radius_scale:float=0.6,wedge_ss:float=10,wedge_ps:float=10,elliptical:float=1):
         """Add a trailing edge that's rounded
