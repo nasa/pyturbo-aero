@@ -352,8 +352,8 @@ class Centrif3D():
                 p.ss_pts[:,0]+=te_x[0]-te_x[i]
                 p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
     
-    def __stretch_profiles__(self,npts_span:int,npts_chord:int,main_blade=None):
-        """Stretch the profiles in the x and y direction to match camber
+    def __stretch_profiles__(self,npts_span:int,npts_chord:int):
+        """Stretch the profiles in the x and y direction to match the height of the hub and shroud 
 
         Args:
             npts_span (int): number of points defining the span
@@ -362,14 +362,26 @@ class Centrif3D():
         # Lets get the length from start to finish
         t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         # t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
+        
+        # Get the length of each profile in the spanwise direction. Use to scale and fit 
         xh = self.func_xhub(t)
         rh = self.func_rhub(t)
+        xr = np.zeros((self.npts_span,self.npts_chord,2))
+        chord_lens = np.zeros((self.npts_span,1))
+        for t_chord in range(self.t_chord):
+            x,r = line2D(xh[t_chord],rh[t_chord]).l.get_point(self.t_span)
+            xr[:,t_chord,0] = x
+            xr[:,t_chord,1] = r 
+        
+        for i in range(self.npts_span):
+            chord_lens[i] = np.sum(np.sqrt(np.diff(xr[i,:,0])**2 + np.diff(xr[i,:,1])**2))
+
+            self.ss_pts[:,i,2] = 
+            self.ps_pts[:,i,2]
         
         hub_length_of_blade = np.sum(np.sqrt(np.diff(xh)**2+np.diff(rh)**2))
-        if main_blade is not None:
-            _,cambers = main_blade.__percent_camber__(main_blade.npts_span,main_blade.npts_chord)
-        else:
-            _,cambers = self.__percent_camber__(npts_span,npts_chord)
+        _,cambers = self.__percent_camber__(npts_span,npts_chord)
+        
         for i in range(cambers.shape[0]):
             self.ss_pts[i,:]*=hub_length_of_blade/cambers[-1]  # Scale the blade profiles to the hub length 
             self.ps_pts[i,:]*=hub_length_of_blade/cambers[-1]
