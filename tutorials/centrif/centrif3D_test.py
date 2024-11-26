@@ -108,32 +108,32 @@ def test_centrif_splitter():
     hub.add_ps_thickness(thickness_array=[0.02,0.02,0.02,0.02])
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_te_radius(0.5,5,5,1)
-    hub.build(200)
-    hub.plot()
+    hub.build(100)
+    # hub.plot()
     
     comp = Centrif3D([hub,hub,hub],StackType.leading_edge)
     comp.add_hub(xhub,rhub)
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
-    comp.build(100,100)
-    comp.plot()
+    comp.build(50,50)
+    # # comp.plot()
     
-    # splitter_hub = Centrif2D(splitter_camber_start=0.4)
-    # splitter_hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
-    # splitter_hub.add_le_thickness(0.02)
-    # splitter_hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
-    # splitter_hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
-    # splitter_hub.add_te_radius(0.5,5,5,1)
-    # splitter_hub.build(200)
+    splitter_hub = Centrif2D(splitter_camber_start=0.4)
+    splitter_hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    splitter_hub.add_le_thickness(0.02)
+    splitter_hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter_hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
+    splitter_hub.add_te_radius(0.5,5,5,1)
+    splitter_hub.build(100)
 
-    # splitter = Centrif3D([splitter_hub,splitter_hub,splitter_hub],StackType.leading_edge)
-    # splitter.add_hub(xhub,rhub)
-    # splitter.add_shroud(xshroud,rshroud)
-    # splitter.set_blade_position(0.01,0.95)
-    # splitter.build(100,100,comp)
+    splitter = Centrif3D([splitter_hub,splitter_hub,splitter_hub],StackType.leading_edge)
+    splitter.add_hub(xhub,rhub)
+    splitter.add_shroud(xshroud,rshroud)
+    splitter.set_blade_position(0.01,0.95)
+    splitter.build(100,100)
     # splitter.plot()    
     
-    return comp,splitter
+    return splitter
 
 
 def test_centrif_fillet():

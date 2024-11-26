@@ -20,7 +20,7 @@ def fullwheel_no_fillet():
 
 def fullwheel_splitter():
     blade = test_centrif3D_rounded_te()
-    splitter = test_centrif_splitter()
+    _,splitter = test_centrif_splitter()
     wheel = Passage3D(blade)
         
     pair1 = PatternPairCentrif(0.96,0.5)
@@ -36,7 +36,7 @@ def fullwheel_splitter():
     wheel.add_splitter(splitter)
     
     wheel.build(nblades=12,hub_resolution=48)
-    wheel.plot()
+    wheel.plot(num_blades=1,num_splitters=1)
     
 if __name__=='__main__':
     # fullwheel_no_fillet()

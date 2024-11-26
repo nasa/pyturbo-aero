@@ -39,6 +39,7 @@ class Centrif2D:
     ps_pts:npt.NDArray
     ss_te_pts:npt.NDArray
     ps_te_pts:npt.NDArray
+    
     camber_pts:npt.NDArray
     te_cut:bool
     
@@ -277,6 +278,7 @@ class Centrif2D:
         
         self.ss_pts = np.array(ss.evalpts)
         self.ps_pts = np.array(ps.evalpts)
+        
         self.camber_pts = np.vstack([x,y,y*0]).transpose()
      
     def plot_camber(self):
@@ -308,12 +310,15 @@ class Centrif2D:
         t = np.linspace(0,1,200)
         [xcamber, ycamber] = self.camber.get_point(t)
     
-
+        max_indx = np.argmax(self.ss_pts[:,0])
+        
         plt.figure(num=1,clear=True)
         plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
             linewidth=2)
         plt.plot(self.ps_pts[:,0],self.ps_pts[:,1],'b',label='pressure side')
         plt.plot(self.ss_pts[:,0],self.ss_pts[:,1],'r',label='suction side')
+        plt.plot(self.ss_pts[max_indx,0],self.ss_pts[max_indx,1],'rx',label='suction side max')
+        
         plt.plot(self.ps_x,self.ps_y,'ob',label='ps ctrl pts')
         plt.plot(self.ss_x,self.ss_y,'or',label='ss ctrl pts')
         plt.plot(self.ps_te_pts[:,0],self.ps_te_pts[:,1],'ok',label='ps te ctrl pts')

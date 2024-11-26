@@ -138,16 +138,15 @@ class Passage3D:
         theta_blade = 360/nblades
         blades = [copy.deepcopy(self.blade) for _ in range(nblades)]
         # Lets rotate the blades 
-        theta = 0 
+        theta = 0
         for b in blades:
             b.rotate(theta)
             theta += theta_blade
         self.blades = blades
         
-        theta = 0
+        theta = theta_blade/2
         if self.splitter is not None:
             splitters = []
-            theta = theta_blade/2
             while theta<=360:
                 splitters.append(copy.deepcopy(self.splitter))
                 splitters[-1].rotate(theta)
@@ -159,50 +158,56 @@ class Passage3D:
             hub_resolution = len(blades) # +len(splitters)
         self.__rotate_hub_shroud__(hub_resolution)
     
-    def plot(self):
-        """Plots the generated design 
+    def plot(self,num_blades:int=-1,num_splitters:int=-1):
+        """Plots the generated design
+
+        Args:
+            num_blades (int, optional): number of blades. Defaults to -1.
+            num_splitters (int, optional): number of splitters. Defaults to -1.
         """
+        if num_blades<0:
+            num_blades = len(self.blades)
+        if num_splitters<0:
+            num_splitters = len(self.splitters)
         fig = plt.figure(num=1,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
         
-        for i in range(len(self.blades)):
+        for i in range(num_blades):
             blade = self.blades[i]
             for i in range(blade.ss_pts.shape[0]):
                 ax.plot3D(blade.ss_pts[i,:,0],blade.ss_pts[i,:,1],blade.ss_pts[i,:,2],'r')
                 ax.plot3D(blade.ps_pts[i,:,0],blade.ps_pts[i,:,1],blade.ps_pts[i,:,2],'b')
                 
-        for i in range(len(self.splitters)):
+        for i in range(num_splitters):
             splitter = self.splitters[i]
             for i in range(splitter.ss_pts.shape[0]):
                 ax.plot3D(splitter.ss_pts[i,:,0],splitter.ss_pts[i,:,1],splitter.ss_pts[i,:,2],'m')
                 ax.plot3D(splitter.ps_pts[i,:,0],splitter.ps_pts[i,:,1],splitter.ps_pts[i,:,2],'m')
         
-        # resolution,npts,_ = self.hub_pts.shape
-        # for i in range(resolution):
-        #     ax.plot3D(self.hub_pts[i,:,0],self.hub_pts[i,:,1],self.hub_pts[i,:,2],'k')
-        #     ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
+        resolution,npts,_ = self.hub_pts.shape
+        for i in range(resolution):
+            ax.plot3D(self.hub_pts[i,:,0],self.hub_pts[i,:,1],self.hub_pts[i,:,2],'k')
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
         
-        # for j in range(npts):
-        #     ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k')
-        #     ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
+        for j in range(npts):
+            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k')
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
             
         ax.view_init(azim=90, elev=45)
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')
         ax.set_zlabel('r-radial')
         
-        
-        
         fig = plt.figure(num=2,dpi=150)
         ax = fig.add_subplot(111)
         
-        for i in range(len(self.blades)):
+        for i in range(num_blades):
             blade = self.blades[i]
             for i in range(blade.ss_pts.shape[0]):
                 ax.plot(blade.ss_pts[i,:,1],blade.ss_pts[i,:,2],'r')
                 ax.plot(blade.ps_pts[i,:,1],blade.ps_pts[i,:,2],'b')
                 
-        for i in range(len(self.splitters)):
+        for i in range(num_splitters):
             splitter = self.splitters[i]
             for i in range(splitter.ss_pts.shape[0]):
                 ax.plot(splitter.ss_pts[i,:,1],splitter.ss_pts[i,:,2],'m')
