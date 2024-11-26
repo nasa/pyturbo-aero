@@ -139,6 +139,16 @@ class line2D():
         self.length = math.sqrt((self.x[1]-self.x[0])*(self.x[1]-self.x[0]) + (self.y[1]-self.y[0])*(self.y[1]-self.y[0]))
         self.angle = math.atan2(self.y[1]-self.y[0],self.x[1]-self.x[0])
     
+    def get_t(self,length:float) -> Union[float, npt.NDArray]:
+        """Returns the t that give a certain length 
+
+        Args:
+            length (float): length of line
+
+        Returns:
+            Union[float, npt.NDArray]: time
+        """
+        return np.sqrt(length**2/(self.dx**2 + self.dy**2))
                     
     def plot2D(self):
         _, ax1 = plt.subplots()

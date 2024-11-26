@@ -39,6 +39,7 @@ class Centrif2D:
     ps_pts:npt.NDArray
     ss_te_pts:npt.NDArray
     ps_te_pts:npt.NDArray
+    camber_pts:npt.NDArray
     te_cut:bool
     
     def __init__(self,splitter_camber_start:float=0) -> None:
@@ -272,8 +273,11 @@ class Centrif2D:
         ss.knotvector = knotvector.generate(ss.degree,ctrlpts.shape[0])
         ss.delta = 1/npts
         
+        x,y = self.camber.get_point(np.arange(0,1,1/npts))
+        
         self.ss_pts = np.array(ss.evalpts)
         self.ps_pts = np.array(ps.evalpts)
+        self.camber_pts = np.vstack([x,y,y*0]).transpose()
      
     def plot_camber(self):
         """Plots the camber of the airfoil

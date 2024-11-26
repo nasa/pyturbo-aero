@@ -34,6 +34,7 @@ class Centrif3D():
     
     ss_pts:npt.NDArray
     ps_pts:npt.NDArray
+    camber_pts:npt.NDArray
 
     hub_pts:npt.NDArray
     shroud_pts:npt.NDArray
@@ -355,6 +356,8 @@ class Centrif3D():
     def __match_aspect_ratio__(self):
         """Stretch the profiles in the x and y direction to match the height of the hub and shroud 
         """
+        def solve_t(t,val:float,func:PchipInterpolator):
+            return np.abs(val-func(t))
         # Lets get the length from start to finish
         t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         # t = np.linspace(self.blade_position[0],self.blade_position[1],npts_chord)
@@ -362,28 +365,32 @@ class Centrif3D():
         # Build a database of xr for the profiles in the spanwise direction 
         xh = self.func_xhub(t); xsh = self.func_xshroud(t)
         rh = self.func_rhub(t); rsh = self.func_rshroud(t)
-        x_rth = np.zeros((self.npts_span,self.npts_chord,2))
+        x_r = np.zeros((self.npts_span,self.npts_chord,2))
         for j in range(len(self.t_chord)):
-            x,r = line2D([xh[j],rh[j]],[xsh[j],rsh[j]]).get_point(self.t_span)
-            x_rth[:,j,0] = x
-            x_rth[:,j,1] = r 
+            x,r = line2D([xh[j],rh[j]],[xsh[j],rsh[j]]).get_point(self.t_span[:,j])
+            x_r[:,j,0] = x
+            x_r[:,j,1] = r 
 
-        x_hub = x_rth[0,0,0]
-        rth_hub = x_rth[0,0,1]
+        x_hub = x_r[0,0,0]
         # Get the aspect ratio
         for i in range(self.npts_span):
             # Shift the x coordinates to start at hub starting location
-            x_scale = x_rth[i,-1,0]-x_rth[i,0,0]
+            x_scale = x_r[i,-1,0]-x_r[i,0,0]
             self.ss_pts[i,:,0] = (self.ss_pts[i,:,0] - self.ss_pts[i,0,0]) + x_hub
             self.ps_pts[i,:,0] = (self.ps_pts[i,:,0] - self.ps_pts[i,0,0]) + x_hub
-
-            xmax = max(self.ps_pts[i,:,0].max(),self.ss_pts[:,i,0].max()); xmin = min(self.ps_pts[i,:,0].min(),self.ss_pts[i,:,0].min())
-            dx = xmax - xmin
-            rth_max = max(self.ps_pts[i,:,1].max(),self.ss_pts[i,:,1].max()); rth_min = min(self.ps_pts[i,:,1].min(),self.ss_pts[i,:,1].min())
-            drth = rth_max - rth_min
             
+            # Calculate Aspect Ratio using Camber
+            xmax = self.camber_pts[i,:,0].max(); xmin = self.camber_pts[i,:,0].min()
+            dx = xmax - xmin
+            rth_max = self.camber_pts[i,:,1].max(); rth_min = self.camber_pts[i,:,1].min()
+            drth = rth_max - rth_min
             AR = (rth_max-rth_min)/(xmax-xmin)
+
             # Calculate the centroid
+            xmax = max(self.ss_pts[i,:,0].max(),self.ps_pts[:,i,0].max()); xmin = min(self.ss_pts[i,:,0].min(),self.ps_pts[i,:,0].min())
+            dx = xmax - xmin
+            rth_max = max(self.ss_pts[i,:,1].max(),self.ps_pts[i,:,1].max()); rth_min = min(self.ss_pts[i,:,1].min(),self.ps_pts[i,:,1].min())
+            drth = rth_max - rth_min
             cx = dx/2+xmin
             crth = drth/2+rth_min
             x_le = self.ss_pts[i,0,0]
@@ -395,39 +402,39 @@ class Centrif3D():
             self.ps_pts[i,:,0] = (self.ps_pts[i,:,0]-cx) * x_scale/dx
             self.ps_pts[i,:,1] = (self.ps_pts[i,:,1]-crth) * AR*x_scale/dx
             
-            self.ss_pts[i,:,0] = self.ss_pts[i,:,0]+(x_le-self.ss_pts[i,0,0])
-            self.ss_pts[i,:,1] = self.ss_pts[i,:,1]+(rth_le-self.ss_pts[i,0,1])
-            self.ps_pts[i,:,0] = self.ps_pts[i,:,0]+(x_le-self.ps_pts[i,0,0])
-            self.ps_pts[i,:,1] = self.ps_pts[i,:,1]+(rth_le-self.ps_pts[i,0,1])
+            self.ss_pts[i,:,0] = self.ss_pts[i,:,0] + cx * x_scale/dx
+            self.ss_pts[i,:,1] = self.ss_pts[i,:,1] + crth * AR*x_scale/dx
+            self.ps_pts[i,:,0] = self.ps_pts[i,:,0] + cx * x_scale/dx
+            self.ps_pts[i,:,1] = self.ps_pts[i,:,1] + crth * AR*x_scale/dx
             
-            # Move the points to the r values of passage
-            self.ss_pts[i,:,2] = x_rth[i,:,1]
-            self.ps_pts[i,:,2] = x_rth[i,:,1]
+            # need to work on this function 
+            self.t_chord
+            func = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,0])
+            func_r = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,1])
+            inflection_indx = int(np.argmax(self.ss_pts[i,:,0])) # where TE is 
+            for j in range(inflection_indx):
+                res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ss_pts[i,j,0],func))
+                t = res.x 
+                r = func_r(t)
+                self.ss_pts[i,j,2] = r
+                
+            for j in range(inflection_indx,self.npts_chord):
+                res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ss_pts[i,j,0],func))
+                t = res.x
+                r = func_r(t)
+                self.ss_pts[i,j,2] = r
             
-    def __apply_tip_gap__(self):
-        """Apply tip gap and construct new functions that define the hub and shroud 
-        """
-        # Scale to match hub and shroud curves 
-        t = np.linspace(0,1,self.hub.shape[0])
-        # Implement Tip gap
-        hub = self.hub.copy()       # create a copy 
-        shroud = self.shroud.copy()
-        if self.tip_clearance>0:
-            for i in self.hub.shape[0]:
-                xhub = self.hub[i,0]
-                rhub = self.hub[i,1]
-                xshroud = self.shroud[i,0]
-                rshroud = self.shroud[i,1]
-                l = line2D([xhub,rhub],[xshroud,rshroud])
-                x,r = l.get_point(1-self.tip_clearance)
-                shroud[i,0] = x
-                shroud[i,1] = r
-        
-        self.func_xhub = PchipInterpolator(t,hub[:,0])
-        self.func_rhub = PchipInterpolator(t,hub[:,1])
-        self.func_xshroud = PchipInterpolator(t,shroud[:,0])
-        self.func_rshroud = PchipInterpolator(t,shroud[:,1])
-    
+            for j in range(self.npts_chord):
+                res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ps_pts[i,j,0],func))
+                t = res.x 
+                r = func_r(t)
+                self.ps_pts[i,j,2] = r
+            
+        plt.figure()
+        for i in range(self.npts_span):
+            plt.plot(x_r[i,:,0],x_r[i,:,1],'k')
+            plt.plot(self.ss_pts[i,:,0],self.ss_pts[i,:,2],'r')
+        plt.show()
     def __flatten__(self,pts:npt.NDArray):
         """Each of the profile in ss_pts and ps_pts follow the hub and shroud.
         This code flattens it at constant radius but keeps the length 
@@ -464,41 +471,45 @@ class Centrif3D():
             pts[i,:,0] = flatten_pts[i,0,0]+dx_list[i,:]
             pts[i,:,2] = flatten_pts[i,0,2]+dr_list[i,:]
                              
-    def __interpolate__(self,npts_span:int,npts_chord:int):
+    def __interpolate__(self):
         """Interpolate the geometry to make it denser
-
-        Args:
-            npts_span (int): number of points in the spanwise direction 
-            npts_chord (int): number of points in the chordwise direction
         """
-        ss_pts_temp = np.zeros((len(self.profiles),npts_chord,3))
-        ps_pts_temp = np.zeros((len(self.profiles),npts_chord,3))
+        ss_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
+        ps_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
+        camber_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
         # Build and interpolate the blade 
         for i in range(len(self.profiles)):
-            self.profiles[i].build(npts_chord)
+            self.profiles[i].build(self.npts_chord)
             ss_pts_temp[i,:,:] = self.profiles[i].ss_pts
-            ps_pts_temp[i,:,:] = self.profiles[i].ps_pts    
+            ps_pts_temp[i,:,:] = self.profiles[i].ps_pts
+            camber_pts_temp[i,:,:] = self.profiles[i].camber_pts
         
         self.ss_profile_pts = ss_pts_temp
         self.ps_profile_pts = ps_pts_temp
         
         # Construct the new denser ss and ps 
-        ss_pts = np.zeros((npts_span,npts_chord,3))
-        ps_pts = np.zeros((npts_span,npts_chord,3))
+        ss_pts = np.zeros((self.npts_span,self.npts_chord,3))
+        ps_pts = np.zeros((self.npts_span,self.npts_chord,3))
+        camber_pts = np.zeros((self.npts_span,self.npts_chord,3))
         
         t_temp = np.linspace(0,1,len(self.profiles))
         
-        for i in range(npts_chord):
-            ss_pts[:,i,0] = csapi(t_temp,ss_pts_temp[:,i,0],self.t_span)
-            ss_pts[:,i,1] = csapi(t_temp,ss_pts_temp[:,i,1],self.t_span)
-            ss_pts[:,i,2] = csapi(t_temp,ss_pts_temp[:,i,2],self.t_span)
+        t = (self.t_span-self.t_span[0,:])/(self.t_span[-1,:]-self.t_span[0,:])
+        for j in range(self.npts_chord):
+            ss_pts[:,j,0] = csapi(t_temp,ss_pts_temp[:,j,0],t[:,j])
+            ss_pts[:,j,1] = csapi(t_temp,ss_pts_temp[:,j,1],t[:,j])
+            ss_pts[:,j,2] = csapi(t_temp,ss_pts_temp[:,j,2],t[:,j])
             
-            ps_pts[:,i,0] = csapi(t_temp,ps_pts_temp[:,i,0],self.t_span)
-            ps_pts[:,i,1] = csapi(t_temp,ps_pts_temp[:,i,1],self.t_span)
-            ps_pts[:,i,2] = csapi(t_temp,ps_pts_temp[:,i,2],self.t_span)
-        
+            ps_pts[:,j,0] = csapi(t_temp,ps_pts_temp[:,j,0],t[:,j])
+            ps_pts[:,j,1] = csapi(t_temp,ps_pts_temp[:,j,1],t[:,j])
+            ps_pts[:,j,2] = csapi(t_temp,ps_pts_temp[:,j,2],t[:,j])
+            
+            camber_pts[:,j,0] = csapi(t_temp,camber_pts_temp[:,j,0],t[:,j])
+            camber_pts[:,j,1] = csapi(t_temp,camber_pts_temp[:,j,1],t[:,j])
+            camber_pts[:,j,2] = csapi(t_temp,camber_pts_temp[:,j,2],t[:,j])
         self.ps_pts = ps_pts
         self.ss_pts = ss_pts
+        self.camber_pts = camber_pts
     
     def __percent_camber__(self,npts_span:int,npts_chord:int) -> npt.NDArray:
         """Gets the percent along the camber line for each profile and interpolates that to fill the interpolated blade. 
@@ -566,7 +577,31 @@ class Centrif3D():
             for i in range(npts_span):
                 self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
                 self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
+    
+    def __tip_clearance__(self):
+        """Build the tspan matrix such that tip clearance is maintained
+        """
+        self.t_span = np.zeros((self.npts_span,self.npts_chord))
+        self.t_chord = np.linspace(0,1,self.npts_chord)
+        t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         
+        xh = self.func_xhub(t); xsh = self.func_xshroud(t)
+        rh = self.func_rhub(t); rsh = self.func_rshroud(t)
+                
+        for j in range(len(self.t_chord)):
+            l = line2D([xh[j],rh[j]],[xsh[j],rsh[j]])
+            t2 = l.get_t(l.length-self.tip_clearance)
+
+            if self.fillet_r>0:
+                # Lets get a better resolution of the fillet 
+                a = 0.1 # Percent span where expansion ratio stops
+                h1 = exp_ratio(1.2,50)*a
+                h2 = np.linspace(0,t2,self.npts_span-50)*(t2-a)+a
+                self.t_span[:,j] = np.hstack([h1,h2[1:]])
+            else:
+                self.t_span[:,j] = np.linspace(0,t2,self.npts_span)
+        
+
     def build(self,npts_span:int=100,npts_chord:int=100,main_blade=None):
         """Build the 3D Blade
 
@@ -578,28 +613,19 @@ class Centrif3D():
         self.npts_span = npts_span
         self.npts_chord = npts_chord
         
-        if self.fillet_r>0:
-            # Lets get a better resolution of the fillet 
-            a = 0.1 # Percent span where expansion ratio stops
-            h1 = exp_ratio(1.2,50)*a
-            h2 = np.linspace(0,1,npts_span-50)*(1-a)+a
-            self.t_span = np.hstack([h1,h2[1:]])
-            self.t_chord = np.linspace(0,1,npts_chord)
-        else:
-            self.t_span = np.linspace(0,1,npts_span)
-            self.t_chord = np.linspace(0,1,npts_chord)
-
+        # Scale to match hub and shroud curves 
+        t = np.linspace(0,1,self.hub.shape[0])
+        self.func_xhub = PchipInterpolator(t,self.hub[:,0])
+        self.func_rhub = PchipInterpolator(t,self.hub[:,1])
+        self.func_xshroud = PchipInterpolator(t,self.shroud[:,0])
+        self.func_rshroud = PchipInterpolator(t,self.shroud[:,1])
         
+        self.__tip_clearance__()
         self.__apply_stacking__()
-        # interpolate the geometry
-        self.__interpolate__(npts_span,npts_chord)
-        self.plot(blade_only=True)
-
-        self.__apply_tip_gap__()
-        
-        self.__apply_lean__(npts_span,npts_chord)
+        self.__interpolate__()
         self.__match_aspect_ratio__()
-        
+        self.plot(blade_only=True)
+        self.__apply_lean__(npts_span,npts_chord)
         # Build the hub and shroud 
         self.hub_pts = np.vstack([
                 self.func_xhub(np.linspace(0,1,npts_chord*2)),

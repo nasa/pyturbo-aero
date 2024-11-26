@@ -109,7 +109,7 @@ def test_centrif_splitter():
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_te_radius(0.5,5,5,1)
     hub.build(200)
-    # hub.plot()
+    hub.plot()
     
     comp = Centrif3D([hub,hub,hub],StackType.leading_edge)
     comp.add_hub(xhub,rhub)
