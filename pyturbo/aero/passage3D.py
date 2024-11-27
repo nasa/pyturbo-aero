@@ -190,8 +190,8 @@ class Passage3D:
             ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.1)
         
         for j in range(npts):
-            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k',alpha=0.1)
-            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.1)
+            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k',alpha=0.5)
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'g',alpha=0.5)
             
         ax.view_init(azim=90, elev=45)
         ax.set_xlabel('x-axial')

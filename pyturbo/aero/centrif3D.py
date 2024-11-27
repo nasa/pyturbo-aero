@@ -470,6 +470,13 @@ class Centrif3D():
                 t = res.x 
                 r = func_r(t)
                 self.ps_pts[i,j,2] = r
+        
+        # Shift leading edge to rth = 0 
+        if self.stacktype == StackType.trailing_edge:
+            LE_rth = self.ss_pts[0,0,1]
+            for i in range(self.npts_span):
+                self.ss_pts[i,:,1] -= LE_rth
+                self.ps_pts[i,:,1] -= LE_rth
         # i = 10
         # plt.figure(clear=True)
         # # plt.plot(x_r[i,:,0],x_r[i,:,1],'k')
@@ -554,10 +561,6 @@ class Centrif3D():
             self.ss_pts[:,:,1] -= drth
             self.ps_pts[:,:,1] -= drth
             self.camber_pts[:,:,1] -= drth
-    
-    def __cylindrical__(self):
-        """Converts x,y,z into x,rth_z
-        """
         
     def build(self,npts_span:int=100,npts_chord:int=100,main_blade=None):
         """Build the 3D Blade
