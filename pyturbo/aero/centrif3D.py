@@ -428,11 +428,16 @@ class Centrif3D():
             self.camber_pts[i,:,0] -= centroid[i,0]
             self.camber_pts[i,:,1] -= centroid[i,1]
             
-            self.ss_pts[i,:,0] *= scale[i]
-            self.ss_pts[i,:,1] *= scale[i]
+            self.ss_pts[i,:,0] *= scale[i]      
+            # Stretching in the aspect ratio is a stretch in the r-theta direction. 
+            # y,z need to change such that sqrt(self.ss_pts[i,:,1]**2 + self.ss_pts[i,:,2]**2) = r 
+            # y = r * cos(theta)
+            # z = r * sin(theta)
+            # theta = arctan(z,y)
+            self.ss_pts[i,:,1] *= scale[i]      
             
             self.ps_pts[i,:,0] *= scale[i]
-            self.ps_pts[i,:,1] *= scale[i]
+            self.ps_pts[i,:,1] *= scale[i]      # Stretching in the aspect ratio is a stretch in the r-theta direction
             
             self.camber_pts[i,:,0] *= scale[i]
             self.camber_pts[i,:,1] *= scale[i]
@@ -562,6 +567,16 @@ class Centrif3D():
             self.ps_pts[:,:,1] -= drth
             self.camber_pts[:,:,1] -= drth
         
+    def __cylindrical__(self):
+        for i in range(self.npts_span):
+            r = self.ss_pts[:,2]
+            theta = self.ss_pts[:,1]/r 
+            self.ss_pts[:,1] = theta
+            
+            r = self.ps_pts[:,2]
+            theta = self.ps_pts[:,1]/r
+            self.ps_pts[:,1] = theta
+             
     def build(self,npts_span:int=100,npts_chord:int=100,main_blade=None):
         """Build the 3D Blade
 
