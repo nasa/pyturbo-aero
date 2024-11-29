@@ -12,7 +12,7 @@ from scipy.interpolate import interp1d
 from geomdl import NURBS, knotvector
 
 class Centrif3D():
-    """Generates the 3D blade 
+    """Generates the 3D blade starting from LE to TE. Leading edge is all lined up 
     """
     profiles:List[Centrif2D]
     stacktype:StackType 
@@ -52,7 +52,9 @@ class Centrif3D():
     t_span:npt.NDArray          # Not used yet but might be in the future
     t_chord:npt.NDArray
     
-    __rotation_angle:float = 0 
+    __rotation_angle:float = 0
+    scales:npt.NDArray
+    centroids:npt.NDArray
     
     @property
     def tip_clearance(self):
@@ -360,12 +362,13 @@ class Centrif3D():
                 
                 p.ss_pts[:,0]+=te_x[0]-te_x[i]
                 p.ss_pts[:,1]+=te_rtheta[0]-te_rtheta[i]
-    
+
     def __match_aspect_ratio__(self):
-        """Stretch the profiles in the x and y direction to match the height of the hub and shroud 
+        """Stretch the profiles in the x and y direction to match the height of the hub and shroud
         """
         def solve_t(t,val:float,func:PchipInterpolator):
             return np.abs(val-func(t))
+        
         # Lets get the length from start to finish
         splitter_start = self.profiles[0].splitter_camber_start
         if splitter_start == 0:
@@ -377,74 +380,112 @@ class Centrif3D():
         xh = self.func_xhub(t); xsh = self.func_xshroud(t)
         rh = self.func_rhub(t); rsh = self.func_rshroud(t)
         x_r = np.zeros((self.npts_span,self.npts_chord,2))
+        
         for j in range(len(self.t_chord)):
             x,r = line2D([xh[j],rh[j]],[xsh[j],rsh[j]]).get_point(self.t_span[:,j])
             x_r[:,j,0] = x
-            x_r[:,j,1] = r 
+            x_r[:,j,1] = r
         
+        # Setup
+        scale = np.zeros((self.npts_span,1)); centroid = np.zeros((self.npts_span,2))
+        for i in range(self.npts_span):
+            x_scale = x_r[i,-1,0]-x_r[i,0,0]
+            xmax = max(self.ss_pts[i,:,0].max(),
+                    self.ps_pts[i,:,0].max()); 
+            xmin = min(self.ss_pts[i,:,0].min(),
+                    self.ps_pts[i,:,0].min())
+                
+            rth_max = max(self.ss_pts[i,:,1].max(),
+                        self.ps_pts[i,:,1].max()); 
+            rth_min = min(self.ss_pts[i,:,1].min(),
+                        self.ps_pts[i,:,1].min())
+            dx = xmax - xmin
+            centroid[i,0] = (xmax+xmin)/2
+            centroid[i,1] = (rth_max+rth_min)/2
+            scale[i] = x_scale/dx
+            
         # Get the aspect ratio
         for i in range(self.npts_span):
-            x_start = x_r[i,0,0]
+            if self.stacktype == StackType.leading_edge:
+                x_start = x_r[i,0,0]
+                # Shift the x coordinates to start at hub starting location
+                self.ss_pts[i,:,0] += x_start-self.ss_pts[i,0,0]
+                self.ps_pts[i,:,0] += x_start-self.ps_pts[i,0,0]
+                self.camber_pts[i,:,0] += x_start-self.camber_pts[i,0,0]
+            else:
+                x_end = x_r[i,-1,0]
+                # Shift the x coordinates to end at hub ending location
+                self.ss_pts[i,:,0] += x_end-self.ss_pts[i,-1,0]
+                self.ps_pts[i,:,0] += x_end-self.ps_pts[i,-1,0]
+                self.camber_pts[i,:,0] += x_end-self.camber_pts[i,-1,0]
+            # Shifts the blade to the centroid for stretching 
+            self.ss_pts[i,:,0] -= centroid[i,0]
+            self.ss_pts[i,:,1] -= centroid[i,1]
+            
+            self.ps_pts[i,:,0] -= centroid[i,0]
+            self.ps_pts[i,:,1] -= centroid[i,1]
+            
+            self.camber_pts[i,:,0] -= centroid[i,0]
+            self.camber_pts[i,:,1] -= centroid[i,1]
+            
+            # Stretch the geometry in the x and corresponding rth direction maintaining the same aspect ratio
+            self.ss_pts[i,:,0] *= scale[i]      
+            self.ss_pts[i,:,1] *= scale[i]      
+            
+            self.ps_pts[i,:,0] *= scale[i]
+            self.ps_pts[i,:,1] *= scale[i]      
+            
+            self.camber_pts[i,:,0] *= scale[i]
+            self.camber_pts[i,:,1] *= scale[i]
+            
+            if self.stacktype == StackType.leading_edge:
+                self.ss_pts[i,:,0] += x_start-self.ss_pts[i,0,0]
+                self.ss_pts[i,:,1] -= self.ss_pts[i,0,1]
+            
+                self.ps_pts[i,:,0] += x_start-self.ps_pts[i,0,0]
+                self.ps_pts[i,:,1] -= self.ps_pts[i,0,1]
+            
+                self.camber_pts[i,:,0] += x_start-self.camber_pts[i,0,0]
+                self.camber_pts[i,:,1] -= self.camber_pts[i,0,1]
+            else:
+                self.ss_pts[i,:,0] += x_end-self.ss_pts[i,-1,0]
+                self.ss_pts[i,:,1] -= self.ss_pts[i,-1,1]
+            
+                self.ps_pts[i,:,0] += x_end-self.ps_pts[i,-1,0]
+                self.ps_pts[i,:,1] -= self.ps_pts[i,-1,1]
+            
+                self.camber_pts[i,:,0] += x_end-self.camber_pts[i,-1,0]
+                self.camber_pts[i,:,1] -= self.camber_pts[i,-1,1]
 
-            # Shift the x coordinates to start at hub starting location
-            self.ss_pts[i,:,0] += x_start-self.ss_pts[i,0,0]
-            self.ps_pts[i,:,0] += x_start-self.ps_pts[i,0,0]
-        
-            x_scale = x_r[i,-1,0]-x_r[i,0,0]
-            
-            # Scale the blade up by moving geometry to the center. Calculate Aspect Ratio using Camber
-            xmax = max(self.ss_pts[i,:,0].max(),
-                       self.ps_pts[i,:,0].max()); 
-            xmin = min(self.ss_pts[i,:,0].min(),
-                       self.ps_pts[i,:,0].min())
-            
-            rth_max = max(self.ss_pts[i,:,1].max(),
-                          self.ps_pts[i,:,1].max()); 
-            rth_min = min(self.ss_pts[i,:,1].min(),
-                          self.ps_pts[i,:,1].min())
-
-            self.ss_pts[i,:,0] -= (xmax+xmin)/2 
-            self.ss_pts[i,:,1] -= (rth_max+rth_min)/2
-            
-            self.ps_pts[i,:,0] -= (xmax+xmin)/2
-            self.ps_pts[i,:,1] -= (rth_max+rth_min)/2
-            
-            self.camber_pts[i,:,0] -= (xmax+xmin)/2 
-            self.camber_pts[i,:,1] -= (rth_max+rth_min)/2
-            
-            dx = xmax - xmin
-            self.ss_pts[i,:,0] *= x_scale/dx
-            self.ss_pts[i,:,1] *= x_scale/dx
-            
-            self.ps_pts[i,:,0] *= x_scale/dx
-            self.ps_pts[i,:,1] *= x_scale/dx
-            
-            self.camber_pts[i,:,0] *= x_scale/dx
-            self.camber_pts[i,:,1] *= x_scale/dx
-        
-            self.ss_pts[i,:,0] += x_start-self.ss_pts[i,0,0]     
-            self.ps_pts[i,:,0] += x_start-self.ps_pts[i,0,0]            
-        
-            self.ss_pts[i,:,1] -= self.ss_pts[i,0,1]
-            self.ps_pts[i,:,1] -= self.ps_pts[i,0,1]
-            
-            self.camber_pts[i,:,0] += self.camber_pts[i,0,0]
-            self.camber_pts[i,:,1] -= self.camber_pts[i,0,1]
-           
-            # need to work on this function 
+            # Stretching in the aspect ratio is a stretch in the r-theta direction. 
+            # y,z need to change such that sqrt(self.ss_pts[i,:,1]**2 + self.ss_pts[i,:,2]**2) = r 
+            # y = r * cos(theta)
+            # z = r * sin(theta)
+            # theta = arctan2(z,y)            
             func = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,0])
             func_r = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,1])
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ss_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
+                theta = np.atan2(self.ss_pts[i,j,1],r)
+                self.ss_pts[i,j,1] = r*theta
                 self.ss_pts[i,j,2] = r
-            
+                
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ps_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
+                theta = np.atan2(self.ps_pts[i,j,1],r)
+                self.ps_pts[i,j,1] = r*theta
                 self.ps_pts[i,j,2] = r
+        
+        # Shift leading edge to rth = 0 
+        if self.stacktype == StackType.trailing_edge:
+            LE_rth = self.ss_pts[0,0,1]
+            for i in range(self.npts_span):
+                self.ss_pts[i,:,1] -= LE_rth
+                self.ps_pts[i,:,1] -= LE_rth
         # i = 10
         # plt.figure(clear=True)
         # # plt.plot(x_r[i,:,0],x_r[i,:,1],'k')
@@ -453,56 +494,25 @@ class Centrif3D():
         # plt.axis('scaled')
         # plt.show()
         # self.plot(True)
-    
-        
-    def __flatten__(self,pts:npt.NDArray):
-        """Each of the profile in ss_pts and ps_pts follow the hub and shroud.
-        This code flattens it at constant radius but keeps the length 
-
-        Returns:
-            Tuple: containing
-            
-                *flatten_pts* (npt.NDArray): flatten points
-                *dx* (npt.NDArray): matrix of dx between points 
-        """
-        flatten_pts = pts.copy()*0
-        dx_list = np.zeros((self.npts_span,self.npts_chord))
-        dr_list = np.zeros((self.npts_span,self.npts_chord))
-        for i in range(self.npts_span):
-            dx = np.diff(pts[i,:,0])
-            dr = np.diff(pts[i,:,2])
-            dh = np.hstack([[0], np.cumsum(np.sqrt(dx**2+dr**2))])
-            dx = np.hstack([[0], np.cumsum(dx)])
-            flatten_pts[i,:,0] = pts[i,0,0]+dh
-            flatten_pts[i,:,2] = pts[i,0,2]
-            dx_list[i,:] = dx
-            dr_list[i,:] = dr
-        return flatten_pts,dx_list,dr_list
-    
-    def __unflatten__(self,flatten_pts:npt.NDArray,dx_list:npt.NDArray,dr_list:npt.NDArray):
-        """unflatten the geometry 
-
-        Args:
-            flatten_pts (npt.NDArray): _description_
-            dx (npt.NDArray): _description_
-        """
-        pts = np.zeros((self.npts_span,self.npts_chord))
-        for i in range(self.npts_span):
-            pts[i,:,0] = flatten_pts[i,0,0]+dx_list[i,:]
-            pts[i,:,2] = flatten_pts[i,0,2]+dr_list[i,:]
-                             
+        self.scales = scale
+        self.centroids = centroid
+         
     def __interpolate__(self):
         """Interpolate the geometry to make it denser
         """
         ss_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
         ps_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
         camber_pts_temp = np.zeros((len(self.profiles),self.npts_chord,3))
+        h = np.linspace(0,1,self.npts_span)
+
         # Build and interpolate the blade 
         for i in range(len(self.profiles)):
             self.profiles[i].build(self.npts_chord)
             ss_pts_temp[i,:,:] = self.profiles[i].ss_pts
             ps_pts_temp[i,:,:] = self.profiles[i].ps_pts
             camber_pts_temp[i,:,:] = self.profiles[i].camber_pts
+            ss_pts_temp[i,:,2] = h[i]
+            ps_pts_temp[i,:,2] = h[i]
         
         self.ss_profile_pts = ss_pts_temp
         self.ps_profile_pts = ps_pts_temp
@@ -531,73 +541,6 @@ class Centrif3D():
         self.ss_pts = ss_pts
         self.camber_pts = camber_pts
     
-    def __percent_camber__(self,npts_span:int,npts_chord:int) -> npt.NDArray:
-        """Gets the percent along the camber line for each profile and interpolates that to fill the interpolated blade. 
-
-        Args:
-            npts_span (int): number of points in the span
-            npts_chord (int): number of points in the chord 
-
-        Returns:
-
-            Tuple containing:
-                **percent_camber** (npt.NDArray): matrix shape [npts_span,npts_chord] of percent camber 
-                **camber** (npt.NDArray): [nspan,1] camber of each profile
-        """
-        percent_distance_along_camber_for_each_profile = np.zeros((npts_span,npts_chord))
-        camber_temp = np.zeros(shape=(npts_span,npts_chord,2))
-        camber_lengths = list()
-        for i in range(npts_span):
-            camber_temp[i,:,:] = np.vstack([(
-                    self.ss_pts[i,:,0]+self.ps_pts[i,:,0])/2, 
-                    (self.ss_pts[i,:,1]+self.ps_pts[i,:,1])/2]).transpose()
-            
-            diff_camber = np.vstack([
-                    [0,0],
-                    np.vstack([np.diff(camber_temp[i,:,0]),np.diff(camber_temp[i,:,1])]).transpose()
-            ])
-            
-            camber_len = np.cumsum(np.sqrt(diff_camber[:,0]**2 + diff_camber[:,1]**2))
-            percent_distance_along_camber = [camber_len[i]/camber_len[-1] for i in range(len(camber_len))]
-            percent_distance_along_camber_for_each_profile[i,:] = percent_distance_along_camber
-            camber_lengths.append(camber_len)
-            
-        percent_distance = percent_distance_along_camber_for_each_profile
-        camber = np.array(camber_lengths)[:,-1] # camber for each profile
-        
-        return percent_distance, camber
-    
-    def __apply_lean__(self,npts_span:int,npts_chord:int):
-        """Lean is a shift in the profiles in the y-direction
-            
-        Args:
-            npts_span (int): number of points in the spanwise direction 
-            npts_chord (int): number of points in the chordwise direction 
-        """
-        if len(self.lean_cambers) != 0: 
-            percent_camber,_ = self.__percent_camber__(npts_span,npts_chord)
-            lean_y_temp = np.zeros((npts_span,len(self.leans)))  # rth
-        
-            # Insert zero lean at LE and TE if lean isn't specified there
-            if self.lean_cambers[0] != 0:
-                b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
-                self.leans.insert(0,b)
-                self.lean_cambers.insert(0,0)
-            if self.lean_cambers[-1] != 1:
-                b = bezier([0 for _ in self.lean_cambers],[0 for _ in self.lean_cambers])
-                self.leans.append(b)
-                self.lean_cambers.append(1)
-            # for each lean and location 
-            i = 0 
-            for lean,lean_loc in zip(self.leans,self.lean_cambers):
-                lean_y_temp[:,i] = lean.get_point(self.t_span)
-                i+=1 
-            
-            # Apply lean 
-            for i in range(npts_span):
-                self.ss_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-                self.ps_pts[i,:,1] += csapi(lean_loc,lean_y_temp[i,:])(percent_camber[i,:])
-    
     def __tip_clearance__(self):
         """Build the tspan matrix such that tip clearance is maintained
         """
@@ -621,7 +564,23 @@ class Centrif3D():
             else:
                 self.t_span[:,j] = np.linspace(0,t2,self.npts_span)
         
-
+    def __rth_shift__(self,main_blade=None):
+        if main_blade is not None:
+            drth = self.ss_pts[0,-1,1] - main_blade.ss_pts[0,-1,1]
+            self.ss_pts[:,:,1] -= drth
+            self.ps_pts[:,:,1] -= drth
+            self.camber_pts[:,:,1] -= drth
+        
+    def __cylindrical__(self):
+        for i in range(self.npts_span):
+            r = self.ss_pts[:,2]
+            theta = self.ss_pts[:,1]/r
+            self.ss_pts[:,1] = theta
+            
+            r = self.ps_pts[:,2]
+            theta = self.ps_pts[:,1]/r
+            self.ps_pts[:,1] = theta
+             
     def build(self,npts_span:int=100,npts_chord:int=100,main_blade=None):
         """Build the 3D Blade
 
@@ -643,9 +602,10 @@ class Centrif3D():
         self.__tip_clearance__()
         self.__apply_stacking__()
         self.__interpolate__()
+        # self.plot(True)
         self.__match_aspect_ratio__()
-        
-        self.__apply_lean__(npts_span,npts_chord)
+        self.__rth_shift__(main_blade)
+        # self.__apply_lean__(npts_span,npts_chord)
         # Build the hub and shroud 
         self.hub_pts = np.vstack([
                 self.func_xhub(np.linspace(0,1,npts_chord*2)),

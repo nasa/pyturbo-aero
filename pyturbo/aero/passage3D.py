@@ -186,17 +186,18 @@ class Passage3D:
         
         resolution,npts,_ = self.hub_pts.shape
         for i in range(resolution):
-            ax.plot3D(self.hub_pts[i,:,0],self.hub_pts[i,:,1],self.hub_pts[i,:,2],'k')
-            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
+            ax.plot3D(self.hub_pts[i,:,0],self.hub_pts[i,:,1],self.hub_pts[i,:,2],'k',alpha=0.1)
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.1)
         
         for j in range(npts):
-            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k')
-            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'k',alpha=0.2)
+            ax.plot3D(self.hub_pts[:,j,0],self.hub_pts[:,j,1],self.hub_pts[:,j,2],'k',alpha=0.1)
+            ax.plot3D(self.shroud_pts[i,:,0],self.shroud_pts[i,:,1],self.shroud_pts[i,:,2],'g',alpha=0.1)
             
         ax.view_init(azim=90, elev=45)
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')
         ax.set_zlabel('r-radial')
+        plt.axis('equal')
         
         fig = plt.figure(num=2,dpi=150)
         ax = fig.add_subplot(111)
@@ -215,5 +216,5 @@ class Passage3D:
         
         ax.set_xlabel('rth')
         ax.set_ylabel('r-radial')
-        plt.axis('scaled')
+        plt.axis('equal')
         plt.show()

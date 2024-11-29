@@ -39,7 +39,7 @@ def create_passage_compressor(bPlot:bool=False):
 
 
 
-def test_centrif3D_cut_te():
+def test_Centrif3D_LE_cut_te():
     hub = Centrif2D()
 
     hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
@@ -111,12 +111,12 @@ def test_centrif_splitter():
     hub.build(100)
     # hub.plot()
     
-    comp = Centrif3D([hub,hub,hub],StackType.leading_edge)
+    comp = Centrif3D([hub,hub,hub],StackType.trailing_edge)
     comp.add_hub(xhub,rhub)
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
-    comp.build(50,50)
-    # # comp.plot()
+    comp.build(100,100)
+    # comp.plot()
     
     splitter_hub = Centrif2D(splitter_camber_start=0.4)
     splitter_hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
@@ -126,14 +126,34 @@ def test_centrif_splitter():
     splitter_hub.add_te_radius(0.5,5,5,1)
     splitter_hub.build(100)
 
-    splitter = Centrif3D([splitter_hub,splitter_hub,splitter_hub],StackType.leading_edge)
+    splitter = Centrif3D([splitter_hub,splitter_hub,splitter_hub],StackType.trailing_edge)
     splitter.add_hub(xhub,rhub)
     splitter.add_shroud(xshroud,rshroud)
     splitter.set_blade_position(0.01,0.95)
-    splitter.build(100,100)
-    # splitter.plot()    
+    splitter.build(100,100,comp)
+    # splitter.plot()
     
-    return splitter
+    # fig = plt.figure(num=1,dpi=150)
+    # ax = fig.add_subplot(111, projection='3d')
+    
+    # ax.plot3D(comp.hub_pts[:,0],comp.hub_pts[:,0]*0,comp.hub_pts[:,2],'k')
+    # ax.plot3D(comp.shroud_pts[:,0],comp.shroud_pts[:,0]*0,comp.shroud_pts[:,2],'k')
+        
+    # for i in range(comp.ss_pts.shape[0]):
+    #     ax.plot3D(comp.ss_pts[i,:,0],comp.ss_pts[i,:,1],comp.ss_pts[i,:,2],'r')
+    #     ax.plot3D(comp.ps_pts[i,:,0],comp.ps_pts[i,:,1],comp.ps_pts[i,:,2],'b')
+    # for i in range(splitter.ss_pts.shape[0]):
+    #     ax.plot3D(splitter.ss_pts[i,:,0],splitter.ss_pts[i,:,1],splitter.ss_pts[i,:,2],'r')
+    #     ax.plot3D(splitter.ps_pts[i,:,0],splitter.ps_pts[i,:,1],splitter.ps_pts[i,:,2],'b')
+    # ax.view_init(azim=90, elev=45)
+    # ax.set_xlabel('x-axial')
+    # ax.set_ylabel('rth')
+    # ax.set_zlabel('r-radial')
+    # plt.axis('scaled')
+    # plt.show()
+    
+
+    return comp,splitter
 
 
 def test_centrif_fillet():
@@ -199,6 +219,6 @@ def test_centrif_fillet():
     return comp 
     
 if __name__=="__main__":
-    # test_centrif3D_rounded_te()
-    blade,splitter = test_centrif_splitter()
+    # test_Centrif3D_LE_rounded_te()
+    splitter = test_centrif_splitter()
     
