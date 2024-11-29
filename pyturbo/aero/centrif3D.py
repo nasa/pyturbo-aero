@@ -418,7 +418,7 @@ class Centrif3D():
                 self.ss_pts[i,:,0] += x_end-self.ss_pts[i,-1,0]
                 self.ps_pts[i,:,0] += x_end-self.ps_pts[i,-1,0]
                 self.camber_pts[i,:,0] += x_end-self.camber_pts[i,-1,0]
-            # Scale the blade up by moving geometry to the center. Calculate Aspect Ratio using Camber            
+            # Shifts the blade to the centroid for stretching 
             self.ss_pts[i,:,0] -= centroid[i,0]
             self.ss_pts[i,:,1] -= centroid[i,1]
             
@@ -428,16 +428,12 @@ class Centrif3D():
             self.camber_pts[i,:,0] -= centroid[i,0]
             self.camber_pts[i,:,1] -= centroid[i,1]
             
+            # Stretch the geometry in the x and corresponding rth direction maintaining the same aspect ratio
             self.ss_pts[i,:,0] *= scale[i]      
-            # Stretching in the aspect ratio is a stretch in the r-theta direction. 
-            # y,z need to change such that sqrt(self.ss_pts[i,:,1]**2 + self.ss_pts[i,:,2]**2) = r 
-            # y = r * cos(theta)
-            # z = r * sin(theta)
-            # theta = arctan(z,y)
             self.ss_pts[i,:,1] *= scale[i]      
             
             self.ps_pts[i,:,0] *= scale[i]
-            self.ps_pts[i,:,1] *= scale[i]      # Stretching in the aspect ratio is a stretch in the r-theta direction
+            self.ps_pts[i,:,1] *= scale[i]      
             
             self.camber_pts[i,:,0] *= scale[i]
             self.camber_pts[i,:,1] *= scale[i]
@@ -461,20 +457,29 @@ class Centrif3D():
                 self.camber_pts[i,:,0] += x_end-self.camber_pts[i,-1,0]
                 self.camber_pts[i,:,1] -= self.camber_pts[i,-1,1]
                 
-            # need to work on this function 
+
+            # Stretching in the aspect ratio is a stretch in the r-theta direction. 
+            # y,z need to change such that sqrt(self.ss_pts[i,:,1]**2 + self.ss_pts[i,:,2]**2) = r 
+            # y = r * cos(theta)
+            # z = r * sin(theta)
+            # theta = arctan2(z,y)
+            
+            theta = np.atan2(self.ss_pts[i,:,1],self.ss_pts[i,:,2])
             func = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,0])
             func_r = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,1])
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ss_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
-                self.ss_pts[i,j,2] = r
-            
+                self.ss_pts[i,j,1] = r*np.sin(theta[j])
+                self.ss_pts[i,j,2] = r*np.cos(theta[j])
+                
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ps_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
-                self.ps_pts[i,j,2] = r
+                self.ps_pts[i,j,1] = r*np.sin(theta[j])
+                self.ps_pts[i,j,2] = r*np.cos(theta[j])
         
         # Shift leading edge to rth = 0 
         if self.stacktype == StackType.trailing_edge:
@@ -570,7 +575,7 @@ class Centrif3D():
     def __cylindrical__(self):
         for i in range(self.npts_span):
             r = self.ss_pts[:,2]
-            theta = self.ss_pts[:,1]/r 
+            theta = self.ss_pts[:,1]/r
             self.ss_pts[:,1] = theta
             
             r = self.ps_pts[:,2]
