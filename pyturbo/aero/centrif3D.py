@@ -456,30 +456,29 @@ class Centrif3D():
             
                 self.camber_pts[i,:,0] += x_end-self.camber_pts[i,-1,0]
                 self.camber_pts[i,:,1] -= self.camber_pts[i,-1,1]
-                
 
             # Stretching in the aspect ratio is a stretch in the r-theta direction. 
             # y,z need to change such that sqrt(self.ss_pts[i,:,1]**2 + self.ss_pts[i,:,2]**2) = r 
             # y = r * cos(theta)
             # z = r * sin(theta)
-            # theta = arctan2(z,y)
-            
-            theta = np.atan2(self.ss_pts[i,:,1],self.ss_pts[i,:,2])
+            # theta = arctan2(z,y)            
             func = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,0])
             func_r = PchipInterpolator(np.linspace(0,1,self.npts_chord),x_r[i,:,1])
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ss_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
-                self.ss_pts[i,j,1] = r*np.sin(theta[j])
-                self.ss_pts[i,j,2] = r*np.cos(theta[j])
+                theta = np.atan2(self.ss_pts[i,j,1],r)
+                self.ss_pts[i,j,1] = r*theta
+                self.ss_pts[i,j,2] = r
                 
             for j in range(self.npts_chord):
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ps_pts[i,j,0],func))
                 t = res.x 
                 r = func_r(t)
-                self.ps_pts[i,j,1] = r*np.sin(theta[j])
-                self.ps_pts[i,j,2] = r*np.cos(theta[j])
+                theta = np.atan2(self.ps_pts[i,j,1],r)
+                self.ps_pts[i,j,1] = r*theta
+                self.ps_pts[i,j,2] = r
         
         # Shift leading edge to rth = 0 
         if self.stacktype == StackType.trailing_edge:

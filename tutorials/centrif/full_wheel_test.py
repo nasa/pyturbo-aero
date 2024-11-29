@@ -34,7 +34,7 @@ def fullwheel_splitter():
     
     wheel.add_splitter(splitter)
     
-    wheel.build(nblades=12,hub_resolution=12)
+    wheel.build(nblades=12,hub_resolution=48)
     wheel.plot(num_blades=3,num_splitters=3)
     
 if __name__=='__main__':
