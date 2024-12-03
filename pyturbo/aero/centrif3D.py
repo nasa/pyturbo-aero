@@ -121,6 +121,12 @@ class Centrif3D():
     
     @LE_Waves.setter    
     def LE_Waves(self,waves:npt.NDArray,wave_angle:npt.NDArray):
+        """Define a wavy leading edge
+
+        Args:
+            waves (npt.NDArray): Leading edge waves e.g. np.sin(x) assume x axis is from 0 to 1
+            wave_angle (npt.NDArray): An array of values (0 to 90) that define the wave angle from hub to shroud. 0 is in line with the leading edge, 90 is perpendicular to the leading edge 
+        """
         self.__LE_Waves = waves
         self.__LE_Wave_angle = wave_angle
     
@@ -130,6 +136,12 @@ class Centrif3D():
     
     @TE_Waves.setter
     def TE_Waves(self,waves:npt.NDArray,wave_angle:npt.NDArray):
+        """Define a wavy trailing edge
+
+        Args:
+            waves (npt.NDArray): trailing edge waves e.g. np.sin(x) assume x axis is from 0 to 1
+            wave_angle (npt.NDArray): An array of values (0 to 90) that define the wave angle from hub to shroud. 0 is in line with the trailing edge, 90 is perpendicular to the trailing edge 
+        """
         self.__TE_Waves = waves
         self.__TE_Wave_angle = wave_angle
         
@@ -157,6 +169,10 @@ class Centrif3D():
         self.lean_cambers = list()
         self.leans = list() 
         self.fillet_r = 0
+        self.LE_Waves = np.zeros((100,1))+1
+        self.TE_Waves = np.zeros((100,1))+1
+        self.SS_Waves = np.zeros((100,1))+1
+        self.PS_Waves = np.zeros((100,1))+1
         
     def add_lean(self,lean_pts:List[float],percent_span:float):
         """Adds lean to the 3D blade. Lean goes from hub to shroud
@@ -606,6 +622,8 @@ class Centrif3D():
         # Apply Fillet radius to hub 
         if self.fillet_r>0:
             self.__apply_fillets__()
+        
+        self.__apply_waves__()
     
     def __apply_waves__(self):
         """Changes the thickness to chord ratio along the span of the blade 
@@ -618,10 +636,10 @@ class Centrif3D():
         """
         import math
         TE_smooth = 0.85
-        LERatio = convert_to_ndarray(LERatio)
-        SSRatio = convert_to_ndarray(SSRatio)
-        PSRatio = convert_to_ndarray(PSRatio)
-        TERatio = convert_to_ndarray(TERatio)
+        LERatio = convert_to_ndarray(self.LE_Waves)
+        SSRatio = convert_to_ndarray(self.SS_Waves)
+        PSRatio = convert_to_ndarray(self.PS_Waves)
+        TERatio = convert_to_ndarray(self.TE_Waves)
 
         LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
         TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
