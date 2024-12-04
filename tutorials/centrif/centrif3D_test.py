@@ -59,19 +59,19 @@ def test_Centrif3D_LE_cut_te():
 
 def test_centrif3D_rounded_te():
     hub = Centrif2D()
-    hub.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
-    # hub.plot_camber()
+    hub.add_camber(alpha1=30,alpha2=50,stagger=45,x1=0.15,x2=0.9,aggressivity=(0.9,0.1))
+    hub.plot_camber()
     
     hub.add_le_thickness(0.02)
     hub.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_ss_thickness(thickness_array=[0.02,0.03,0.02,0.02])
     hub.add_te_radius(0.5,5,5,1)
     hub.build(200)
-    # hub.plot()
+    hub.plot()
     
     mid = Centrif2D()
-    mid.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
-    # hub.plot_camber()
+    mid.add_camber(alpha1=15,alpha2=40,stagger=45,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    mid.plot_camber()
     
     mid.add_le_thickness(0.02)
     mid.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
@@ -80,8 +80,8 @@ def test_centrif3D_rounded_te():
     mid.build(200)
     
     tip = Centrif2D()
-    tip.add_camber(alpha1=0,alpha2=70,stagger=35,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
-    # hub.plot_camber()
+    tip.add_camber(alpha1=10,alpha2=0,stagger=45,x1=0.1,x2=0.98,aggressivity=(0.9,0.1))
+    tip.plot_camber()
     
     tip.add_le_thickness(0.02)
     tip.add_ps_thickness(thickness_array=[0.02,0.03,0.02,0.02])
@@ -91,11 +91,12 @@ def test_centrif3D_rounded_te():
 
     # Define hub and shroud
     xhub,rhub,xshroud,rshroud = create_passage_compressor()    
-    comp = Centrif3D([hub,mid,tip],StackType.leading_edge)
+    comp = Centrif3D([hub,mid,tip],StackType.trailing_edge)
     comp.add_hub(xhub,rhub)
     comp.add_shroud(xshroud,rshroud)
     comp.set_blade_position(0.01,0.95)
     comp.build(100,100)
+    comp.plot()
     return comp
 
 def test_centrif_splitter():

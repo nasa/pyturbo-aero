@@ -411,7 +411,7 @@ class Centrif3D():
                 self.ps_pts[i,:,0] += x_start-self.ps_pts[i,0,0]
                 self.camber_pts[i,:,0] += x_start-self.camber_pts[i,0,0]
             else:
-                x_end = x_r[i,-1,0]
+                x_end = x_r[i,-1,0] # Last x coordinate 
                 # Shift the x coordinates to end at hub ending location
                 self.ss_pts[i,:,0] += x_end-self.ss_pts[i,-1,0]
                 self.ps_pts[i,:,0] += x_end-self.ps_pts[i,-1,0]
@@ -686,8 +686,11 @@ class Centrif3D():
             # rot_ang2 = self.spanw_tewave_fn([ps])[0]
 
             # To apply thickness function we need the normal vector
-            delta_ss = ss_normal[i,:,:] * ss_thck_fn(t_chord)
-            delta_ps = ps_normal[i,:,:] * ps_thck_fn(t_chord)
+            delta_ss = np.zeros((self.npts_chord,3))
+            delta_ps = np.zeros((self.npts_chord,3))
+            for j in range(self.npts_chord):
+                delta_ss[j,:] = ss_normal[i,j,:] * 0#ss_thck_fn(t_chord[j])
+                delta_ps[j,:] = ps_normal[i,j,:] *0#ps_thck_fn(t_chord[j])
             
             self.ss_pts[i,:,:] += delta_ss
             self.ps_pts[i,:,:] += delta_ps     
@@ -719,7 +722,7 @@ class Centrif3D():
         ax.set_xlabel('x-axial')
         ax.set_ylabel('rth')
         ax.set_zlabel('r-radial')
-        plt.axis('scaled')
+        plt.axis('equal')
         plt.show()
     
         
