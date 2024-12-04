@@ -57,6 +57,7 @@ class Centrif3D():
     centroids:npt.NDArray
     
     # Wavy
+    has_waves:bool = False
     __LE_Waves:npt.NDArray
     __LE_Wave_angle:npt.NDArray    
     __TE_Waves:npt.NDArray
@@ -116,34 +117,32 @@ class Centrif3D():
             self.camber_pts[:,j,2] = res[1]
     
     @property
-    def LE_Waves(self)->npt.NDArray:
+    def LE_Waves(self)->npt.NDArray:        
         return self.__LE_Waves
     
     @LE_Waves.setter    
-    def LE_Waves(self,waves:npt.NDArray,wave_angle:npt.NDArray):
+    def LE_Waves(self,waves:npt.NDArray):
         """Define a wavy leading edge
 
         Args:
             waves (npt.NDArray): Leading edge waves e.g. np.sin(x) assume x axis is from 0 to 1
-            wave_angle (npt.NDArray): An array of values (0 to 90) that define the wave angle from hub to shroud. 0 is in line with the leading edge, 90 is perpendicular to the leading edge 
         """
+        self.has_waves = True
         self.__LE_Waves = waves
-        self.__LE_Wave_angle = wave_angle
     
     @property
     def TE_Waves(self)->npt.NDArray:
         return self.__TE_Waves
     
     @TE_Waves.setter
-    def TE_Waves(self,waves:npt.NDArray,wave_angle:npt.NDArray):
+    def TE_Waves(self,waves:npt.NDArray):
         """Define a wavy trailing edge
 
         Args:
             waves (npt.NDArray): trailing edge waves e.g. np.sin(x) assume x axis is from 0 to 1
-            wave_angle (npt.NDArray): An array of values (0 to 90) that define the wave angle from hub to shroud. 0 is in line with the trailing edge, 90 is perpendicular to the trailing edge 
         """
+        self.has_waves = True
         self.__TE_Waves = waves
-        self.__TE_Wave_angle = wave_angle
         
     @property
     def SS_Waves(self)->npt.NDArray:
@@ -151,6 +150,7 @@ class Centrif3D():
     
     @SS_Waves.setter    
     def SS_Waves(self,waves:npt.NDArray):
+        self.has_waves = True
         self.__SS_Waves = waves
     
     @property
@@ -159,6 +159,7 @@ class Centrif3D():
     
     @PS_Waves.setter
     def PS_Waves(self,waves:npt.NDArray):
+        self.has_waves = True
         self.__PS_Waves = waves
     
     def __init__(self,profiles:List[Centrif2D],stacking:StackType=StackType.leading_edge):
@@ -169,10 +170,10 @@ class Centrif3D():
         self.lean_cambers = list()
         self.leans = list() 
         self.fillet_r = 0
-        self.LE_Waves = np.zeros((100,1))+1
-        self.TE_Waves = np.zeros((100,1))+1
-        self.SS_Waves = np.zeros((100,1))+1
-        self.PS_Waves = np.zeros((100,1))+1
+        self.__LE_Waves = np.zeros((100))+1
+        self.__TE_Waves = np.zeros((100))+1
+        self.__SS_Waves = np.zeros((100))+1
+        self.__PS_Waves = np.zeros((100))+1
         
     def add_lean(self,lean_pts:List[float],percent_span:float):
         """Adds lean to the 3D blade. Lean goes from hub to shroud
@@ -623,7 +624,8 @@ class Centrif3D():
         if self.fillet_r>0:
             self.__apply_fillets__()
         
-        self.__apply_waves__()
+        if self.has_waves:
+            self.__apply_waves__()
     
     def __apply_waves__(self):
         """Changes the thickness to chord ratio along the span of the blade 
@@ -641,20 +643,19 @@ class Centrif3D():
         PSRatio = convert_to_ndarray(self.PS_Waves)
         TERatio = convert_to_ndarray(self.TE_Waves)
 
-        LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
-        TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
+        # LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
+        # TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
 
-        t = np.linspace(0,1,self.npts_span)
-        te_center = self.camber_pts[:,-1,:]
+        t_span = self.t_span
         spanw_leratio_fn = PchipInterpolator(np.linspace(0,1,len(LERatio)),LERatio)
         spanw_ssratio_fn = PchipInterpolator(np.linspace(0,1,len(SSRatio)),SSRatio)
         spanw_psratio_fn = PchipInterpolator(np.linspace(0,1,len(PSRatio)),PSRatio)
         spanw_teratio_fn = PchipInterpolator(np.linspace(0,1,len(TERatio)),TERatio)
 
-        self.spanw_lewave_fn = PchipInterpolator(np.linspace(0,1,len(LE_wave_angle)),np.radians(LE_wave_angle))
-        self.spanw_tewave_fn = PchipInterpolator(np.linspace(0,1,len(LE_wave_angle)),np.radians(TE_wave_angle))
+        # self.spanw_lewave_fn = PchipInterpolator(np.linspace(0,1,len(LE_wave_angle)),np.radians(LE_wave_angle))
+        # self.spanw_tewave_fn = PchipInterpolator(np.linspace(0,1,len(LE_wave_angle)),np.radians(TE_wave_angle))
         
-        camber = 0.5*(self.ss_pts+self.ps_pts); t = self.t_chord
+        camber = 0.5*(self.ss_pts+self.ps_pts); t_chord = self.t_chord
         ss_normal, ps_normal = get_normal(self.ss_pts,self.ps_pts)
         
         for i in range(self.npts_span):
@@ -663,7 +664,7 @@ class Centrif3D():
             dr = np.diff(camber[i,:,2])
             drth = np.diff(camber[i,:,1])
             
-            s = np.hstack([0],np.cumsum(np.sqrt(dx**2+dr**2)))
+            s = np.hstack([[0],np.cumsum(np.sqrt(dx**2+dr**2))])
             drth_ds = np.gradient(drth,np.diff(s))
             # This is the center point where 0 scaling
             vibrissaeIndx = np.argmax(np.sign(drth_ds)!=np.sign(drth_ds[0]))
@@ -671,44 +672,25 @@ class Centrif3D():
                 vibrissaeIndx = math.ceil(0.5*self.npts_chord)
 
             # These are scaling factors used to scale dx and dy
-            t = np.array([0,vibrissaeIndx[i],math.floor(self.npts_chord*TE_smooth),self.npts_chord-1])
-            percent_span = i/(self.npts_span-1)
-            ss_scale = convert_to_ndarray([spanw_leratio_fn([percent_span])[0], spanw_ssratio_fn([percent_span])[0], 
-                spanw_teratio_fn([percent_span])[0],spanw_teratio_fn([percent_span])[0]])
+            t = np.array([0,vibrissaeIndx,math.floor(self.npts_chord*TE_smooth),self.npts_chord-1])
+            percent_span = t_span[i,0]
+            ss_scale = convert_to_ndarray([spanw_leratio_fn(percent_span), spanw_ssratio_fn(percent_span), 
+                spanw_teratio_fn(percent_span),spanw_teratio_fn(percent_span)])
             
-            ps_scale = convert_to_ndarray([spanw_leratio_fn([percent_span])[0], spanw_psratio_fn([percent_span])[0], 
-                spanw_teratio_fn([percent_span])[0],spanw_teratio_fn([percent_span])[0]])
+            ps_scale = convert_to_ndarray([spanw_leratio_fn(percent_span), spanw_psratio_fn(percent_span), 
+                spanw_teratio_fn(percent_span),spanw_teratio_fn(percent_span)])
             
             ss_thck_fn = PchipInterpolator(t,1+ss_scale) 
             ps_thck_fn = PchipInterpolator(t,1+ps_scale)
-        
+            # rot_ang1 = self.spanw_lewave_fn([ps])[0]
+            # rot_ang2 = self.spanw_tewave_fn([ps])[0]
+
             # To apply thickness function we need the normal vector
-            self.ss_pts[i,:,0]
-
-        # Apply thickness chord ratio
-        for i in range(self.npts_span):
-            ps = i/(self.npts_span-1)# percent span 
-
-            chord[i] = np.sqrt((self.shft_yss[i,-1]-self.shft_yss[i,-1])**2+(self.shft_xss[i,-1]-self.shft_xss[i,-1])**2)  
-            center_point[i,0] = camber[i,vibrissaeIndx[i],0] # Stretch will be based around self point
-            center_point[i,1] = camber[i,vibrissaeIndx[i],1]
+            delta_ss = ss_normal[i,:,:] * ss_thck_fn(t_chord)
+            delta_ps = ps_normal[i,:,:] * ps_thck_fn(t_chord)
             
-            # LE Rotation Angle
-            rot_ang1 = self.spanw_lewave_fn([ps])[0]*(0.5*(1+np.cos(math.pi*t))) 
-            # TE Rotation Angle
-            rot_ang2 = self.spanw_tewave_fn([ps])[0]*(0.5*(1+np.cos(math.pi*np.flip(t))))
-            # Blend the rotation angles into a vector
-            rot_angl = rot_ang1+rot_ang2
-            rotation_vector = rot_angl
-            
-            # Find thickness for each camber point
-            for j in range(self.npts_chord):                      
-                 
-                self.shft_xps[i,j] = dx_rot + self.shft_xps[i,j] 
-                self.shft_yps[i,j] = dy_rot + self.shft_yps[i,j]
-                
-            
-            
+            self.ss_pts[i,:,:] += delta_ss
+            self.ps_pts[i,:,:] += delta_ps     
         
         
     def plot_x_slice(self,j:int):
@@ -752,7 +734,7 @@ def get_normal(ss_pts:npt.NDArray,ps_pts:npt.NDArray):
         3x1: Normal Vector 
     """
     def find_interior_normal(pts:npt.NDArray):
-        normal = np.zeros((pts.shape[0]-2,pts.shape[1]-2))
+        normal = np.zeros((pts.shape[0]-2,pts.shape[1]-2,3))
         for i in range(1,max_span-1):
             for j in range(1,max_pts-1):                
                 P=pts[i,j]
@@ -772,24 +754,24 @@ def get_normal(ss_pts:npt.NDArray,ps_pts:npt.NDArray):
     
     max_span,max_pts,_ = ss_pts.shape
 
-    ss_pts2 = np.zeros((max_span+2,max_pts+2))
-    ss_pts2[1:max_span-1,1:max_pts-1,:] = ss_pts
+    ss_pts2 = np.zeros((max_span+2,max_pts+2,3))
+    ss_pts2[1:max_span+1,1:max_pts+1,:] = ss_pts
     
-    ps_pts2 = np.zeros((max_span+2,max_pts+2))
-    ps_pts2[1:max_span-1,1:max_pts-1,:] = ps_pts
+    ps_pts2 = np.zeros((max_span+2,max_pts+2,3))
+    ps_pts2[1:max_span+1,1:max_pts+1,:] = ps_pts
     
     # Add in the ghost cells 
-    ss_pts2[:,0,:] = ps_pts[:,0,:]      # Leading Edge
-    ss_pts2[:,-1,:] = ps_pts[:,-1,:]    # TE Edge
+    ss_pts2[1:max_span+1,0,:] = ps_pts[:,1,:]      # Leading Edge
+    ss_pts2[1:max_span+1,-1,:] = ps_pts[:,-2,:]    # TE Edge
 
-    ps_pts2[:,0,:] = ss_pts[:,0,:]      # Leading Edge
-    ps_pts2[:,-1,:] = ss_pts[:,-1,:]    # TE Edge
+    ps_pts2[1:max_span+1,0,:] = ss_pts[:,1,:]      # Leading Edge
+    ps_pts2[1:max_span+1,-1,:] = ss_pts[:,-2,:]    # TE Edge
     
-    ss_pts2[0,:,:] = ss_pts[1,:,:]      # Bottom
-    ss_pts2[-1,:,:] = ss_pts[-2,:,:]    # Top
+    ss_pts2[0,1:max_pts+1,:] = ss_pts[1,:,:]      # Bottom
+    ss_pts2[-1,1:max_pts+1,:] = ss_pts[-2,:,:]    # Top
     
-    ps_pts2[0,:,:] = ps_pts[1,:,:]
-    ps_pts2[-1,:,:] = ps_pts[-2,:,:]
+    ps_pts2[0,1:max_pts+1,:] = ps_pts[1,:,:]
+    ps_pts2[-1,1:max_pts+1,:] = ps_pts[-2,:,:]
     
     n_ss = find_interior_normal(ss_pts2)
     n_ps = find_interior_normal(ps_pts2)
