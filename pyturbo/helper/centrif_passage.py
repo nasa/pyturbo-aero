@@ -5,10 +5,20 @@ import math
 import json
 from typing import Dict, Tuple 
 import numpy as np 
-from .arc import arc
+from pyturbo.helper import arc
 
 
 def import_json():
+    """Import Whittle Lab Data
+
+    Returns:
+        Tuple containing:
+        
+            *indices* (Dict[str,int]): Dictionary containing indices in fitdata that match varible names
+            *xl_dict* (Dict[str,int]): Dictionary containing lower values of the data that match variable names
+            *dx_dict* (Dict[str,int]): Dictionary containing dx values of the data that match variable names
+            *fit_data* (Dict[str,Any]): all the data
+    """
     with open('./pyturbo/helper/fit_eta_tt.json','r') as fp:            
         fit_data = json.load(fp)
         
@@ -50,10 +60,32 @@ def import_json():
     
     return None
 
-def entropy(P:float,T:float,cp:float,Tref:float=300,Pref:float=1E5,Rgas:float=287.15):
+def entropy(P:float,T:float,cp:float,Tref:float=300,Pref:float=1E5,Rgas:float=287.15) -> float:
+    """Computes the entropy rise from Temperature and Pressure 
+
+    Args:
+        P (float): Pressure in Pascal
+        T (float): Temperature in Kelvin
+        cp (float): Coefficient of Pressure
+        Tref (float, optional): Reference Temperature [Kelvin]. Defaults to 300.
+        Pref (float, optional): Reference Pressure [Pa]. Defaults to 1E5.
+        Rgas (float, optional): Ideal Gas constant [J/(Kg K)]. Defaults to 287.15.
+
+    Returns:
+        float: entropy difference delta_s
+    """
     return cp * math.log(T/Tref) - Rgas * math.log(P/Pref)
 
-def legval(k:int, x:float):
+def legval(k:int, x:float) ->float:
+    """Legendre Polynomials
+
+    Args:
+        k (int): polynomial power 
+        x (float): value
+
+    Returns:
+        float: evalulated legendre polynomial 
+    """
     if (k==0):
         return 1
     elif k==1:
@@ -71,13 +103,13 @@ def calculate_efficiency(PRtt:float,HTR1:float,Marel1:float,tau:float,Alrel2:flo
     """Takes unnormalized values and computes the efficiency based on JSON Curve Fit
 
     Args:
-        PRtt (float): _description_
+        PRtt (float): Total Pressure Ratio 
         HTR1 (float): _description_
         Marel1 (float): _description_
         tau (float): _description_
         Alrel2 (float): _description_
-        DH (float): _description_
-        phi (float): _description_
+        DH (float): deHaller number
+        phi (float): inlet flow coefficient
         Cgamma (float): _description_
     """        
     c = fit_data['c']    
@@ -100,14 +132,14 @@ def calculate_efficiency(PRtt:float,HTR1:float,Marel1:float,tau:float,Alrel2:flo
     k = fit_data['k']
     
     eta = 0
-    pval = np.zeros((len(fit_data.keys),4))
-    pval[indices['PR_tt'],:] = PRtt_pval
-    pval[indices['htr1'],:] = HTR1_pval
+    pval = np.zeros((len(fit_data['vars']),4))
+    pval[indices['PRtt'],:] = PRtt_pval
+    pval[indices['HTR1'],:] = HTR1_pval
     pval[indices['Marel1'],:] = Marel1_pval     # M1 
     pval[indices['tau'],:] = tau_pval           # Tip Clearance 
     pval[indices['Alrel2'],:] = Alrel2_pval     # Outlet Relative Yaw
     pval[indices['DH'],:] = DH_pval             # DeHaller Number 
-    pval[indices['Alrel2'],:] = phi1_pval       # Inlet Flow coefficient
+    pval[indices['phi'],:] = phi1_pval       # Inlet Flow coefficient
     pval[indices['Cgamma'],:] = Cgamma_pval     # blade circulation
     
     # Efficiency
@@ -118,45 +150,61 @@ def calculate_efficiency(PRtt:float,HTR1:float,Marel1:float,tau:float,Alrel2:flo
         eta = eta + c[j]*deta
     return eta
     
-def normalize(PRtt:float,HTR1:float,Marel1:float,tau:float,DH:float,phi1:float,Alrel2:float,Cgamma:float,xl:Dict[str,float],dx:Dict[str,float]):   
+def normalize(PRtt:float,HTR1:float,Marel1:float,tau:float,DH:float,phi1:float,Alrel2:float,Cgamma:float,xl:Dict[str,float],dx:Dict[str,float]):
+    """Normalize the data given absolute data
+
+    Args:
+        PRtt (float): Total Pressure Ratio
+        HTR1 (float): Inlet hub to tip ratio
+        Marel1 (float): Inlet relative mach number
+        tau (float): Tip Clearance as a percent
+        DH (float): deHaller Number
+        phi1 (float): Inlet flow coefficient
+        Alrel2 (float): Blade exit angle [degrees]
+        Cgamma (float): Recirculation 
+        xl (Dict[str,float]): Dictionary containing lower values of the data that match variable names
+        dx (Dict[str,float]): Dictionary containing dx values of the data that match variable names
+
+    Returns:
+        Normalized Data: PRtt, HTR1, Marel1, tau, DH, phi1, Alrel2, Cgamma
+    """
     PRtt = 2. * (PRtt - xl['PRtt'])/dx['PRtt'] - 1.
     HTR1 = 2. * (HTR1 - xl['HTR1'])/dx['HTR1'] - 1.
     Marel1 = 2. * (Marel1 - xl['Marel1'])/dx['Marel1'] - 1.
     tau = 2. * (tau - xl['tau'])/dx['tau'] - 1.
     DH = 2. * (DH - xl['DH'])/dx['DH'] - 1.
-    phi1 = 2. * (phi1 - xl['phi1'])/dx['phi1'] - 1.
+    phi1 = 2. * (phi1 - xl['phi'])/dx['phi'] - 1.
     Alrel2 = 2. * (Alrel2 - xl['Alrel2'])/dx['Alrel2'] - 1.
     Cgamma = 2. * (Cgamma - xl['Cgamma'])/dx['Cgamma'] - 1.
 
     return PRtt, HTR1,Marel1,tau,DH,phi1,Alrel2,Cgamma
 
+# Global variables 
+indices,xl_dict,dx_dict,fit_data = import_json()
 
-        
-
-def create_passage(fit_data,xl:Dict[str,float],dx:Dict[str,float],indices:Dict[str,float],PR:float=2.4, phi1:float=0.7, 
+def create_passage(PR:float=2.4, phi1:float=0.7, 
                        M1_rel:float=0.6, HTR1:float=0.5,
                        deHaller:float=1, outlet_yaw:float=-64, 
                        blade_circulation:float=0.6, tip_clearance:float=0.01,
-                       P01:float=1, T01:float=300, mdot:float=5):
+                       P01:float=1, T01:float=300, mdot:float=5,gam:float=1.4,Rgas:float=287.15):
     """_summary_
 
     Args:
-        PR (float, optional): _description_. Defaults to 2.4.
-        phi1 (float, optional): inlet flow coefficient. Defaults to 0.7.
-        M1_rel (float, optional): _description_. Defaults to 0.6.
+        PR (float, optional): Total Pressure Ratio. Defaults to 2.4.
+        phi1 (float, optional): Inlet flow coefficient. Defaults to 0.7.
+        M1_rel (float, optional): Inlet relative mach number. Defaults to 0.6.
         HTR1 (float, optional): Inlet hub to tip ratio. Defaults to 0.5.
-        deHaller (float, optional): _description_. Defaults to 1.
+        deHaller (float, optional): deHaller Number. Defaults to 1.
         outlet_yaw (float, optional): Blade exit angle [degrees]. Defaults to -64.
-        blade_circulation (float, optional): . Defaults to 0.6.
-        tip_clearance (float, optional): _description_. Defaults to 0.01.
+        blade recirculation (float, optional): How much recirculation flow in an centrif compressor. Defaults to 0.6.
+        tip_clearance (float, optional): Tip Clearance as a percent. Defaults to 0.01.
         P01 (float, optional): Total Inlet Pressure [bar]. Defaults to 1.
-        T01 (float, optional): _description_. Defaults to 300.
-        mdot (float, optional): _description_. Defaults to 5.
+        T01 (float, optional): Total Inlet Temperature [K]. Defaults to 300.
+        mdot (float, optional): massflow rate [kg/s]. Defaults to 5.
+        gam (float, optional): Ratio of Cp/Cv. Defaults to 1.4.
+        Rgas (float, optional): Ideal Gas Constant [J/(Kg*K)]. Defaults to 287.15.
     """
-    
-               
-    gam = 1.4
-    cp = 1005 # J/(Kg K)
+    cp = gam*Rgas/(gam-1) # J/(Kg K)
     Tref = 300
     Pref = 1E5
 
@@ -207,7 +255,7 @@ def create_passage(fit_data,xl:Dict[str,float],dx:Dict[str,float],indices:Dict[s
 
 
     # Predicted effy
-    eta_now = calculate_efficiency(PR,HTR1,M1_rel,tip_clearance,Alrel2_deg,deHaller,phi1,blade_circulation,fit_data,xl,dx,indices)
+    eta_now = calculate_efficiency(PR,HTR1,M1_rel,tip_clearance,outlet_yaw,deHaller,phi1,blade_circulation,fit_data,xl_dict,dx_dict,indices)
 
     # Diffuser outlet stagnation state
     P03 = (P01*1e5)* PR
@@ -217,8 +265,8 @@ def create_passage(fit_data,xl:Dict[str,float],dx:Dict[str,float],indices:Dict[s
     # Loss split to set rotor outlet state
     # Assumed constant
     zeta = 0.75
-    s1 = entropy(P01*1e5, T01)
-    s3 = entropy(P03, T03)
+    s1 = entropy(P01*1e5, T01, cp, Tref, Pref, Rgas)
+    s3 = entropy(P03, T03, cp, Tref, Pref, Rgas)
     s2 = s1 + zeta*(s3-s1)
     print(f"s2-s1: {s2-s1}, s3-s1: {s3-s1}")
     
@@ -280,5 +328,8 @@ def create_passage(fit_data,xl:Dict[str,float],dx:Dict[str,float],indices:Dict[s
     # drawArc(0., 1.0, Rhath, Xhath/Rhath)
     hub = np.hstack([xhub,yhub])
     shroud = np.hstack([xsh,ysh])
-    return hub,shroud, V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM
+    return hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM
         
+if __name__ == "__main__":
+    hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM = create_passage(PR=2.0,phi1=0.6,M1_rel=0.6,HTR1=0.5,
+                   deHaller=1,outlet_yaw=-60,blade_circulation=0.6,tip_clearance=0.01)
