@@ -6,7 +6,7 @@ import json
 from typing import Dict, Tuple 
 import numpy as np 
 from pyturbo.helper import arc
-
+import matplotlib.pyplot as plt 
 
 def import_json():
     """Import Whittle Lab Data
@@ -203,6 +203,21 @@ def create_passage(PR:float=2.4, phi1:float=0.7,
         mdot (float, optional): massflow rate [kg/s]. Defaults to 5.
         gam (float, optional): Ratio of Cp/Cv. Defaults to 1.4.
         Rgas (float, optional): Ideal Gas Constant [J/(Kg*K)]. Defaults to 287.15.
+        
+    Returns:
+        Tuple containing:
+            *hub* (npt.NDArray): hub curve nx2
+            *shroud* (npt.NDArray): shroud curve nx2
+            *V3* (float): Exit velocity (m/s)
+            *T3* (float): Exit static temperature (Kelvin)
+            *P3 (float): Exit static pressure (Pascal)
+            *Ma3* (float): Exit absolute mach number
+            *eta_ts*, (float): Total to static efficiency
+            *eta_now* (float): Total to total efficiency
+            *Power* (float): Power in watts
+            *RPM* (float): Revolutions per min
+            *Alrel1_deg* (float): Inlet flow angle
+            *Alrel2_deg* (float): Exit flow angle
     """
     cp = gam*Rgas/(gam-1) # J/(Kg K)
     Tref = 300
@@ -317,7 +332,7 @@ def create_passage(PR:float=2.4, phi1:float=0.7,
     Xhath = (Rhath+Rhatc)/2 + Span_true/2   # Xscale
     
     shroud = arc(0,1,Rhatc,270,360)
-    hub = arc(0,1,Rhatc,270,360)
+    hub = arc(0,1,Rhath,270,360)
     xsh, ysh = shroud.get_point(np.linspace(0,1,100))
     
     xhub, yhub = hub.get_point(np.linspace(0,1,100))
@@ -326,10 +341,14 @@ def create_passage(PR:float=2.4, phi1:float=0.7,
     xhub *= Xhath/Rhath
     # drawArc(0., 1.0, Rhatc, Xhatc/Rhatc)
     # drawArc(0., 1.0, Rhath, Xhath/Rhath)
-    hub = np.hstack([xhub,yhub])
-    shroud = np.hstack([xsh,ysh])
-    return hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM
+    hub = np.vstack([xhub,yhub]).transpose()
+    shroud = np.vstack([xsh,ysh]).transpose()
+    return hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM,Alrel1_deg,Alrel2_deg
         
 if __name__ == "__main__":
     hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM = create_passage(PR=2.0,phi1=0.6,M1_rel=0.6,HTR1=0.5,
                    deHaller=1,outlet_yaw=-60,blade_circulation=0.6,tip_clearance=0.01)
+    plt.figure()    
+    plt.plot(hub[:,0],hub[:,1],'k')
+    plt.plot(shroud[:,0],shroud[:,1],'b')
+    plt.show()
