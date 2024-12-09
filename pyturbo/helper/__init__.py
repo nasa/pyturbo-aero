@@ -21,4 +21,3 @@ from .unique_xy import uniqueXY
 from .wave import wave_control
 from .interparc import interpcurve
 from .centrif_passage import create_passage
-from .lean import Lean
