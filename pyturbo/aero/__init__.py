@@ -5,4 +5,4 @@ from .airfoil2D import Airfoil2D
 from .airfoil3D import Airfoil3D, StackType
 from .airfoil_wavy import AirfoilWavy
 from .passage2D import Passage2D
-from .centrif import Centrif
+from .centrif import Centrif, CentrifProfile
