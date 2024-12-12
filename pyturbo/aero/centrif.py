@@ -11,11 +11,37 @@ class WaveDirection(Enum):
     x:int = 0
     r:int = 1
 
+
+@dataclass 
+class TrailingEdgeProperties:
+    # Flat Trailing Edge 
+    TE_Cut:bool = False                     # Defaults to no cut TE
+    
+    # Circular Trailing Edge
+    TE_Radius:float                         # In theta
+    TE_WedgeAngle_SS:float = 5              # Wedge angle in theta, not used if CUT_TE is selected
+    TE_WedgeAngle_PS:float = 3              # Wedge angle in theta, not used if CUT_TE is selected
+    
+    # Elliptical Trailing Edge
+    radius_scale:float = 1                  # 0 to 1 as to how the radius shrinks with respect to spacing between ss and ps last control points
+    
+
+def DefineCircularTE(radius:float,SS_WedgeAngle:float, PS_WedgeAngle:float):
+    """_summary_
+
+    Args:
+        radius (float): _description_
+        SS_WedgeAngle (float): _description_
+        PS_WedgeAngle (float): _description_
+
+    Returns:
+        _type_: _description_
+    """
 @dataclass
 class CentrifProfile:
-    percent_span:float
-    LE_Thickness:float
-    TE_Radius:float
+    percent_span:float                      
+    LE_Thickness:float                      # In theta
+    
     
     LE_Metal_Angle:float
     TE_Metal_Angle:float
@@ -31,7 +57,6 @@ class CentrifProfile:
     warp_displacement_locs:List[float]      # percent chord
     
     splitter_camber_start = 0
-    
 
 class Centrif:
     hub:npt.NDArray
@@ -55,6 +80,7 @@ class Centrif:
     LE_percent_span:List[float]
     TE_Angle:List[float]
     TE_radius:float
+    __tip_clearance_percent:float = 0
     __tip_clearance:float = 0
 
     le_wave:npt.NDArray
@@ -107,9 +133,13 @@ class Centrif:
         """
         self.profiles.append(profile)
         
-    
+    @property
     def tip_clearance(self):
-        return self.__tip_clearance
+        return self.__tip_clearance_percent
+    
+    @tip_clearance.setter
+    def tip_clearance(self,val:float):
+        self.__tip_clearance_percent = val
             
     def add_LE_Wave(self,wave:Union[List[float],npt.NDArray],direction:WaveDirection):
         self.le_wave = convert_to_ndarray(wave)
@@ -209,11 +239,95 @@ class Centrif:
             self.func_rshroud(np.linspace(0,1,self.npts_chord*2))]).transpose()
     
     def __apply_thickness__(self):
-        t = exp_ratio(0,1)
+        """Apply thickness to the cambers 
+        """
         # Apply thickness in theta direction 
         for i,profile in enumerate(self.profiles):
-            self.camber_t_th[i].get_point_dt()
+            npoints = len(profile.ss_thickness)+2
+            profile.LE_Thickness
+            profile.TE_Radius
+            t = exp_ratio(ratio=1.2,npoints=npoints,maxvalue=1)
+            self.camber_t_th[i].get_point_dt(0)
+    
+    def __apply_TE_Radius__(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
+        radius = radius_scale*(self.ps_y[-1] - self.ss_y[-1])/2
+        radius_e = radius*elliptical
+        xn,yn = self.camber.get_point(1) # End of camber line
+        def dist(t):
+            x,y = self.camber.get_point(t)
+            d = np.sqrt((x-xn)**2+(y-yn)**2)
+            return np.abs(radius_e-d)
         
+        t = minimize_scalar(dist,bounds=[0,1])
+        dx,dy = self.camber.get_point_dt(t.x)     # Gets the slope at the end
+        xs,ys = self.camber.get_point(t.x)
+        theta = np.degrees(np.atan2(dy,dx))
+        x,y = self.camber.get_point(t.x)
+        
+        self.te_cut = False
+        if elliptical == 1:
+            ps_te = arc(x,y,radius,theta-wedge_ps+90,theta)
+            ss_te = arc(x,y,radius,theta,theta-90+wedge_ss)
+            
+            ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
+            ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
+            self.ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
+            self.ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
+            self.ss_te_pts = np.flipud(self.ss_te_pts)
+        else: # Create an ellispe
+            a = np.sqrt((x-xn)**2+(y-yn)**2)
+            ellispe_te = ellispe(x,y,a,radius,
+                                 alpha_start=90-wedge_ps,
+                                 alpha_stop=-90+wedge_ss)
+        
+            te_x, te_y = ellispe_te.get_point(np.linspace(0,1,20))
+            theta = np.radians(theta)
+            
+            n = te_x.shape[0]; n2 = int(n/2)
+            self.ps_te_pts = np.flipud(np.stack([te_x[n2-1:],te_y[n2-1:]],axis=1))
+            self.ss_te_pts = np.stack([te_x[:n2],te_y[:n2]],axis=1)
+            
+            rot = np.array([[np.cos(theta), -np.sin(theta)],
+                [np.sin(theta), np.cos(theta)]])[:,:,0]
+            
+            xc = (self.ps_te_pts[:,0].sum() + self.ss_te_pts[:,0].sum()) / (self.ps_te_pts.shape[0] + self.ss_te_pts.shape[0])
+            yc = (self.ps_te_pts[:,1].sum() + self.ss_te_pts[:,1].sum()) / (self.ps_te_pts.shape[0] + self.ss_te_pts.shape[0])
+            
+            self.ps_te_pts[:,0] = self.ps_te_pts[:,0]-xc
+            self.ps_te_pts[:,1] = self.ps_te_pts[:,1]-yc
+            
+            self.ss_te_pts[:,0] = self.ss_te_pts[:,0]-xc
+            self.ss_te_pts[:,1] = self.ss_te_pts[:,1]-yc
+            
+            self.ps_te_pts = np.matmul(rot,self.ps_te_pts.transpose()).transpose()
+            self.ss_te_pts = np.matmul(rot,self.ss_te_pts.transpose()).transpose()
+            
+            self.ps_te_pts[:,0] = self.ps_te_pts[:,0]+xc
+            self.ps_te_pts[:,1] = self.ps_te_pts[:,1]+yc
+            
+            self.ss_te_pts[:,0] = self.ss_te_pts[:,0]+xc
+            self.ss_te_pts[:,1] = self.ss_te_pts[:,1]+yc
+    
+    def __tip_clearance__(self):
+        """Build the tspan matrix such that tip clearance is maintained
+        """
+        self.t_span = np.zeros((self.npts_span,self.npts_chord))
+        self.t_chord = np.linspace(0,1,self.npts_chord)
+        t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
+        
+        xh = self.func_xhub(t); xsh = self.func_xshroud(t)
+        rh = self.func_rhub(t); rsh = self.func_rshroud(t)
+                
+        for j in range(len(self.t_chord)):
+            cut = line2D([xh[j],rh[j]],[xsh[j],rsh[j]])
+            t2 = cut.get_t(cut.length-self.tip_clearance)
+            self.t_span[:,j] = np.linspace(0,t2,self.npts_span)
+                
     def build(self,npts_span:int=100, npts_chord:int=100):
         """Build the centrif blade 
 

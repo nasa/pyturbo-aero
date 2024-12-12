@@ -1,6 +1,5 @@
-import sys
 import numpy as np
-from pyturbo.aero import Airfoil3D, Centrif, CentrifProfile
+from pyturbo.aero import Centrif, CentrifProfile
 from pyturbo.helper import create_passage
 
 def test_passage():
