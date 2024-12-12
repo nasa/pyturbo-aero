@@ -1,5 +1,5 @@
 import numpy as np
-from pyturbo.aero import Centrif, CentrifProfile
+from pyturbo.aero import Centrif, CentrifProfile, DefineCircularTE, DefineCutTE
 from pyturbo.helper import create_passage
 
 def test_passage():
@@ -20,7 +20,8 @@ def test_passage():
     warp_angle=-30    
     warp_displacements = [0.3, -0.3]
     warp_displacement_locs = [0.37,0.64]
-    cen.add_profile(CentrifProfile(percent_span=0,LE_Thickness=0.05,TE_Radius=0.005,
+    te_props = DefineCircularTE(radius=0.005,major_axis_scale=1,SS_WedgeAngle=5,PS_WedgeAngle=3)
+    cen.add_profile(CentrifProfile(percent_span=0,LE_Thickness=0.05,trailing_edge_properties=te_props,
                                    LE_Metal_Angle=LE_Metal_Angle,TE_Metal_Angle=TE_Metal_Angle,
                                    LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
                                    ss_thickness=[0.2,0.15,0.12,0.08],
@@ -28,7 +29,7 @@ def test_passage():
                                    warp_angle=warp_angle,warp_displacements=warp_displacements,
                                    warp_displacement_locs=warp_displacement_locs))
     
-    cen.add_profile(CentrifProfile(percent_span=0.5,LE_Thickness=0.05,TE_Radius=0.005,
+    cen.add_profile(CentrifProfile(percent_span=0.5,LE_Thickness=0.05,trailing_edge_properties=te_props,
                                    LE_Metal_Angle=LE_Metal_Angle,TE_Metal_Angle=TE_Metal_Angle,
                                    LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
                                    ss_thickness=[0.2,0.15,0.12,0.08],
@@ -36,7 +37,7 @@ def test_passage():
                                    warp_angle=warp_angle,warp_displacements=warp_displacements,
                                    warp_displacement_locs=warp_displacement_locs))
     
-    cen.add_profile(CentrifProfile(percent_span=1.0,LE_Thickness=0.05,TE_Radius=0.005,
+    cen.add_profile(CentrifProfile(percent_span=1.0,LE_Thickness=0.05,trailing_edge_properties=te_props,
                                    LE_Metal_Angle=LE_Metal_Angle,TE_Metal_Angle=TE_Metal_Angle,
                                    LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
                                    ss_thickness=[0.2,0.15,0.12,0.08],

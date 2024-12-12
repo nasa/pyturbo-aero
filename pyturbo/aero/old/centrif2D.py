@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Tuple
 import numpy.typing as npt
 from scipy.optimize import minimize_scalar
-from ..helper import bezier,arc,ellispe,exp_ratio,convert_to_ndarray
+from pyturbo.helper import bezier,arc,ellispe,exp_ratio,convert_to_ndarray
 import matplotlib.pyplot as plt
 from geomdl import NURBS, knotvector
     

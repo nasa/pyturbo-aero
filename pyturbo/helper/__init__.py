@@ -1,6 +1,8 @@
 """
     Imports all the files in the helper directory
 """
+from __future__ import absolute_import
+
 from .arc import arc, arclen, arclen3
 from .bezier import bezier,bezier3,pw_bezier2D
 from .bisect import bisect
