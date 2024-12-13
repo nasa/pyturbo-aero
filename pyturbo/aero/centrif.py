@@ -297,119 +297,129 @@ class Centrif:
         """  
         # Apply thickness in theta direction 
         for i,profile in enumerate(self.profiles):  
+            # Flatten in xr
+            xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
+            xt = PchipInterpolator(self.t_camber,xrth[:,0])
+            rt = PchipInterpolator(self.t_camber,xrth[:,1])
+            dx = np.diff(xrth[:,0])
+            dr = np.diff(xrth[:,1])
+            dist_rx = np.hstack([[0],np.cumsum(np.sqrt(dx**2+dr**2))])
+            func_rx = PchipInterpolator(self.t_camber,dist_rx)
+            
+            # Apply Thickness in theta
             
             
-            
+            # Convert theta,rx to Array of t(along camber),x,theta
             
             
             
             
                       
-            xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
-            dist = [xrth[-1,1]**2+xrth[j,1]**2 - 2*xrth[-1,1]*xrth[j,1]*np.cos(xrth[-1,2]-xrth[j,2])+(xrth[-1,1]-xrth[j,1])**2 for j in range(len(xrth))]
-            indx = np.argmin(np.array(dist) > profile.trailing_edge_properties.TE_Radius)
-            t_te_starts = self.t_camber[indx]
+            # xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
+            # dist = [xrth[-1,1]**2+xrth[j,1]**2 - 2*xrth[-1,1]*xrth[j,1]*np.cos(xrth[-1,2]-xrth[j,2])+(xrth[-1,1]-xrth[j,1])**2 for j in range(len(xrth))]
+            # indx = np.argmin(np.array(dist) > profile.trailing_edge_properties.TE_Radius)
+            # t_te_starts = self.t_camber[indx]
             
-            camber = self.camber_t_th[i]
-            xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
-            # Add SS and PS Points 
-            npoint_ss = len(profile.ss_thickness)+3 # LE Start, Leading Edge Thickness, SS_Thickness, TE_Radius
-            npoint_ps = len(profile.ps_thickness)+3 # LE Start,Leading Edge Thickness, PS_Thickness, TE_Radius
-            SS = np.zeros((npoint_ss,2)); PS = np.zeros((npoint_ps,2))  # t, theta 
-            ps_wedge = profile.trailing_edge_properties.TE_WedgeAngle_PS
-            ss_wedge = profile.trailing_edge_properties.TE_WedgeAngle_SS
-            te_radius = profile.trailing_edge_properties.TE_Radius
-            te_radius_scale = profile.trailing_edge_properties.radius_scale
+            # camber = self.camber_t_th[i]
+            # xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
+            # # Add SS and PS Points 
+            # npoint_ss = len(profile.ss_thickness)+3 # LE Start, Leading Edge Thickness, SS_Thickness, TE_Radius
+            # npoint_ps = len(profile.ps_thickness)+3 # LE Start,Leading Edge Thickness, PS_Thickness, TE_Radius
+            # SS = np.zeros((npoint_ss,2)); PS = np.zeros((npoint_ps,2))  # t, theta 
+            # ps_wedge = profile.trailing_edge_properties.TE_WedgeAngle_PS
+            # ss_wedge = profile.trailing_edge_properties.TE_WedgeAngle_SS
+            # te_radius = profile.trailing_edge_properties.TE_Radius
+            # te_radius_scale = profile.trailing_edge_properties.radius_scale
 
-            t_start,th_start = camber.get_point(0)
-            SS[0,0] = t_start
-            SS[0,1] = th_start
-            PS[0,0] = t_start
-            PS[0,1] = th_start
+            # t_start,th_start = camber.get_point(0)
+            # SS[0,0] = t_start
+            # SS[0,1] = th_start
+            # PS[0,0] = t_start
+            # PS[0,1] = th_start
             
-            t_start,th_start = camber.get_point(0)
-            x = xrth profile.LE_Thickness * np.cos(np.radians(profile.LE_Metal_Angle+90))
-            PS[1,0] = 
-            PS[1,1] = profile.LE_Thickness * np.sin(np.radians(profile.LE_Metal_Angle+90))
-            x = profile.LE_Thickness * np.cos(np.radians(profile.LE_Metal_Angle-90))
-            SS[1,0] = 
-            SS[1,1] = profile.LE_Thickness * np.sin(np.radians(profile.LE_Metal_Angle-90))
+            # t_start,th_start = camber.get_point(0)
+            # x = xrth profile.LE_Thickness * np.cos(np.radians(profile.LE_Metal_Angle+90))
+            # PS[1,0] = 
+            # PS[1,1] = profile.LE_Thickness * np.sin(np.radians(profile.LE_Metal_Angle+90))
+            # x = profile.LE_Thickness * np.cos(np.radians(profile.LE_Metal_Angle-90))
+            # SS[1,0] = 
+            # SS[1,1] = profile.LE_Thickness * np.sin(np.radians(profile.LE_Metal_Angle-90))
             
-            t_ps = exp_ratio(1.2,npoint_ps,maxvalue=t_te_starts)        # Pressure side thicknesses 
-            for j in range(len(profile.ps_thickness)):  
-                t_start,th_start = camber.get_point(t_ps[j+1])
-                dx,dth = camber.get_point_dt(t_ps[j+1])
-                angle = np.degrees(np.arctan2(dth,dx))
-                PS[j+1,0] = t_start + profile.ps_thickness[j] * np.cos(np.radians(angle+90))
-                PS[j+1,1] = th_start + profile.ps_thickness[j] * np.sin(np.radians(angle+90))
-            t_start,th_start = camber.get_point(t_ps[-1])
-            dx,dth = camber.get_point_dt(t_ps[-1]) # TE Radius
-            ps_angle = np.degrees(np.arctan2(dth,dx))
-            PS[-1,0] = t_start + te_radius * np.cos(np.radians(ps_angle+90-ps_wedge))
-            PS[-1,1] = th_start + te_radius * np.sin(np.radians(ps_angle+90-ps_wedge))
+            # t_ps = exp_ratio(1.2,npoint_ps,maxvalue=t_te_starts)        # Pressure side thicknesses 
+            # for j in range(len(profile.ps_thickness)):  
+            #     t_start,th_start = camber.get_point(t_ps[j+1])
+            #     dx,dth = camber.get_point_dt(t_ps[j+1])
+            #     angle = np.degrees(np.arctan2(dth,dx))
+            #     PS[j+1,0] = t_start + profile.ps_thickness[j] * np.cos(np.radians(angle+90))
+            #     PS[j+1,1] = th_start + profile.ps_thickness[j] * np.sin(np.radians(angle+90))
+            # t_start,th_start = camber.get_point(t_ps[-1])
+            # dx,dth = camber.get_point_dt(t_ps[-1]) # TE Radius
+            # ps_angle = np.degrees(np.arctan2(dth,dx))
+            # PS[-1,0] = t_start + te_radius * np.cos(np.radians(ps_angle+90-ps_wedge))
+            # PS[-1,1] = th_start + te_radius * np.sin(np.radians(ps_angle+90-ps_wedge))
             
-            t_ss = exp_ratio(1.2,npoint_ss,maxvalue=t_te_starts)        # Suction side thicknesses
-            for j in range(len(profile.ss_thickness)):
-                t_start,th_start = camber.get_point(t_ss[j+1])
-                dx,dth = camber.get_point_dt(t_ss[j+1])
-                angle = np.degrees(np.arctan2(dth,dx))
-                SS[j+1,0] = profile.ss_thickness[j] * np.cos(np.radians(angle-90))
-                SS[j+1,1] = profile.ss_thickness[j] * np.sin(np.radians(angle-90))
-            t_start,th_start = camber.get_point(t_ss[-1])
-            dx,dth = camber.get_point_dt(t_ss[-1]) # TE Radius
-            ss_angle = np.degrees(np.arctan2(dth,dx))
-            SS[-1,0] = t_start + te_radius * np.cos(np.radians(ss_angle-90+ss_wedge))
-            SS[-1,1] = th_start + te_radius * np.sin(np.radians(ss_angle-90+ss_wedge))
+            # t_ss = exp_ratio(1.2,npoint_ss,maxvalue=t_te_starts)        # Suction side thicknesses
+            # for j in range(len(profile.ss_thickness)):
+            #     t_start,th_start = camber.get_point(t_ss[j+1])
+            #     dx,dth = camber.get_point_dt(t_ss[j+1])
+            #     angle = np.degrees(np.arctan2(dth,dx))
+            #     SS[j+1,0] = profile.ss_thickness[j] * np.cos(np.radians(angle-90))
+            #     SS[j+1,1] = profile.ss_thickness[j] * np.sin(np.radians(angle-90))
+            # t_start,th_start = camber.get_point(t_ss[-1])
+            # dx,dth = camber.get_point_dt(t_ss[-1]) # TE Radius
+            # ss_angle = np.degrees(np.arctan2(dth,dx))
+            # SS[-1,0] = t_start + te_radius * np.cos(np.radians(ss_angle-90+ss_wedge))
+            # SS[-1,1] = th_start + te_radius * np.sin(np.radians(ss_angle-90+ss_wedge))
             
-            te_metal_angle = profile.TE_Metal_Angle
+            # te_metal_angle = profile.TE_Metal_Angle
 
-            # Add TE Points 
-            if te_radius_scale == 1: # Circle                
-                ps_te = arc(PS[-1,0],PS[-1,1],te_radius,ps_angle+90-ps_wedge, te_metal_angle)
-                ss_te = arc(SS[-1,0],SS[-1,1],te_radius, te_metal_angle,ss_angle-90+ss_wedge)
+            # # Add TE Points 
+            # if te_radius_scale == 1: # Circle                
+            #     ps_te = arc(PS[-1,0],PS[-1,1],te_radius,ps_angle+90-ps_wedge, te_metal_angle)
+            #     ss_te = arc(SS[-1,0],SS[-1,1],te_radius, te_metal_angle,ss_angle-90+ss_wedge)
                 
-                ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
-                ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
-                ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
-                ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
-                ss_te_pts = np.flipud(ss_te_pts)
-            else:
-                xc,yc = camber.get_point(1)
-                ellispe_te = ellispe(xc,yc,te_radius_scale,te_radius,
-                                 alpha_start=ps_angle+90-ps_wedge,
-                                 alpha_stop=ss_angle-90+ss_wedge)
-                te_x, te_y = ellispe_te.get_point(np.linspace(0,1,20))
+            #     ps_te_x, ps_te_y = ps_te.get_point(np.linspace(0,1,10))
+            #     ss_te_x, ss_te_y = ss_te.get_point(np.linspace(0,1,10))
+            #     ps_te_pts = np.column_stack([ps_te_x,ps_te_y])
+            #     ss_te_pts = np.column_stack([ss_te_x,ss_te_y])
+            #     ss_te_pts = np.flipud(ss_te_pts)
+            # else:
+            #     xc,yc = camber.get_point(1)
+            #     ellispe_te = ellispe(xc,yc,te_radius_scale,te_radius,
+            #                      alpha_start=ps_angle+90-ps_wedge,
+            #                      alpha_stop=ss_angle-90+ss_wedge)
+            #     te_x, te_y = ellispe_te.get_point(np.linspace(0,1,20))
 
-                n = te_x.shape[0]; n2 = int(n/2)
-                ps_te_pts = np.flipud(np.stack([te_x[n2-1:],te_y[n2-1:]],axis=1))
-                ss_te_pts = np.stack([te_x[:n2],te_y[:n2]],axis=1)
+            #     n = te_x.shape[0]; n2 = int(n/2)
+            #     ps_te_pts = np.flipud(np.stack([te_x[n2-1:],te_y[n2-1:]],axis=1))
+            #     ss_te_pts = np.stack([te_x[:n2],te_y[:n2]],axis=1)
                 
-                te_metal_angle_rad = np.radians(te_metal_angle)
-                rot = np.array([[np.cos(te_metal_angle_rad), -np.sin(te_metal_angle_rad)],
-                    [np.sin(te_metal_angle_rad), np.cos(te_metal_angle_rad)]])[:,:,0]
-                xc = (ps_te_pts[:,0].sum() + ss_te_pts[:,0].sum()) / (ps_te_pts.shape[0] + ss_te_pts.shape[0])
-                yc = (ps_te_pts[:,1].sum() + ss_te_pts[:,1].sum()) / (ps_te_pts.shape[0] + ss_te_pts.shape[0])
+            #     te_metal_angle_rad = np.radians(te_metal_angle)
+            #     rot = np.array([[np.cos(te_metal_angle_rad), -np.sin(te_metal_angle_rad)],
+            #         [np.sin(te_metal_angle_rad), np.cos(te_metal_angle_rad)]])[:,:,0]
+            #     xc = (ps_te_pts[:,0].sum() + ss_te_pts[:,0].sum()) / (ps_te_pts.shape[0] + ss_te_pts.shape[0])
+            #     yc = (ps_te_pts[:,1].sum() + ss_te_pts[:,1].sum()) / (ps_te_pts.shape[0] + ss_te_pts.shape[0])
                 
-                ps_te_pts[:,0] = ps_te_pts[:,0]-xc
-                ps_te_pts[:,1] = ps_te_pts[:,1]-yc
+            #     ps_te_pts[:,0] = ps_te_pts[:,0]-xc
+            #     ps_te_pts[:,1] = ps_te_pts[:,1]-yc
                 
-                ss_te_pts[:,0] = ss_te_pts[:,0]-xc
-                ss_te_pts[:,1] = ss_te_pts[:,1]-yc
+            #     ss_te_pts[:,0] = ss_te_pts[:,0]-xc
+            #     ss_te_pts[:,1] = ss_te_pts[:,1]-yc
                 
-                ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
-                ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
+            #     ps_te_pts = np.matmul(rot,ps_te_pts.transpose()).transpose()
+            #     ss_te_pts = np.matmul(rot,ss_te_pts.transpose()).transpose()
                 
-                ps_te_pts[:,0] = ps_te_pts[:,0]+xc
-                ps_te_pts[:,1] = ps_te_pts[:,1]+yc
+            #     ps_te_pts[:,0] = ps_te_pts[:,0]+xc
+            #     ps_te_pts[:,1] = ps_te_pts[:,1]+yc
                 
-                ss_te_pts[:,0] = ss_te_pts[:,0]+xc
-                ss_te_pts[:,1] = ss_te_pts[:,1]+yc
+            #     ss_te_pts[:,0] = ss_te_pts[:,0]+xc
+            #     ss_te_pts[:,1] = ss_te_pts[:,1]+yc
             
-            ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],ss_te_pts]) # t,theta
-            ps_nurbs_ctrl_pts = np.vstack([PS[:-1,:],ps_te_pts]) # t,theta
+            # ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],ss_te_pts]) # t,theta
+            # ps_nurbs_ctrl_pts = np.vstack([PS[:-1,:],ps_te_pts]) # t,theta
             
-            self.ss_nurbs.append(self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,self.npts_chord)) # t,theta
-            self.ps_nurbs.append(self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,self.npts_chord)) # t,theta
+            # self.ss_nurbs.append(self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,self.npts_chord)) # t,theta
+            # self.ps_nurbs.append(self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,self.npts_chord)) # t,theta
             
             
     def __interpolate__(self):
