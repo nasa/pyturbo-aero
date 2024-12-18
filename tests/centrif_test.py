@@ -56,7 +56,7 @@ def test_passage():
                                    warp_displacement_locs=warp_displacement_locs))
     cen.build()
     cen.plot_rx_profile()
-
+    cen.plot()
     # cen.plot_rx_profile()
     # cen.plot_camber()
 if __name__ == "__main__":
