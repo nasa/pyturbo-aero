@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple, Union
-from pyturbo.helper import convert_to_ndarray, line2D, bezier, exp_ratio, arc, ellispe
+from pyturbo.helper import convert_to_ndarray, line2D, bezier, exp_ratio, arc, ellispe, csapi
 import numpy.typing as npt 
 import numpy as np 
 from scipy.interpolate import PchipInterpolator
@@ -123,16 +123,17 @@ class Centrif:
     __tip_clearance_percent:float = 0
     __tip_clearance:float = 0
     
-    t_chord:npt.ArrayLike                   # This is the t from hub to shroud 
+    t_hub:npt.ArrayLike                   # This is the t from hub to shroud 
     t_span:npt.ArrayLike
     t_blade:npt.ArrayLike                   
     npts_chord:int              
     npts_span:int               
     
-    ss_pts:npt.NDArray
-    ps_pts:npt.NDArray
-    
-    ss_rx_pts:npt.NDArray
+    ss_pts:npt.NDArray          # shape=(nspan, nchord, 3)
+    ps_pts:npt.NDArray          # shape=(nspan, nchord, 3)
+    ss_profile_pts:npt.NDArray  # shape=(nprofile, nchord, 3)
+    ps_profile_pts:npt.NDArray  # shape=(nprofile, nchord, 3)
+    ss_rx_pts:npt.NDArray       # shape=(nprofile,nchord,6), 6 = rx,theta,r,x,t_camber,t_span
     ps_rx_pts:npt.NDArray
     camb_rx_func:List[PchipInterpolator]
     
@@ -191,32 +192,32 @@ class Centrif:
     def add_SS_Wave(self,wave:Union[List[float],npt.NDArray]):
         self.ss_wave = convert_to_ndarray[wave]
     
-    def __get_camber_xr_point__(self,t_span:float,t_chord:float) -> npt.NDArray:
+    def __get_camber_xr_point__(self,t_span:float,t_hub:float) -> npt.NDArray:
         # Returns the x,r point. Doesn't require vertical line test 
-        shroud_pts = np.hstack([self.func_xshroud(t_chord),self.func_rshroud(t_chord)])
-        hub_pts = np.hstack([self.func_xhub(t_chord),self.func_rhub(t_chord)])    
+        shroud_pts = np.hstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)])
+        hub_pts = np.hstack([self.func_xhub(t_hub),self.func_rhub(t_hub)])    
         l = line2D(hub_pts,shroud_pts)
         x,r = l.get_point(t_span)
         return np.array([x,r])
     
     ''' 
     '''
-    def __get_camber_xr__(self,t_span:float,t_chord:npt.NDArray) -> npt.NDArray:
+    def __get_camber_xr__(self,t_span:float,t_hub:npt.NDArray) -> npt.NDArray:
         """Get the x and r coordinates of the camberline
 
         Args:
             t_span (float): percent span
-            t_chord (npt.NDArray): percent along the hub from 0 to 1. Defaults to None.
+            t_hub (npt.NDArray): percent along the hub from 0 to 1. Defaults to None.
         
         Returns:
             npt.NDArray: Array nx2 containing xr 
         """
         # Returns xr for the camber line. Doesn't require vertical line test 
-        # t_chord is the percent along the hub 
+        # t_hub is the percent along the hub 
        
-        shroud_pts = np.vstack([self.func_xshroud(t_chord),self.func_rshroud(t_chord)]).transpose()
-        hub_pts = np.vstack([self.func_xhub(t_chord),self.func_rhub(t_chord)]).transpose()
-        n = len(t_chord)
+        shroud_pts = np.vstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)]).transpose()
+        hub_pts = np.vstack([self.func_xhub(t_hub),self.func_rhub(t_hub)]).transpose()
+        n = len(t_hub)
             
         xr = np.zeros((n,2))
         for j in range(n):
@@ -224,12 +225,12 @@ class Centrif:
             xr[j,0],xr[j,1] = l.get_point(t_span)
         return xr
     
-    def get_camber_points(self,i:int,t_chord:npt.NDArray,t_camber:npt.NDArray):
+    def get_camber_points(self,i:int,t_hub:npt.NDArray,t_camber:npt.NDArray):
         """Get the camber in cylindrical coordinates x,r,th
 
         Args:
             i (int): camber index
-            t_chord (npt.NDArray): new t_chord distribution, t-chord a percentage along the hub. Defaults to None
+            t_hub (npt.NDArray): new t_hub distribution, t-chord a percentage along the hub. Defaults to None
             t_camber (npt.NDArray): new t_blade distribution, t-blade is percent camber of the blade. Defaults to None
 
         Returns:
@@ -237,8 +238,8 @@ class Centrif:
             
         """
  
-        xr = self.__get_camber_xr__(self.profiles[i].percent_span,t_chord)
-        _,th = self.camber_t_th[i].get_point(t_camber)      # using t_blade matches up with t_chord from get_camber_xr
+        xr = self.__get_camber_xr__(self.profiles[i].percent_span,t_hub)
+        _,th = self.camber_t_th[i].get_point(t_camber)      # using t_blade matches up with t_hub from get_camber_xr
         xrth = np.hstack([xr,th.reshape(-1,1)])
         return xrth
     
@@ -273,8 +274,8 @@ class Centrif:
             camber_bezier_t_th[-2,:] = [profile.TE_Metal_Angle_Loc, (t_end-profile.TE_Metal_Angle_Loc)*np.tan(np.radians(profile.TE_Metal_Angle))+np.radians(profile.warp_angle)]
             camber_bezier_t_th[-1,:] = [t_end, np.radians(profile.warp_angle)]
             
-            xr0 = self.__get_camber_xr_point__(profile.percent_span,self.t_chord[-1])
-            xr1 = self.__get_camber_xr_point__(profile.percent_span,self.t_chord[0])
+            xr0 = self.__get_camber_xr_point__(profile.percent_span,self.t_hub[-1])
+            xr1 = self.__get_camber_xr_point__(profile.percent_span,self.t_hub[0])
             camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.warp_angle)) + (xr0[0]-xr1[0])**2)
             
             j = 2
@@ -356,14 +357,19 @@ class Centrif:
         """Apply thickness to the cambers 
         """  
         
-        self.ss_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,2))
-        self.ps_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,2))
+        self.ss_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,6)) # rx,theta,r,x,t_camber,t_span
+        self.ps_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,6))
+        
         self.profiles_debug = list()
         self.camb_rx_func = list()
+        
+        def solve_t(t,val:float,func:PchipInterpolator):
+            return np.abs(val-func(t))
+        
         # Apply thickness in theta direction 
         for i,profile in enumerate(self.profiles):  
             # Flatten in xr
-            xrth = self.get_camber_points(i,self.t_chord,self.t_camber)
+            xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
             dx = np.diff(xrth[:,0])
             dr = np.diff(xrth[:,1])
             dist_rx = np.hstack([[0],np.cumsum(np.sqrt(dx**2+dr**2))])
@@ -441,55 +447,69 @@ class Centrif:
             ps_te,ss_te = self.__apply_te__(center_pt=(center_rx,center_th),
                                             start_pt=PS[-1,:],end_pt=(rx_end,th_end),
                                             end_pt2=SS[-1,:],te_properties=profile.trailing_edge_properties)
-            ps_nurbs_ctrl_pts = np.vstack([PS[:-1,:],ps_te]) # t,theta
-            ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],np.flipud(ss_te)]) # t,theta
+            ps_nurbs_ctrl_pts = np.vstack([PS[:-1,:],ps_te])            # rx,theta
+            ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],np.flipud(ss_te)]) # rx,theta
 
-            self.ss_rx_pts[i,:,:] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,self.npts_chord) # t,theta
-            self.ps_rx_pts[i,:,:] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,self.npts_chord) # t,theta
+            self.ss_rx_pts[i,:,:1] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,self.npts_chord) # rx,theta
+            self.ps_rx_pts[i,:,:1] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,self.npts_chord) # rx,theta
             
             self.profiles_debug.append(CentrifProfileDebug(SS=SS,PS=PS,
                                 camber_rx_th=np.vstack([func_rx(self.t_camber),camber(self.t_camber)[1]]).transpose(),
                                 ss_rx_pts=self.ss_rx_pts,ps_rx_pts=self.ps_rx_pts,
                                 ss_te=ss_te,ps_te=ps_te,rx_end=rx_end,th_end=th_end,center_rx=center_rx,center_th=center_th))
             
+            # Inversely solve for t_camber for each rx value 
+            for j in range(self.npts_chord):
+                rx = self.ss_profile_pts[i,j,0]
+                res = minimize_scalar(solve_t,bounds=[0,1],args=(rx,func_rx))
+                self.ss_rx_pts[i,j,4] = res.x # new t_camber for rx value 
+                xrth = self.get_camber_points(i,self.t_hub[j],self.ss_rx_pts[i,j,4])
+                self.ss_rx_pts[i,j,2] = xrth[0]
+                self.ss_rx_pts[i,j,3] = self.ss_rx_pts[i,j,0]/xrth[0] # r 
+                
+                res = minimize_scalar(solve_t,bounds=[0,1],args=(self.ps_rx_pts[i,j,4],func_rx))
+                self.ps_rx_pts[i,j,4] = res.x 
+                xrth = self.get_camber_points(i,self.t_hub[j],self.ps_rx_pts[i,j,4])
+                self.ps_rx_pts[i,j,2] = xrth[0]
+                self.ps_rx_pts[i,j,3] = self.ps_rx_pts[i,j,0]/xrth[0]
             
-    def __interpolate__(self):
-        ss_pts = np.zeros((len(self.ss_nurbs),self.npts_chord+10,4)) # x,r,theta,t 
-        ps_pts = np.zeros((len(self.ss_nurbs),self.npts_chord+10,4)) 
-        for i in range(len(self.ss_nurbs)):
-            t_camber2 = self.ss_nurbs[:,0] # t,theta
-            ss_theta2 = self.ss_nurbs[:,1]
-            t_camber2 = self.ps_nurbs[:,0] # t,theta
-            ps_theta2 = self.ps_nurbs[:,1]
+            self.ss_rx_pts[i,:,5] = self.t_span[i,:] # tspan 
+            self.ps_rx_pts[i,:,5] = self.t_span[i,:] 
             
-            xrth = self.get_camber_points(i)            
-            theta = PchipInterpolator(xrth[:,0],xrth[:,1])(t_camber2)
-            ss_pts[i,:,0] = xrth[:,0]
-            ss_pts[i,:,1] = theta
-            ss_pts[i,:,2] = xrth[:,1]
             
-            ps_t_theta = self.ps_t_theta[i]
-            xrth = self.get_camber_points(i)            
-            theta = PchipInterpolator(ps_t_theta[:,0],ps_t_theta[:,1])(t_camber2)
-            ps_pts[i,:,0] = xrth[:,0]
-            ps_pts[i,:,1] = theta
-            ps_pts[i,:,2] = xrth[:,1]
+            
+    def __interpolate__(self):    
+        """Interpolate the control profiles and get x,r,th
+        """
+        self.ss_pts = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
+        self.ps_pts = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
+        
+        for j in range(self.npts_chord):
+            tspan = np.linspace(0,self.t_span[-1,j],self.npts_span)
+            self.ss_pts[:,j,0] = csapi(tspan,self.ss_rx_pts[:,j,2],self.t_span[:,j])   # x
+            self.ss_pts[:,j,1] = csapi(tspan,self.ss_rx_pts[:,j,3],self.t_span[:,j])   # r
+            self.ss_pts[:,j,2] = csapi(tspan,self.ss_rx_pts[:,j,1],self.t_span[:,j])   # th
+            
+            self.ps_pts[:,j,0] = csapi(tspan,self.ps_rx_pts[:,j,2],self.t_span[:,j])   # x
+            self.ps_pts[:,j,1] = csapi(tspan,self.ps_rx_pts[:,j,3],self.t_span[:,j])   # r
+            self.ps_pts[:,j,2] = csapi(tspan,self.ps_rx_pts[:,j,1],self.t_span[:,j])   # th
+            
             
     
     def __tip_clearance__(self):
         """Build the tspan matrix such that tip clearance is maintained
         """
         self.t_span = np.zeros((self.npts_span,self.npts_chord))
-        self.t_chord = np.linspace(0,1,self.npts_chord)
-        t = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
+        self.t_hub = np.linspace(0,1,self.npts_chord)
+        t = self.t_hub * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         
         xh = self.func_xhub(t); xsh = self.func_xshroud(t)
         rh = self.func_rhub(t); rsh = self.func_rshroud(t)
                 
-        for j in range(len(self.t_chord)):
+        for j in range(len(self.t_hub)):
             cut = line2D([xh[j],rh[j]],[xsh[j],rsh[j]])
             t2 = cut.get_t(cut.length-self.tip_clearance)
-            self.t_span[:,j] = np.linspace(0,t2,self.npts_span)
+            self.t_span[:,j] = exp_ratio(1.2,self.npts_span,maxvalue=t2)
     
     def build(self,npts_span:int=100, npts_chord:int=100):
         """Build the centrif blade 
@@ -499,19 +519,18 @@ class Centrif:
             npts_chord (int, optional): _description_. Defaults to 100.
         """
         self.npts_chord = npts_chord; self.npts_span = npts_span
-        self.t_chord = np.linspace(0,1,npts_chord)
+        self.t_hub = np.linspace(0,1,npts_chord)
         self.t_span = np.linspace(0,1,npts_span)
         
         splitter_start = self.profiles[0].splitter_camber_start
         if splitter_start == 0:
-            t_splitter = self.t_chord * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
+            t_splitter = self.t_hub * (self.blade_position[1]-self.blade_position[0]) + self.blade_position[0]
         else:
-            self.t_chord = self.t_chord * (self.blade_position[1]-splitter_start) + splitter_start
-        self.t_camber = (self.t_chord - self.t_chord.min())/(self.t_chord.max()-self.t_chord.min())
+            self.t_hub = self.t_hub * (self.blade_position[1]-splitter_start) + splitter_start
+        self.t_camber = (self.t_hub - self.t_hub.min())/(self.t_hub.max()-self.t_hub.min())
         self.__build_camber__()
         self.__build_hub_shroud__()
         self.__apply_thickness__()  # Creates the flattened profiles
-        self.plot_rx_profile()
         # self.__interpolate__()
         
     def plot_camber(self,plot_hub_shroud:bool=True):
@@ -558,8 +577,7 @@ class Centrif:
         """
         for i in range(len(self.profiles_debug)):
             p = self.profiles_debug[i]
-            
-            plt.figure(num=i,clear=True)
+            plt.figure(num=i,clear=True)    # rx view
             plt.plot(p.camber_rx_th[:,0],p.camber_rx_th[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
             plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction')
             plt.plot(p.ss_te[0,0],p.ss_te[0,1],'ro',fillstyle='none', label='suction-te') 
@@ -574,10 +592,43 @@ class Centrif:
             plt.legend()
             plt.xlabel('distance along r and x')
             plt.ylabel('theta')
-            plt.title(f'Flatten Profile-{i} in rx-theta')
+            plt.title(f'RX Profile-{i}')
             plt.axis('equal')
-            plt.savefig(f'profile-{i}.png',dpi=150)
-                        
+            plt.savefig(f'profile rx-theta {i:02d}.png',dpi=150)
+            
+            plt.figure(num=int(i+len(self.profiles_debug)),clear=True) # Front view theta-r
+            plt.plot(p.ss_rx_pts[i,:,1],p.ss_rx_pts[i,:,2])         # rx,theta,r,x,t_camber,t_span
+            plt.plot(p.ps_rx_pts[i,:,1],p.ps_rx_pts[i,:,2])
+            plt.xlabel('theta')
+            plt.ylabel('r')
+            plt.title(f'Theta-r Profile-{i}')
+            plt.axis('equal')
+            plt.savefig(f'profile theta-r {i:02d}.png',dpi=150)
+            
+            fig = plt.figure(num=1,dpi=150)
+            ax = fig.add_subplot(111, projection='3d')
+            
+            ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
+            ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
+                
+            for i in range(self.ss_pts.shape[0]):
+                ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,1],self.ss_pts[i,:,2],'r')
+                ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,1],self.ps_pts[i,:,2],'b')
+            ax.view_init(azim=90, elev=45)
+            ax.set_xlabel('x-axial')
+            ax.set_ylabel('rth')
+            ax.set_zlabel('r-radial')
+            plt.axis('equal')
+            plt.savefig(f'profile 3D {i:02d}.png',dpi=150)
+        
+            plt.figure(num=int(i+2*len(self.profiles_debug)),clear=True) # Front view theta-r
+            plt.plot(p.ss_rx_pts[i,:,1],p.ss_rx_pts[i,:,2])         # rx,theta,r,x,t_camber,t_span
+            plt.plot(p.ps_rx_pts[i,:,1],p.ps_rx_pts[i,:,2])
+            plt.xlabel('theta')
+            plt.ylabel('r')
+            plt.title(f'Theta-r Profile-{i}')
+            plt.axis('equal')
+            plt.savefig(f'profile theta-r {i:02d}.png',dpi=150)
     
     def plot_front_view(self):
         pass
