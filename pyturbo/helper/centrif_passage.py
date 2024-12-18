@@ -283,7 +283,7 @@ def create_passage(PR:float=2.4, phi1:float=0.7,
     s1 = entropy(P01*1e5, T01, cp, Tref, Pref, Rgas)
     s3 = entropy(P03, T03, cp, Tref, Pref, Rgas)
     s2 = s1 + zeta*(s3-s1)
-    print(f"s2-s1: {s2-s1}, s3-s1: {s3-s1}")
+    # print(f"s2-s1: {s2-s1}, s3-s1: {s3-s1}")
     
     T02 = T03
     h02 = cp*(T02-Tref)

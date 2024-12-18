@@ -85,6 +85,21 @@ class CentrifProfile:
     
     splitter_camber_start:float = 0         # What percentage along the camberline to start the splitter 
     npts_te: int = 10                       # Suction side and pressure side 
+    
+@dataclass
+class CentrifProfileDebug:
+    SS:npt.NDArray              # ControlPoints rx-theta
+    PS:npt.NDArray  
+    camber_rx_th:npt.NDArray    # Camber points rx-theta
+    ss_rx_pts:npt.NDArray          # Generated ss points rx-theta
+    ps_rx_pts:npt.NDArray          # Generated ps points rx-theta
+    ss_te:npt.NDArray
+    ps_te:npt.NDArray
+    rx_end:float
+    th_end:float
+    center_rx:float
+    center_th:float
+    
 
 def cylindrical_to_cartesian(rho, phi, z):
     x = rho * np.cos(phi)
@@ -95,6 +110,7 @@ class Centrif:
     hub:npt.NDArray
     shroud:npt.NDArray
     profiles:List[CentrifProfile]
+    profiles_debug:List[CentrifProfileDebug]
     blade_position:Tuple[float,float] # Start and End positions
     
     func_xhub:PchipInterpolator
@@ -118,6 +134,7 @@ class Centrif:
     
     ss_rx_pts:npt.NDArray
     ps_rx_pts:npt.NDArray
+    camb_rx_func:List[PchipInterpolator]
     
     def __init__(self):
         self.profiles = list()
@@ -286,7 +303,7 @@ class Centrif:
         curve = NURBS.Curve(); # knots = # control points + order of curve
         curve.degree = 3 # cubic
         ctrlpts = points
-        ctrlpts = np.column_stack([ctrlpts, ctrlpts[:,1]*0]) # Add empty column for z axis
+        # ctrlpts = np.column_stack([ctrlpts, ctrlpts[:,1]*0]) # Add empty column for z axis
         curve.ctrlpts = ctrlpts
         curve.delta = 1/npts
         curve.knotvector = knotvector.generate(curve.degree,ctrlpts.shape[0])
@@ -306,7 +323,7 @@ class Centrif:
             center_pt (Tuple[float,float]): center point in terms of rx, theta
             start_pt (Tuple[float,float]): start point eg. pressure side point
             end_pt (Tuple[float,float]): end point eg. trailing edge
-            end_pt (Tuple[float,float]): end point eg. suction side point
+            end_pt2 (Tuple[float,float]): end point eg. suction side point
             te_properties (TrailingEdgeProperties): Trailing edge properties 
         """
         te_radius_scale = te_properties.radius_scale     # Ellipitcal TE 
@@ -316,12 +333,14 @@ class Centrif:
             te_pts_upper = np.flipud(np.concat([end_pt[0]+0*th, th],axis=1))
             
             th = np.linspace(end_pt[1]-te_radius,end_pt[1],10)
-            te_pts_lower = np.concat([end_pt[0]+0*th, th],axis=1)
+            te_pts_lower = np.concat([end_pt2[0]+0*th, th],axis=1)
             
         else:
             start_angle = np.degrees(np.arctan2(start_pt[1]-center_pt[1],start_pt[0]-center_pt[0]))
             end_angle = np.degrees(np.arctan2(end_pt[1]-center_pt[1],end_pt[0]-center_pt[0]))
-            end_angle2 = np.degrees(np.arctan2(end_pt2[1]-end_pt[1],end_pt2[0]-end_pt[0]))
+            
+            end_angle2 = np.degrees(np.arctan2(end_pt2[1]-center_pt[1],end_pt2[0]-center_pt[0]))
+            
             if te_radius_scale == 1:
                 te_arc1 = arc(center_pt[0],center_pt[1],te_radius,start_angle, end_angle)                
                 te_x, te_y = te_arc1.get_point(np.linspace(0,1,10))
@@ -336,8 +355,11 @@ class Centrif:
     def __apply_thickness__(self):
         """Apply thickness to the cambers 
         """  
+        
         self.ss_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,2))
         self.ps_rx_pts = np.zeros(shape=(len(self.profiles),self.npts_chord,2))
+        self.profiles_debug = list()
+        self.camb_rx_func = list()
         # Apply thickness in theta direction 
         for i,profile in enumerate(self.profiles):  
             # Flatten in xr
@@ -346,6 +368,7 @@ class Centrif:
             dr = np.diff(xrth[:,1])
             dist_rx = np.hstack([[0],np.cumsum(np.sqrt(dx**2+dr**2))])
             func_rx = PchipInterpolator(self.t_camber,dist_rx)
+            self.camb_rx_func.append(func_rx)
             dfunc_rx = func_rx.derivative()
             
             # Apply Thickness in theta
@@ -356,7 +379,9 @@ class Centrif:
             ss_wedge = profile.trailing_edge_properties.TE_WedgeAngle_SS
             te_radius = profile.trailing_edge_properties.TE_Radius
             
-            dist = [xrth[-1,1]**2+xrth[j,1]**2 - 2*xrth[-1,1]*xrth[j,1]*np.cos(xrth[-1,2]-xrth[j,2])+(xrth[-1,1]-xrth[j,1])**2 for j in range(len(xrth))]
+            dist = [np.sqrt(xrth[-1,1]**2+xrth[j,1]**2 - 2*xrth[-1,1]*xrth[j,1]*np.cos(xrth[-1,2]-xrth[j,2])+(xrth[-1,1]-xrth[j,1])**2) for j in range(len(xrth))]
+            # dist = (dist_rx[-1]-dist_rx[j])**2 + (camber_th[-1]-camber_th[j])**2
+            dist = np.array(dist)
             indx = np.argmin(np.array(dist) > profile.trailing_edge_properties.TE_Radius)
             t_te_starts = self.t_camber[indx]         
 
@@ -373,7 +398,7 @@ class Centrif:
             SS[1,0] = profile.LE_Thickness * np.cos(np.radians(profile.LE_Metal_Angle-90))      # rx
             SS[1,1] = profile.LE_Thickness * np.sin(np.radians(profile.LE_Metal_Angle-90))      # theta
             
-            t_ps = exp_ratio(1.2,npoint_ps,maxvalue=t_te_starts)        # Pressure side thicknesses 
+            t_ps = np.linspace(0,1,npoint_ps)*t_te_starts # exp_ratio(1.2,npoint_ps,maxvalue=t_te_starts)        # Pressure side thicknesses 
             for j in range(len(profile.ps_thickness)):  
                 _,th_start = camber(t_ps[j+1])
                 rx_start = func_rx(t_ps[j+1])
@@ -391,7 +416,7 @@ class Centrif:
             PS[-1,0] = rx_start + te_radius * np.cos(np.radians(angle+90-ps_wedge))
             PS[-1,1] = th_start + te_radius * np.sin(np.radians(angle+90-ps_wedge))
             
-            t_ss = exp_ratio(1.2,npoint_ss,maxvalue=t_te_starts)        # Suction side thicknesses
+            t_ss = t_ps = np.linspace(0,1,npoint_ps)*t_te_starts # exp_ratio(1.2,npoint_ss,maxvalue=t_te_starts)        # Suction side thicknesses
             for j in range(len(profile.ss_thickness)):
                 _,th_start = camber(t_ps[j+1])
                 rx_start = func_rx(t_ps[j+1])
@@ -409,18 +434,23 @@ class Centrif:
             SS[-1,1] = th_start + te_radius * np.sin(np.radians(angle-90+ss_wedge))
             
             center_rx = func_rx(t_te_starts)
-            center_th = camber(t_te_starts)
+            _,center_th = camber(t_te_starts)
             rx_end = func_rx(1)
-            th_end = camber(1)
+            _,th_end = camber(1)
             
             ps_te,ss_te = self.__apply_te__(center_pt=(center_rx,center_th),
-                                            start_pt=SS[-1,:],end_pt=(rx_end,th_end),
-                                            end_pt2=PS[-1,:],te_properties=profile.trailing_edge_properties)
+                                            start_pt=PS[-1,:],end_pt=(rx_end,th_end),
+                                            end_pt2=SS[-1,:],te_properties=profile.trailing_edge_properties)
             ps_nurbs_ctrl_pts = np.vstack([PS[:-1,:],ps_te]) # t,theta
-            ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],ss_te]) # t,theta
-            
+            ss_nurbs_ctrl_pts = np.vstack([SS[:-1,:],np.flipud(ss_te)]) # t,theta
+
             self.ss_rx_pts[i,:,:] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,self.npts_chord) # t,theta
             self.ps_rx_pts[i,:,:] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,self.npts_chord) # t,theta
+            
+            self.profiles_debug.append(CentrifProfileDebug(SS=SS,PS=PS,
+                                camber_rx_th=np.vstack([func_rx(self.t_camber),camber(self.t_camber)[1]]).transpose(),
+                                ss_rx_pts=self.ss_rx_pts,ps_rx_pts=self.ps_rx_pts,
+                                ss_te=ss_te,ps_te=ps_te,rx_end=rx_end,th_end=th_end,center_rx=center_rx,center_th=center_th))
             
             
     def __interpolate__(self):
@@ -480,13 +510,14 @@ class Centrif:
         self.t_camber = (self.t_chord - self.t_chord.min())/(self.t_chord.max()-self.t_chord.min())
         self.__build_camber__()
         self.__build_hub_shroud__()
-        self.__apply_thickness__()
+        self.__apply_thickness__()  # Creates the flattened profiles
+        self.plot_rx_profile()
         # self.__interpolate__()
         
     def plot_camber(self,plot_hub_shroud:bool=True):
         """Plot the camber line
         """
-        t = self.t_blade
+        t = self.t_camber
         fig = plt.figure(num=1,dpi=150)
         for i,b in enumerate(self.camber_t_th):
             [x,y] = b.get_point(t)        
@@ -522,21 +553,31 @@ class Centrif:
         plt.axis('equal')
         plt.show()
         
-    def plot_profiles(self):
-        
-        plt.figure(num=1,clear=True)
-        plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
-            linewidth=2)
-        plt.plot(self.ps_pts[:,0],self.ps_pts[:,1],'b',label='pressure side')
-        plt.plot(self.ss_pts[:,0],self.ss_pts[:,1],'r',label='suction side')
-        plt.plot(self.ss_pts[max_indx,0],self.ss_pts[max_indx,1],'rx',label='suction side max')
-        
-        plt.plot(self.ps_x,self.ps_y,'ob',label='ps ctrl pts')
-        plt.plot(self.ss_x,self.ss_y,'or',label='ss ctrl pts')
-        plt.plot(self.ps_te_pts[:,0],self.ps_te_pts[:,1],'ok',label='ps te ctrl pts')
-        plt.plot(self.ss_te_pts[:,0],self.ss_te_pts[:,1],'om',label='ss te ctrl pts')
-        plt.legend()
-        plt.axis('scaled')
-        plt.show()
+    def plot_rx_profile(self):
+        """Plot the control profiles in the rx-theta plane
+        """
+        for i in range(len(self.profiles_debug)):
+            p = self.profiles_debug[i]
+            
+            plt.figure(num=i,clear=True)
+            plt.plot(p.camber_rx_th[:,0],p.camber_rx_th[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
+            plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction')
+            plt.plot(p.ss_te[0,0],p.ss_te[0,1],'ro',fillstyle='none', label='suction-te') 
+            plt.plot(p.ss_te[-1,0],p.ss_te[-1,1],'ro',fillstyle='none', label='suction-te') 
+            plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
+            plt.plot(p.ps_te[0,0],p.ps_te[0,1],'bo',fillstyle='none', label='pressure-te') 
+            plt.plot(p.ps_te[-1,0],p.ps_te[-1,1],'bo',fillstyle='none', label='pressure-te') 
+            plt.plot(p.rx_end,p.th_end,'go',fillstyle='none', label='end-pt') 
+            plt.plot(p.center_rx,p.center_th,'ko',fillstyle='none', label='center-pt')
+            plt.plot(p.ss_rx_pts[i,:,0],p.ss_rx_pts[i,:,1],'r-',label='ss')
+            plt.plot(p.ps_rx_pts[i,:,0],p.ps_rx_pts[i,:,1],'b-',label='ps')
+            plt.legend()
+            plt.xlabel('distance along r and x')
+            plt.ylabel('theta')
+            plt.title(f'Flatten Profile-{i} in rx-theta')
+            plt.axis('equal')
+            plt.savefig(f'profile-{i}.png',dpi=150)
+                        
+    
     def plot_front_view(self):
         pass
