@@ -465,14 +465,14 @@ class Centrif:
                 self.ss_rx_pts[i,j,4] = res.x # new t_camber for rx value 
                 xrth = self.get_camber_points(i,[self.t_hub[j]],self.ss_rx_pts[i,j,4])[0]
                 self.ss_rx_pts[i,j,3] = xrth[0]                       # x
-                self.ss_rx_pts[i,j,2] = self.ss_rx_pts[i,j,0]/xrth[0] # r
+                self.ss_rx_pts[i,j,2] = xrth[1]                       # r
                 
                 rx = self.ps_rx_pts[i,j,0]
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(rx,func_rx))
                 self.ps_rx_pts[i,j,4] = res.x 
                 xrth = self.get_camber_points(i,[self.t_hub[j]],self.ps_rx_pts[i,j,4])[0]
                 self.ps_rx_pts[i,j,3] = xrth[0]
-                self.ps_rx_pts[i,j,2] = self.ps_rx_pts[i,j,0]/xrth[0]
+                self.ps_rx_pts[i,j,2] = xrth[1]
             
             self.ss_rx_pts[i,:,5] = self.t_span[i,:] # tspan 
             self.ps_rx_pts[i,:,5] = self.t_span[i,:] 
@@ -487,12 +487,12 @@ class Centrif:
         
         for j in range(self.npts_chord):
             tspan = np.linspace(0,self.t_span[-1,j],self.ss_rx_pts.shape[0])
-            self.ss_pts[:,j,0] = csapi(tspan,self.ss_rx_pts[:,j,2],self.t_span[:,j])   # x
-            self.ss_pts[:,j,1] = csapi(tspan,self.ss_rx_pts[:,j,3],self.t_span[:,j])   # r
+            self.ss_pts[:,j,0] = csapi(tspan,self.ss_rx_pts[:,j,3],self.t_span[:,j])   # x
+            self.ss_pts[:,j,1] = csapi(tspan,self.ss_rx_pts[:,j,2],self.t_span[:,j])   # r
             self.ss_pts[:,j,2] = csapi(tspan,self.ss_rx_pts[:,j,1],self.t_span[:,j])   # th
             
-            self.ps_pts[:,j,0] = csapi(tspan,self.ps_rx_pts[:,j,2],self.t_span[:,j])   # x
-            self.ps_pts[:,j,1] = csapi(tspan,self.ps_rx_pts[:,j,3],self.t_span[:,j])   # r
+            self.ps_pts[:,j,0] = csapi(tspan,self.ps_rx_pts[:,j,3],self.t_span[:,j])   # x
+            self.ps_pts[:,j,1] = csapi(tspan,self.ps_rx_pts[:,j,2],self.t_span[:,j])   # r
             self.ps_pts[:,j,2] = csapi(tspan,self.ps_rx_pts[:,j,1],self.t_span[:,j])   # th
             
             
@@ -598,11 +598,32 @@ class Centrif:
             plt.axis('equal')
             plt.savefig(f'profile rx-theta {i:02d}.png',dpi=150)
             
+            plt.figure(num=i,clear=True)    # x-theta view
+            xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+            plt.plot(p.camber_rx_th[:,0],p.camber_rx_th[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
+            plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction')
+            plt.plot(p.ss_te[0,0],p.ss_te[0,1],'ro',fillstyle='none', label='suction-te') 
+            plt.plot(p.ss_te[-1,0],p.ss_te[-1,1],'ro',fillstyle='none', label='suction-te') 
+            plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
+            plt.plot(p.ps_te[0,0],p.ps_te[0,1],'bo',fillstyle='none', label='pressure-te') 
+            plt.plot(p.ps_te[-1,0],p.ps_te[-1,1],'bo',fillstyle='none', label='pressure-te') 
+            plt.plot(p.rx_end,p.th_end,'go',fillstyle='none', label='end-pt') 
+            plt.plot(p.center_rx,p.center_th,'ko',fillstyle='none', label='center-pt')
+            plt.plot(p.ss_rx_pts[i,:,0],p.ss_rx_pts[i,:,1],'r-',label='ss')
+            plt.plot(p.ps_rx_pts[i,:,0],p.ps_rx_pts[i,:,1],'b-',label='ps')
+            plt.legend()
+            plt.xlabel('distance along r and x')
+            plt.ylabel('theta')
+            plt.title(f'RX Profile-{i}')
+            plt.axis('equal')
+            plt.savefig(f'profile rx-theta {i:02d}.png',dpi=150)
+            
             
     def plot(self):
         """3D Plot
         """    
-        fig = plt.figure(num=1,dpi=150)
+        
+        fig = plt.figure(num=1,clear=True,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
         # ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
         # ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
@@ -615,6 +636,7 @@ class Centrif:
         ax.set_zlabel('r-radial')
         plt.axis('equal')
         plt.show()
+        
         
             
     
