@@ -14,7 +14,6 @@ class WaveDirection(Enum):
     x:int = 0
     r:int = 1
 
-
 @dataclass 
 class TrailingEdgeProperties:
     # Flat Trailing Edge 
@@ -61,8 +60,11 @@ class WavyBladeProperties:
     PS_Wave:npt.NDArray
     LE_Wave_angle:Optional[List[float]]=None
     TE_Wave_angle:Optional[List[float]]=None
-    
 
+@dataclass
+class SplitterProperties:    
+    position:Tuple[float,float] = (0.5,1)
+    
 @dataclass
 class CentrifProfile:
     percent_span:float                      
@@ -129,10 +131,10 @@ class Centrif:
     npts_chord:int              
     npts_span:int               
     
-    ss_pts:npt.NDArray          # shape=(nspan, nchord, 3)
-    ps_pts:npt.NDArray          # shape=(nspan, nchord, 3)
-    ss_profile_pts:npt.NDArray  # shape=(nprofile, nchord, 3)
-    ps_profile_pts:npt.NDArray  # shape=(nprofile, nchord, 3)
+    ss_pts_cart:npt.NDArray         # shape=(nspan, chord, 3) x,y,z
+    ps_pts_cart:npt.NDArray         # shape=(nspan, chord, 3) x,y,z
+    ss_pts_cyl:npt.NDArray          # shape=(nspan, nchord, 3)
+    ps_pts_cyl:npt.NDArray          # shape=(nspan, nchord, 3)
     ss_rx_pts:npt.NDArray       # shape=(nprofile,nchord,6), 6 = rx,theta,r,x,t_camber,t_span
     ps_rx_pts:npt.NDArray
     camb_rx_func:List[PchipInterpolator]
@@ -481,23 +483,34 @@ class Centrif:
             self.ss_rx_pts[i,:,5] = self.t_span[i,:] # tspan 
             self.ps_rx_pts[i,:,5] = self.t_span[i,:] 
             
+    def __build_splitter__(self):
+        """Builds the splitter 
+        """
+        for profile in self.profiles:
+            npoint_ss = len(profile.ss_thickness)+3 # LE Start, Leading Edge Thickness, SS_Thickness, TE_Radius
+            npoint_ps = len(profile.ss_thickness)+3 # LE Start, Leading Edge Thickness, SS_Thickness, TE_Radius
+            SS = np.zeros((npoint_ss,2)); PS = np.zeros((npoint_ps,2))  # rx, theta 
             
             
+
+        cx,cy = self.camber.get_point(self.splitter_camber_start)
+        dx,dy = self.camber.get_point_dt(self.splitter_camber_start)
+
     def __interpolate__(self):    
         """Interpolate the control profiles and get x,r,th
         """
-        self.ss_pts = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
-        self.ps_pts = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
+        self.ss_pts_cyl = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
+        self.ps_pts_cyl = np.zeros(shape=(self.npts_span,self.npts_chord,3)) # 3 = (x,r,theta)
         
         for j in range(self.npts_chord):
             tspan = np.linspace(0,self.t_span[-1,j],self.ss_rx_pts.shape[0])
-            self.ss_pts[:,j,0] = csapi(tspan,self.ss_rx_pts[:,j,3],self.t_span[:,j])   # x
-            self.ss_pts[:,j,1] = csapi(tspan,self.ss_rx_pts[:,j,2],self.t_span[:,j])   # r
-            self.ss_pts[:,j,2] = csapi(tspan,self.ss_rx_pts[:,j,1],self.t_span[:,j])   # th
+            self.ss_pts_cyl[:,j,0] = csapi(tspan,self.ss_rx_pts[:,j,3],self.t_span[:,j])   # x
+            self.ss_pts_cyl[:,j,1] = csapi(tspan,self.ss_rx_pts[:,j,2],self.t_span[:,j])   # r
+            self.ss_pts_cyl[:,j,2] = csapi(tspan,self.ss_rx_pts[:,j,1],self.t_span[:,j])   # th
             
-            self.ps_pts[:,j,0] = csapi(tspan,self.ps_rx_pts[:,j,3],self.t_span[:,j])   # x
-            self.ps_pts[:,j,1] = csapi(tspan,self.ps_rx_pts[:,j,2],self.t_span[:,j])   # r
-            self.ps_pts[:,j,2] = csapi(tspan,self.ps_rx_pts[:,j,1],self.t_span[:,j])   # th
+            self.ps_pts_cyl[:,j,0] = csapi(tspan,self.ps_rx_pts[:,j,3],self.t_span[:,j])   # x
+            self.ps_pts_cyl[:,j,1] = csapi(tspan,self.ps_rx_pts[:,j,2],self.t_span[:,j])   # r
+            self.ps_pts_cyl[:,j,2] = csapi(tspan,self.ps_rx_pts[:,j,1],self.t_span[:,j])   # th
             
             
     
@@ -516,12 +529,15 @@ class Centrif:
             t2 = cut.get_t(cut.length-self.tip_clearance)
             self.t_span[:,j] = exp_ratio(1.2,self.npts_span,maxvalue=t2)
     
-    def build(self,npts_span:int=100, npts_chord:int=100):
+    def build(self,npts_span:int=100, npts_chord:int=100,nblades:int=3,splitters:int=1):
         """Build the centrif blade 
 
         Args:
-            npts_span (int, optional): _description_. Defaults to 100.
-            npts_chord (int, optional): _description_. Defaults to 100.
+            npts_span (int, optional): number of points in spanwise direction. Defaults to 100.
+            npts_chord (int, optional): number of points in chord. Defaults to 100.
+            nblades (int, optional): number of blades. Defaults to 3
+            splitters (int, optional): splitters in between blades. Defaults to 1
+            
         """
         self.npts_chord = npts_chord; self.npts_span = npts_span
         self.t_hub = np.linspace(0,1,npts_chord)
@@ -538,6 +554,8 @@ class Centrif:
         self.__tip_clearance__()
         self.__apply_thickness__()  # Creates the flattened profiles
         self.__interpolate__()
+        
+        self.__add_splitter__()
         
     def plot_camber(self,plot_hub_shroud:bool=True):
         """Plot the camber line
@@ -608,11 +626,23 @@ class Centrif:
             plt.plot(p.ss_rx_pts[i,:,3],p.ss_rx_pts[i,:,1],'r-',label='ss')
             plt.plot(p.ps_rx_pts[i,:,3],p.ps_rx_pts[i,:,1],'b-',label='ps')
             plt.legend()
-            plt.xlabel('Distance along x')
+            plt.xlabel('X')
             plt.ylabel('Theta')
             plt.title(f'X-Theta Profile-{i}')
             plt.axis('equal')
             plt.savefig(f'profile x-theta {i:02d}.png',dpi=150)
+            
+            plt.figure(num=i,clear=True)    # theta-r view
+            xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+            plt.plot(xrth[:,2],xrth[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
+            plt.plot(p.ss_rx_pts[i,:,1],p.ss_rx_pts[i,:,2],'r-',label='ss')
+            plt.plot(p.ps_rx_pts[i,:,1],p.ps_rx_pts[i,:,2],'b-',label='ps')
+            plt.legend()
+            plt.xlabel('Theta')
+            plt.ylabel('R')
+            plt.title(f'Theta-r Profile-{i}')
+            plt.axis('equal')
+            plt.savefig(f'profile theta-r {i:02d}.png',dpi=150)
             
             
     def plot(self):
@@ -622,9 +652,9 @@ class Centrif:
         ax = fig.add_subplot(111, projection='3d')
         # ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
         # ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
-        for i in range(self.ss_pts.shape[0]):
-            ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,2],self.ss_pts[i,:,1],'r') # x,
-            ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,2],self.ps_pts[i,:,1],'b')
+        for i in range(self.ss_pts_cyl.shape[0]):
+            ax.plot3D(self.ss_pts_cyl[i,:,0],self.ss_pts_cyl[i,:,2],self.ss_pts_cyl[i,:,1],'r') # x,
+            ax.plot3D(self.ps_pts_cyl[i,:,0],self.ps_pts_cyl[i,:,2],self.ps_pts_cyl[i,:,1],'b')
         ax.set_xlabel('x-axial')
         ax.set_ylabel('theta')
         ax.set_zlabel('r-radial')
@@ -638,8 +668,8 @@ class Centrif:
     def plot_front_view(self):
         plt.figure(num=1,clear=True) # Front view theta-r
         for i in range(self.npts_span):
-            plt.plot(self.ss_pts[i,:,1],self.ss_pts[i,:,2])         # rx,theta,r,x,t_camber,t_span
-            plt.plot(self.ps_pts[i,:,1],self.ps_pts[i,:,2])
+            plt.plot(self.ss_pts_cyl[i,:,1],self.ss_pts_cyl[i,:,2])         # rx,theta,r,x,t_camber,t_span
+            plt.plot(self.ps_pts_cyl[i,:,1],self.ps_pts_cyl[i,:,2])
         plt.xlabel('theta')
         plt.ylabel('r')
         plt.title(f'Theta-r Profile-{i}')
