@@ -55,7 +55,6 @@ def test_passage():
                                    warp_angle=warp_angle,warp_displacements=warp_displacements,
                                    warp_displacement_locs=warp_displacement_locs))
     cen.build()
-    cen.plot_rx_profile()
     cen.plot()
     # cen.plot_rx_profile()
     # cen.plot_camber()

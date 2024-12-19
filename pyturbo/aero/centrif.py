@@ -239,7 +239,7 @@ class Centrif:
         """
  
         xr = self.__get_camber_xr__(self.profiles[i].percent_span,t_hub)
-        _,th = self.camber_t_th[i].get_point(t_camber)      # using t_blade matches up with t_hub from get_camber_xr
+        _,th = self.camber_t_th[i].get_point(t_camber) # using t_camber matches up with t_hub from get_camber_xr
         xrth = np.hstack([xr,th.reshape(-1,1)])
         return xrth
     
@@ -458,21 +458,25 @@ class Centrif:
                                 ss_rx_pts=self.ss_rx_pts,ps_rx_pts=self.ps_rx_pts,
                                 ss_te=ss_te,ps_te=ps_te,rx_end=rx_end,th_end=th_end,center_rx=center_rx,center_th=center_th))
             
+            m = 1/(self.t_hub.max()-self.t_hub.min())
             # Inversely solve for t_camber for each rx value 
             for j in range(self.npts_chord):
                 rx = self.ss_rx_pts[i,j,0]
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(rx,func_rx))
                 self.ss_rx_pts[i,j,4] = res.x # new t_camber for rx value 
-                xrth = self.get_camber_points(i,[self.t_hub[j]],self.ss_rx_pts[i,j,4])[0]
-                self.ss_rx_pts[i,j,3] = xrth[0]                       # x
-                self.ss_rx_pts[i,j,2] = xrth[1]                       # r
+                thub = 1/m * res.x + self.t_hub.min()
+                xrth = self.get_camber_points(i,[thub],self.ss_rx_pts[i,j,4])[0]
+                self.ss_rx_pts[i,j,2] = xrth[1] # r
+                self.ss_rx_pts[i,j,3] = xrth[0] # x
                 
+
                 rx = self.ps_rx_pts[i,j,0]
                 res = minimize_scalar(solve_t,bounds=[0,1],args=(rx,func_rx))
-                self.ps_rx_pts[i,j,4] = res.x 
-                xrth = self.get_camber_points(i,[self.t_hub[j]],self.ps_rx_pts[i,j,4])[0]
-                self.ps_rx_pts[i,j,3] = xrth[0]
-                self.ps_rx_pts[i,j,2] = xrth[1]
+                self.ps_rx_pts[i,j,4] = res.x
+                thub = 1/m * res.x + self.t_hub.min()   # Converting t-camber to thub
+                xrth = self.get_camber_points(i,[thub],self.ps_rx_pts[i,j,4])[0]
+                self.ps_rx_pts[i,j,2] = xrth[1] # r
+                self.ps_rx_pts[i,j,3] = xrth[0] # x
             
             self.ss_rx_pts[i,:,5] = self.t_span[i,:] # tspan 
             self.ps_rx_pts[i,:,5] = self.t_span[i,:] 
@@ -600,40 +604,31 @@ class Centrif:
             
             plt.figure(num=i,clear=True)    # x-theta view
             xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-            plt.plot(p.camber_rx_th[:,0],p.camber_rx_th[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
-            plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction')
-            plt.plot(p.ss_te[0,0],p.ss_te[0,1],'ro',fillstyle='none', label='suction-te') 
-            plt.plot(p.ss_te[-1,0],p.ss_te[-1,1],'ro',fillstyle='none', label='suction-te') 
-            plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
-            plt.plot(p.ps_te[0,0],p.ps_te[0,1],'bo',fillstyle='none', label='pressure-te') 
-            plt.plot(p.ps_te[-1,0],p.ps_te[-1,1],'bo',fillstyle='none', label='pressure-te') 
-            plt.plot(p.rx_end,p.th_end,'go',fillstyle='none', label='end-pt') 
-            plt.plot(p.center_rx,p.center_th,'ko',fillstyle='none', label='center-pt')
-            plt.plot(p.ss_rx_pts[i,:,0],p.ss_rx_pts[i,:,1],'r-',label='ss')
-            plt.plot(p.ps_rx_pts[i,:,0],p.ps_rx_pts[i,:,1],'b-',label='ps')
+            plt.plot(xrth[:,0],xrth[:,2], color='black', linestyle='dashed',linewidth=2,label='camber')
+            plt.plot(p.ss_rx_pts[i,:,3],p.ss_rx_pts[i,:,1],'r-',label='ss')
+            plt.plot(p.ps_rx_pts[i,:,3],p.ps_rx_pts[i,:,1],'b-',label='ps')
             plt.legend()
-            plt.xlabel('distance along r and x')
-            plt.ylabel('theta')
-            plt.title(f'RX Profile-{i}')
+            plt.xlabel('Distance along x')
+            plt.ylabel('Theta')
+            plt.title(f'X-Theta Profile-{i}')
             plt.axis('equal')
-            plt.savefig(f'profile rx-theta {i:02d}.png',dpi=150)
+            plt.savefig(f'profile x-theta {i:02d}.png',dpi=150)
             
             
     def plot(self):
-        """3D Plot
-        """    
-        
-        fig = plt.figure(num=1,clear=True,dpi=150)
+        """3D Cartesian Plot
+        """
+        fig = plt.figure(num=100,clear=True,dpi=150)
         ax = fig.add_subplot(111, projection='3d')
         # ax.plot3D(self.hub_pts[:,0],self.hub_pts[:,0]*0,self.hub_pts[:,2],'k')
         # ax.plot3D(self.shroud_pts[:,0],self.shroud_pts[:,0]*0,self.shroud_pts[:,2],'k')
         for i in range(self.ss_pts.shape[0]):
-            ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,1],self.ss_pts[i,:,2],'r') # x,
-            ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,1],self.ps_pts[i,:,2],'b')
-        ax.view_init(azim=90, elev=45)
+            ax.plot3D(self.ss_pts[i,:,0],self.ss_pts[i,:,2],self.ss_pts[i,:,1],'r') # x,
+            ax.plot3D(self.ps_pts[i,:,0],self.ps_pts[i,:,2],self.ps_pts[i,:,1],'b')
         ax.set_xlabel('x-axial')
-        ax.set_ylabel('rth')
+        ax.set_ylabel('theta')
         ax.set_zlabel('r-radial')
+        ax.view_init(azim=90, elev=45)
         plt.axis('equal')
         plt.show()
         
