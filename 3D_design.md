@@ -15,7 +15,7 @@ The code below shows an example of how to build a 3D Blade from 2D designs locat
 
 ```
 # Hub Geometry
-stator_hub = airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58)
+stator_hub = Airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58)
 stator_hub.le_thickness_add(0.04)
 ps_height = [0.0500,0.0200,-0.0100]
 ps_height = [0.0500,0.0200,-0.0100]
@@ -29,7 +29,7 @@ stator_hub.le_thickness_match()
 stator_hub.flow_guidance2(10)
 
 # Tip Geometry
-stator_tip = airfoil2D(alpha1=5,alpha2=72,axial_chord=0.036,stagger=56)
+stator_tip = Airfoil2D(alpha1=5,alpha2=72,axial_chord=0.036,stagger=56)
 stator_tip.le_thickness_add(0.04)
 ps_height = [0.0500,0.0200,-0.0100]
 ps_height_loc = exp_ratio(1.2,len(ps_height)+2,0.95)

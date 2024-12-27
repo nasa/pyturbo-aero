@@ -15,7 +15,7 @@ class AirfoilWavy(Airfoil3D):
         """Initializes a wavy airfoil from an array of profiles, location and height, same as airfoil3D
 
         Args:
-            profileArray ([airfoil2D]): Array of 2D airfoil profiles 
+            profileArray ([Airfoil2D]): Array of 2D airfoil profiles 
             profile_loc ([List[float]]): Locations in terms of percent span where these 2D airfoils are located 
             height (float): height of the airfoil
         """

@@ -10,7 +10,7 @@ import numpy as np
 from pyturbo.aero import *
 from pyturbo.helper import *
 
-stator_hub = airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58) # This creates the camberline
+stator_hub = Airfoil2D(alpha1=0,alpha2=72,axial_chord=0.038,stagger=58) # This creates the camberline
 stator_hub.le_thickness_add(0.04)
 ps_height = [0.0500,0.0200,-0.0100]
 ps_height_loc = exp_ratio(1.2,len(ps_height)+2,0.95)
