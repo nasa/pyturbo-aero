@@ -1,0 +1,12 @@
+No of blades : 36
+Axis of rotation : X
+Coordinates unit : cm
+Machine type : Axial compressor
+Tip clearance : 0.2% of span (~0.1316mm)
+
+Optional parameters:
+RPM : 17189
+
+Inlet trim: -30mm Axial
+Outlet trim: 90mm Axial
+
