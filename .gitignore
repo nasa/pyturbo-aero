@@ -168,7 +168,6 @@ WAND.PLOT
 errors.txt
 *.bak
 *.inp
-*.dat
 *.tgs
 *.x
 *.bin
