@@ -688,7 +688,7 @@ class Airfoil3D():
         Returns:
             (airfoil3D): airfoil3D object
         """
-        a3D = airfoil3D([],[],0)
+        a3D = Airfoil3D([],[],0)
         def readFile(filename):
             with open(filename,'r') as fp:
                 x = np.zeros(10000); y = np.zeros(10000); z = np.zeros(10000)
