@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from .convert_to_ndarray import convert_to_ndarray
+import numpy.typing as npt 
 
 class arc():
     def __init__(self,xc:float,yc:float,radius:float,alpha_start:float,alpha_stop:float):
@@ -52,7 +53,7 @@ class arc():
         dy = x-self.x    
     
     
-    def plot(self,color='b'):
+    def plot(self,color:str='b'):
         t = np.linspace(0,1,20)
         [x, y] = self.get_point(t)
         fig1, ax1 = plt.subplots()
@@ -61,11 +62,15 @@ class arc():
         ax1.plot(self.x, self.y, color='k', marker='o')
         plt.show()
 
-def arclen(x,y):
-    """
-        Computes the length between points 
-        Inputs
-            x,y - this can be a list or a numpy array but not a scalar
+def arclen(x:npt.NDArray,y:npt.NDArray) -> float:
+    """Calculates the arc length
+
+    Args:
+        x (npt.NDArray): array of x values
+        y (npt.NDArray): array of y values 
+
+    Returns:
+        float: arc length
     """
     x = convert_to_ndarray(x)
     y = convert_to_ndarray(y)
@@ -78,9 +83,16 @@ def arclen(x,y):
     L = np.insert(L,0,0)
     return L
 
-def arclen3(x,y,z):
-    """
-        Equally space points along a bezier curve using arc length
+def arclen3(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray) -> float:
+    """Computes the arc length in 3D
+
+    Args:
+        x (npt.NDArray): array of x values
+        y (npt.NDArray): array of y values
+        z (npt.NDArray): array of z values
+
+    Returns:
+        float: arc length
     """
     x = convert_to_ndarray(x)
     y = convert_to_ndarray(y)

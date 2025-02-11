@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Tuple, Union
 from .ray import *
 import math
 import numpy as np
@@ -7,7 +7,14 @@ from .bezier import bezier
 
 class line2D():
     
-    def __init__(self,pt1,pt2):
+    def __init__(self,pt1:Tuple[float,float],pt2:Tuple[float,float]):
+        """Intializes a line
+
+        Args:
+            pt1 (Tuple[float,float]): start point in x,y
+            pt2 (Tuple[float,float]): end point in x,y
+
+        """
         x = np.array([pt1[0], pt2[0]])
         y = np.array([pt1[1], pt2[1]])
         self.x = x
@@ -19,19 +26,34 @@ class line2D():
         self.angle = np.arctan2(self.dy,self.dx)
 
 
-    def to_bezier(self):
-        '''
-            returns a bezier version of a line
-        '''
+    def to_bezier(self) -> bezier:
+        """returns bezier curve
+
+        Returns:
+            bezier: returns a bezier curve
+        """
         b = bezier(self.x,self.y)
         return b
 
-    def ray(self):
+    def ray(self) -> ray2D:
+        """returns a ray 
+
+        Returns:
+            ray2D: ray
+        """
         return ray2D(self.x[0],self.y[0],self.x[1]-self.x[0],self.y[1]-self.y[0])
         
     def intersect_ray(self,r2:ray2D):
-        """
-            INTERSECTRAY - CHECK IF A RAY WILL INTERSECT THE LINE
+        """Check if ray will intersect 
+
+        Args:
+            r2 (ray2D): ray
+
+        Returns:
+            Tuple containing: 
+            
+                **t** (float): t value of ray
+                **bIntersect** (bool): True = intersect, False, no intersection
         """
         r1 = self.ray()
         A = np.array([ [r1.dx, -r2.dx],[r1.dy, -r2.dy] ])
@@ -56,9 +78,11 @@ class line2D():
 
         return t,True
     
-    def add_length(self,len):
-        """
-            Increase the length of the line by a percent
+    def add_length(self,len:float):
+        """_Increase the length of the line
+
+        Args:
+            len (float): new length
         """
         self.x[1]=self.x[0]+len*self.dx
         self.y[1]=self.y[0]+len*self.dy
@@ -78,7 +102,12 @@ class line2D():
         else:
             return False
     
-    def set_length(self,len):
+    def set_length(self,len:float):
+        """Sets the length of a line
+
+        Args:
+            len (float): new length
+        """
         self.x[1]=self.x[0]+len*self.dx/math.sqrt(self.dx**2+self.dy**2)
         self.y[1]=self.y[0]+len*self.dy/math.sqrt(self.dx**2+self.dy**2)
         self = line2D(self.x,self.y)
@@ -121,15 +150,12 @@ class line2D():
             Union[np.ndarray,float]: either a single value or an array of values
         """
         return self.dy/self.dx * (x-self.x[0]) + self.y[0]
-
-    def bezier(self,npoints):
-        t = np.linspace(0,1,npoints)
-        [xx,yy] = self.get_point(t)
-        b = bezier(xx,yy)
     
     def average(self,new_line):
-        """
-            averages the line with another line
+        """Averages the line with another line 
+
+        Args:
+            new_line (line2D): new line 
         """
         self.x = (new_line.x+self.x)/2
         self.y = (new_line.y+self.y)/2
@@ -151,6 +177,8 @@ class line2D():
         return np.sqrt(length**2/(self.dx**2 + self.dy**2))
                     
     def plot2D(self):
+        """Plot the line
+        """
         _, ax1 = plt.subplots()
         ax1.plot(self.x, self.y,'or')
         ax1.plot(self.x, self.y,'-b')
@@ -160,8 +188,13 @@ class line2D():
 
 
     def intersect_check(self,line2):
-        """
-            Intersect check returns true if line segment 'p1q1' and 'p2q2' intersect.
+        """Checks for intersection with another line
+
+        Args:
+            line2 (line2D): another line
+
+        Returns:
+            bool: True - intersects, False - no intersection
         """
         bIntersect = False
         p1 = self.p; q1 = self.q
@@ -199,36 +232,35 @@ class line2D():
         """
         return line2D(self.q,self.p)
 
-    def  line_intersect(self,line2):
+    def line_intersect(self,line2) -> bool:
+        """Checks if two lines intersect
+
+        Args:
+            line2 (line2D): another line
+
+        Returns:
+            (bool): True if intersect
         """
-            line_intersect - used to be called rayintersect but that's kind of misleading. Output changed to return the point of intersection and t1, t2
+        return self.intersect_check(line2)
+    
+    def mag(self) -> float:
+        """returns the magnitude
 
-            Returns [x,y,t1,t2,bIntersect] 
+        Returns:
+            float: magnitude
         """
-        
-        r1 = self.ray()
-        r2 = line2.ray()
-        A = [[r1.dx, -r2.dx], [r1.dy, -r2.dy]]
-        b = [[r2.x-r1.x], [r2.y-r1.y]]
-        T = np.linalg.solve(A,b) 
+        return math.sqrt(self.dx**2+self.dy**2)
+    
+    
+    def angle_between(self,line2)-> float:
+        """Returns the angle between two lines 
 
-        t1 = T[0]; t2 = T[1]
+        Args:
+            line2 (line2D): another line
 
-        [x, y] = r1.get_point(t1)
-        [x2, y2] = r2.get_point(t2)
-        if (math.sqrt((x-x2)**2 + (y-y2)**2) > 0.001):
-            return False
-        
-        if (t1>1 or t1<0 or t2>1 or t2<0): # if time is more than 1, the lines wont intersect 
-            return False
-        
-        return True
-    
-    def mag(self):
-        return math.sqrt(self.dx^2+self.dy^2)
-    
-    
-    def angle_between(self,line2):
+        Returns:
+            float: angle between two lines in degrees
+        """
         return math.degrees(math.acos((self.dx*line2.dx + self.dy*line2.dy)/(self.mag()*line2.mag())))
 
     def __onSegment(self,p,q,r):
@@ -261,10 +293,12 @@ class line2D():
         # orientation = (val > 0)? 1: 2; % clock or counterclock wise
         return orientation
     
-    def shrink_start(self,shrink_len):
-        '''
-            Calculates the new starting point
-        '''
+    def shrink_start(self,shrink_len:float):
+        """calculates new starting point by shrinking the line
+
+        Args:
+            shrink_len (float): amount to shrink the line by
+        """
         self.x[0] = self.x[1]-self.dx*(self.length-shrink_len)/self.length
         self.y[0] = self.y[1]-self.dy*(self.length-shrink_len)/self.length
         self.dx = self.x[1]-self.x[0]
@@ -273,10 +307,12 @@ class line2D():
         self.p = [self.x[0],self.y[0]]
         self.q = [self.x[1],self.y[1]]
 
-    def shrink_end(self,shrink_len):        
-        '''
-            Calculates the new end point
-        '''
+    def shrink_end(self,shrink_len:float):        
+        """Calculates new end point by shrinking hte line 
+
+        Args:
+            shrink_len (float): amount to shrink the line by
+        """
         self.x[1] = self.x[0]+self.dx*(self.length-shrink_len)/self.length
         self.y[1] = self.y[0]+self.dy*(self.length-shrink_len)/self.length
         self.dx = self.x[1]-self.x[0]
@@ -285,16 +321,16 @@ class line2D():
         self.p = [self.x[0],self.y[0]]
         self.q = [self.x[1],self.y[1]]
     
-    def fillet(self,prev_line,filletR:float):
-        '''
-            Creates a fillet with the previous line, how the line terminates doesn't matter
-            inputs:
-                prev_line - Line2D class
-                filletR - fillet radius
-            returns:
-                prev_line - previous line
-                fillet
-        '''
+    def fillet(self,prev_line,filletR:float) -> bezier:
+        """Creates a fillet with the previous line, how the line terminates doesn't matter
+
+        Args:
+            prev_line (line2D): previous line
+            filletR (float): fillet radius
+
+        Returns:
+            bezier: bezier curve describing the fillet
+        """
         # Check the start and end points see where it intersects
         if (self.p == prev_line.p): 
             # Beginning of first line and beginning of 2nd line, intersections happen at start

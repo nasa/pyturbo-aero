@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from scipy.special import comb
@@ -9,33 +9,40 @@ import math
 from scipy.special import comb
 from .arc import arclen3, arclen
 from .convert_to_ndarray import convert_to_ndarray
+import numpy.typing as npt 
 
 # https://www.journaldev.com/14893/python-property-decorator
 # https://www.codementor.io/sheena/advanced-use-python-decorators-class-function-du107nxsv
 # https://stackabuse.com/pythons-classmethod-and-staticmethod-explained/
 
-class bezier():
+class bezier:
     n:int           # Number of control points
     c:np.ndarray    # bezier coefficients
     x:np.ndarray    # x-control points
     y:np.ndarray    # y-control points
 
 
-    def __init__(self, x,y):
+    def __init__(self, x:List[float],y:List[float]):
+        """Initializes a 2D bezier curve
+
+        Args:
+            x (List[float]): x coordinates
+            y (List[float]): y coordinates
+        """
         self.n = len(x)
         self.x = convert_to_ndarray(x)
         self.y = convert_to_ndarray(y)
 
     def flip(self):
-        '''
-            Reverses the direction of the bezier curve
-            returns:
-                flipped bezier curve
-        '''
+        """Reverses the direction of the bezier curve
+
+        Returns:
+            bezier: flipped bezier curve
+        """
         return bezier(np.flip(self.x),np.flip(self.y))
 
     @property
-    def get_x_y(self):
+    def get_x_y(self) -> Tuple[List[float],List[float]]:
         return self.x,self.y
     
     def get_curve_length(self) -> float:
@@ -86,13 +93,14 @@ class bezier():
         return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
     
     def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
-        """
-            Get a point or points along a bezier curve
-            Inputs:
-                t - scalar, list, or numpy array
-                equal_space - try to space points equally 
-            Outputs: 
-                Bx, By - scalar or numpy array
+        """Get a point or points along a bezier curve
+
+        Args:
+            t (Union[float,npt.NDArray]): scalar, list, or numpy array 
+            equal_space (bool, optional): True = space points equally. Defaults to False.
+
+        Returns:
+            Tuple: containing x and y points
         """
         t = convert_to_ndarray(t)
         x = 0; y = 0  

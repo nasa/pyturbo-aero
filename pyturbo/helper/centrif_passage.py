@@ -7,6 +7,8 @@ from typing import Dict, Tuple
 import numpy as np 
 from pyturbo.helper import arc
 import matplotlib.pyplot as plt 
+import os, pathlib
+import requests
 
 def import_json():
     """Import Whittle Lab Data
@@ -19,46 +21,68 @@ def import_json():
             *dx_dict* (Dict[str,int]): Dictionary containing dx values of the data that match variable names
             *fit_data* (Dict[str,Any]): all the data
     """
-    with open('./pyturbo/helper/fit_eta_tt.json','r') as fp:            
-        fit_data = json.load(fp)
-        
-        xl = np.array(fit_data['xl'][0])
-        xu = np.array(fit_data['xu'][0])
-        dx = xu-xl
-        dx[fit_data['vars'].index('PR_tt')]
-        indices = dict() 
-        indices['PRtt'] = fit_data['vars'].index('PR_tt')
-        indices['HTR1'] = fit_data['vars'].index('htr1')
-        indices['Marel1'] = fit_data['vars'].index('Marel1')
-        indices['tau'] = fit_data['vars'].index('tip')
-        indices['DH'] = fit_data['vars'].index('DHimp')
-        indices['phi'] = fit_data['vars'].index('phi1')
-        indices['Alrel2'] = fit_data['vars'].index('Alpharel2')
-        indices['Cgamma'] = fit_data['vars'].index('Co1')
-        
-        xl_dict = dict()
-        xl_dict['PRtt'] = xl[indices['PRtt']]
-        xl_dict['HTR1'] = xl[indices['HTR1']] 
-        xl_dict['Marel1'] = xl[indices['Marel1']]
-        xl_dict['tau'] = xl[indices['tau']]
-        xl_dict['DH'] = xl[indices['DH']]
-        xl_dict['phi'] = xl[indices['phi']]
-        xl_dict['Alrel2'] = xl[indices['Alrel2']]
-        xl_dict['Cgamma'] = xl[indices['Cgamma']]
 
-        dx_dict = dict()
-        dx_dict['PRtt'] = dx[indices['PRtt']]
-        dx_dict['HTR1'] = dx[indices['HTR1']]
-        dx_dict['Marel1'] = dx[indices['Marel1']]
-        dx_dict['tau'] = dx[indices['tau']]
-        dx_dict['DH'] = dx[indices['DH']]
-        dx_dict['phi'] = dx[indices['phi']]
-        dx_dict['Alrel2'] = dx[indices['Alrel2']]
-        dx_dict['Cgamma'] = dx[indices['Cgamma']]
-        
-        return indices,xl_dict,dx_dict,fit_data
+    default_home = os.path.join(os.path.expanduser("~"), ".cache")
+    os.environ['pyturbo-aero'] = os.path.join(default_home,'whittle_labs_radial_compressor')
+    path = pathlib.Path(os.path.join(os.environ['pyturbo-aero'],"fit_eta_tt"+".json"))
+
+    try:
+        if not path.exists():
+            os.makedirs(os.environ['pyturbo-aero'],exist_ok=True)
+            url = "https://whittle.digital/2024/Radial_Compressor_Designer/fit_eta_tt.json"
+            response = requests.get(url, stream=True)
+            with open(path.absolute(), mode="wb") as file:
+                for chunk in response.iter_content(chunk_size=10 * 1024):
+                    file.write(chunk)
+    except Exception as ex:  
+        pass
+    try:
+        with open(path.absolute(),'r') as fp:            
+            fit_data = json.load(fp)
+            indices = dict() 
+
+            xl = np.array(fit_data['xl'][0])
+            xu = np.array(fit_data['xu'][0])
+            dx = xu-xl
+            dx[fit_data['vars'].index('PR_tt')]
+            indices['PRtt'] = fit_data['vars'].index('PR_tt')
+            indices['HTR1'] = fit_data['vars'].index('htr1')
+            indices['Marel1'] = fit_data['vars'].index('Marel1')
+            indices['tau'] = fit_data['vars'].index('tip')
+            indices['DH'] = fit_data['vars'].index('DHimp')
+            indices['phi'] = fit_data['vars'].index('phi1')
+            indices['Alrel2'] = fit_data['vars'].index('Alpharel2')
+            indices['Cgamma'] = fit_data['vars'].index('Co1')
+            
+            xl_dict = dict()
+            xl_dict['PRtt'] = xl[indices['PRtt']]
+            xl_dict['HTR1'] = xl[indices['HTR1']] 
+            xl_dict['Marel1'] = xl[indices['Marel1']]
+            xl_dict['tau'] = xl[indices['tau']]
+            xl_dict['DH'] = xl[indices['DH']]
+            xl_dict['phi'] = xl[indices['phi']]
+            xl_dict['Alrel2'] = xl[indices['Alrel2']]
+            xl_dict['Cgamma'] = xl[indices['Cgamma']]
+
+            dx_dict = dict()
+            dx_dict['PRtt'] = dx[indices['PRtt']]
+            dx_dict['HTR1'] = dx[indices['HTR1']]
+            dx_dict['Marel1'] = dx[indices['Marel1']]
+            dx_dict['tau'] = dx[indices['tau']]
+            dx_dict['DH'] = dx[indices['DH']]
+            dx_dict['phi'] = dx[indices['phi']]
+            dx_dict['Alrel2'] = dx[indices['Alrel2']]
+            dx_dict['Cgamma'] = dx[indices['Cgamma']]
+            
+            return indices,xl_dict,dx_dict,fit_data
+    except Exception as ex:  
+        pass
+    indices = dict() 
+    xl_dict = dict()
+    dx_dict = dict()
+    fit_data = None
+    return indices,xl_dict,dx_dict,fit_data
     
-    return None
 
 def entropy(P:float,T:float,cp:float,Tref:float=300,Pref:float=1E5,Rgas:float=287.15) -> float:
     """Computes the entropy rise from Temperature and Pressure 
@@ -105,7 +129,7 @@ def calculate_efficiency(PRtt:float,HTR1:float,Marel1:float,tau:float,Alrel2:flo
     Args:
         PRtt (float): Total Pressure Ratio 
         HTR1 (float): _description_
-        Marel1 (float): _description_
+        Marel1 (float): Relative inlet mach number
         tau (float): _description_
         Alrel2 (float): _description_
         DH (float): deHaller number
@@ -187,7 +211,7 @@ def create_passage(PR:float=2.4, phi1:float=0.7,
                        deHaller:float=1, outlet_yaw:float=-64, 
                        blade_circulation:float=0.6, tip_clearance:float=0.01,
                        P01:float=1, T01:float=300, mdot:float=5,gam:float=1.4,Rgas:float=287.15):
-    """_summary_
+    """Create a passage for the centrif using whittle labs code 
 
     Args:
         PR (float, optional): Total Pressure Ratio. Defaults to 2.4.

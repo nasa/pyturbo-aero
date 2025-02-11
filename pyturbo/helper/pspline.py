@@ -1,3 +1,4 @@
+from typing import List, Union
 import numpy as np
 from scipy.interpolate import PchipInterpolator
 from scipy.interpolate import CubicSpline
@@ -9,7 +10,7 @@ import copy
 from scipy.interpolate import CubicSpline
 from scipy.interpolate import PchipInterpolator
 from scipy.optimize import minimize
-
+import numpy.typing as npt 
 
 def convert_to_ndarray(t):
     """
@@ -58,9 +59,12 @@ def pspline_intersect(pspline1,pspline2,tmin,tmax):
         return res.x*0-1 # return -1 for no intersect
         
 class pspline:
-    '''
-        Percentage Spline - fits a spline on a curve and allows you to extract points with a percentage as input
-    '''
+    """fits a spline on a curve and allows you to extract points with a percentage as input
+
+    Returns:
+        _type_: _description_
+    """
+   
     def __segkernel__(self,y,t):
         t = convert_to_ndarray(t)
         val = np.zeros(len(t))
@@ -69,7 +73,15 @@ class pspline:
         val = np.sqrt(val)
         return val
     
-    def __init__(self,px,py,pz=[],method=spline_type.pchip):
+    def __init__(self,px:List[float],py:List[float],pz:List[float]=[],method=spline_type.pchip):
+        """Creates a percentage spline
+
+        Args:
+            px (List[float]): list of x values
+            py (List[float]): list of y values 
+            pz (List[float], optional): Optional, list of z vlaues. Defaults to [].
+            method (spline_type, optional): Type of spline to define. Defaults to spline_type.pchip.
+        """
         self.px = convert_to_ndarray(px)
         self.py = convert_to_ndarray(py)
         
@@ -163,13 +175,19 @@ class pspline:
     def get_curve_len(self,t):
         return self.totalsplinelength*t
     
-    def get_point(self,t):
-        '''
-            Inputs:
-                t is from 0 to 1
-            Returns:
-                x,y,(z) of the spline curve
-        '''
+    def get_point(self,t:Union[float,List[float]]) -> npt.NDArray:
+        """Gets the points anywhere along the spline 
+
+        Args:
+            t (Union[float,List[float]]): array or float from 0 to 1
+
+        Returns:
+            Tuple containing:
+                
+                (npt.NDArray): x,y,z value of the spline 
+                (npt.NDArray): dudt - derivative with time
+        """
+    
         t = convert_to_ndarray(t)      
         nt = len(t)  
         
