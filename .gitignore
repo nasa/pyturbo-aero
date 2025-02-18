@@ -196,3 +196,4 @@ blade_section*.txt
 solidwork_curves.txt/
 profile*.png
 splitter*.png
+*.lock
