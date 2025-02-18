@@ -108,7 +108,7 @@ class Centrif:
     
     __tip_clearance_percent:float = 0
     design_from_mid:bool = True
-
+    n_profiles:int = 3
     
     t_hub:npt.NDArray                   # This is the t from hub to shroud 
     t_span:npt.NDArray
@@ -119,18 +119,20 @@ class Centrif:
     hub_pts_cyl:npt.NDArray
     shroud_pts_cyl:npt.NDArray
     
-    def __init__(self,blade_position:Tuple[float,float]=(0.1,0.9),design_from_mid:bool=True):
+    def __init__(self,blade_position:Tuple[float,float]=(0.1,0.9),design_from_mid:bool=True,n_profiles:int=3):
         """Initializes a centrif
 
         Args:
             blade_position (Tuple[float,float]): start and end position of the centrif blade 
             design_from_mid (bool): If true, hub and tip are copied from mid profile. Defaults to True
+            n_profiles (int): Number of profiles to design if using design_from_mid. Defaults to 3
         """
         self.profiles = list()
         self.blade_position = blade_position
         self.splitter_profiles = list()
         self.splitter_start = list()
         self.design_from_mid = design_from_mid
+        self.n_profiles = n_profiles
 
     def set_blade_position(self,t_start:float,t_end:float):
         """Sets the starting location of blade along the hub. 
@@ -264,11 +266,12 @@ class Centrif:
         dth = np.diff(xrth[:,2])
         return np.sum(np.sqrt(dr**2+xrth[:,1]**2 * dth**2 + dx**2))
         
-    def __build_camber__(self,profile:CentrifProfile,profile_loc:float=0.5,le_theta_shifts:List[float]=[],te_theta_shifts:List[float]=[]):
+    def __build_camber__(self,profile:CentrifProfile,n_profiles:int,profile_loc:float=0.5,le_theta_shifts:List[float]=[],te_theta_shifts:List[float]=[]):
         """Builds the camber for a profile
 
         Args:
             profile (CentrifProfile): Profile definition
+            n_profiles (int): Number of profiles to build
             profile_loc (float, optional): _description_. Defaults to 0.5.
             le_theta_shifts (List[float], optional): _description_. Defaults to [].
             te_theta_shifts (List[float], optional): _description_. Defaults to [].
@@ -281,7 +284,7 @@ class Centrif:
         self.func_xshroud = PchipInterpolator(t,self.shroud[:,0])
         self.func_rshroud = PchipInterpolator(t,self.shroud[:,1])
     
-        xr = self.__get_rx_slice__(0.5,np.linspace(self.blade_position[0],self.blade_position[1],self.npts_chord))
+        xr = self.__get_rx_slice__(profile_loc,np.linspace(self.blade_position[0],self.blade_position[1],self.npts_chord))
         dx = np.diff(xr[:,0])
         dr = np.diff(xr[:,1])
         # mprime
@@ -289,32 +292,32 @@ class Centrif:
         mp = np.hstack([[0],np.cumsum(mp)])        
         camb_len = mp[-1]
 
-        camber_bezier_mp_th = np.zeros(shape=(4+len(mid_profile.wrap_displacements),2)) # Bezier Control points in the mp,theta plane
+        camber_bezier_mp_th = np.zeros(shape=(4+len(profile.wrap_displacements),2)) # Bezier Control points in the mp,theta plane
 
         # LE Metal Angle dth
-        dth_LE = mp[-1]*mid_profile.LE_Metal_Angle_Loc * np.tan(np.radians(mid_profile.LE_Metal_Angle))
-        dth_wrap = mp[-1] * np.tan(np.radians(mid_profile.wrap_angle))
-        dth_TE = dth_wrap - mp[-1]*(1-mid_profile.TE_Metal_Angle_Loc)*np.tan(np.radians(mid_profile.TE_Metal_Angle))
+        dth_LE = mp[-1]*profile.LE_Metal_Angle_Loc * np.tan(np.radians(profile.LE_Metal_Angle))
+        dth_wrap = mp[-1] * np.tan(np.radians(profile.wrap_angle))
+        dth_TE = dth_wrap - mp[-1]*(1-profile.TE_Metal_Angle_Loc)*np.tan(np.radians(profile.TE_Metal_Angle))
 
         # r1 = starting radius, r2 = ending radius             
         # wrap_displacement_locs: percent chord
         # wrap displacement: percent of wrap_angle
-        camber_bezier_mp_th = np.zeros(shape=(4+len(mid_profile.wrap_displacements),2)) # Bezier Control points in the t,theta plane
+        camber_bezier_mp_th = np.zeros(shape=(4+len(profile.wrap_displacements),2)) # Bezier Control points in the t,theta plane
         camber_bezier_mp_th[0,:] = [0, 0]
-        camber_bezier_mp_th[1,:] = [mid_profile.LE_Metal_Angle_Loc, dth_LE]
-        camber_bezier_mp_th[-2,:] = [mid_profile.TE_Metal_Angle_Loc, dth_TE]
+        camber_bezier_mp_th[1,:] = [profile.LE_Metal_Angle_Loc, dth_LE]
+        camber_bezier_mp_th[-2,:] = [profile.TE_Metal_Angle_Loc, dth_TE]
         camber_bezier_mp_th[-1,:] = [1, dth_wrap]
         x = np.hstack([camber_bezier_mp_th[0:2,0], camber_bezier_mp_th[-2:,0]])
         y = np.hstack([camber_bezier_mp_th[0:2,1], camber_bezier_mp_th[-2:,1]])
         camber_bezier = bezier(x, y)
 
-        if np.any(np.abs(mid_profile.wrap_displacements)>0): # If there are displacements factor it in
+        if np.any(np.abs(profile.wrap_displacements)>0): # If there are displacements factor it in
             # # Distance formula in cylindrical coordinates https://math.stackexchange.com/questions/3612484/how-do-you-calculate-distance-between-two-cylindrical-coordinates
             # camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.wrap_angle)) + (xr1[0]-xr0[0])**2)
             j = 2
-            dl = mid_profile.TE_Metal_Angle_Loc - mid_profile.LE_Metal_Angle_Loc
-            for loc,displacement in zip(mid_profile.wrap_displacement_locs, mid_profile.wrap_displacements):
-                l = mid_profile.LE_Metal_Angle_Loc + loc*dl
+            dl = profile.TE_Metal_Angle_Loc - profile.LE_Metal_Angle_Loc
+            for loc,displacement in zip(profile.wrap_displacement_locs, profile.wrap_displacements):
+                l = profile.LE_Metal_Angle_Loc + loc*dl
                 nx,ny = camber_bezier.get_point_dt(l)
                 x1,y1 = camber_bezier.get_point(l)
                 x2 = -ny*displacement*camb_len + x1
@@ -698,14 +701,15 @@ class Centrif:
         self.__build_hub_shroud__()
         self.__tip_clearance__()
         if self.design_from_mid:
-            self.__build_camber_from_mid__(self.profiles[0],n_profiles=nblades,le_theta_shifts=self.le_theta_shifts,te_theta_shifts=self.te_theta_shifts)            self.profiles_debug = self.__apply_thickness__(self.profiles,camber_starts=[],npts_chord=npts_chord)  # Creates the flattened profiles
-        else:
-            self.__build_camber_from_mid__(self.profiles)
-            self.profiles_debug = self.__apply_thickness__(self.profiles,camber_starts=[],npts_chord=npts_chord)  # Creates the flattened profiles
-            self.mainblade = self.__interpolate__(self.profiles_debug)
-            if self.splitter_start != 0 and len(self.splitter_profiles)>0:
-                self.splitter_debug = self.__apply_thickness__(self.splitter_profiles,camber_starts=self.splitter_start,npts_chord=npts_chord)  # Creates the flattened profiles
-                self.splitterblade = self.__interpolate__(self.splitter_debug)
+            self.__build_camber__(self.profiles[0],n_profiles=3,n_profiles=0.5,le_theta_shifts=self.le_theta_shifts,te_theta_shifts=self.te_theta_shifts)            self.profiles_debug = self.__apply_thickness__(self.profiles,camber_starts=[],npts_chord=npts_chord)  # Creates the flattened profiles
+        else:            
+            for i,profile in enumerate(self.profiles):
+                self.__build_camber__(profile,len(self.profiles),profile.percent_span,le_theta_shifts=self.le_theta_shifts,te_theta_shifts=self.te_theta_shifts)
+                self.profiles_debug = self.__apply_thickness__(profile,i,camber_starts=0,npts_chord=npts_chord)  # Creates the flattened profiles
+                self.mainblade = self.__interpolate__(self.profiles_debug)
+                if self.splitter_start != 0 and len(self.splitter_profiles)>0:
+                    self.splitter_debug = self.__apply_thickness__(self.splitter_profiles,camber_starts=self.splitter_start,npts_chord=npts_chord)  # Creates the flattened profiles
+                    self.splitterblade = self.__interpolate__(self.splitter_debug)
         
         self.__create_fullwheel__(nblades,nsplitters)
         
