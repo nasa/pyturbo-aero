@@ -1,4 +1,4 @@
-from pyturbo.aero.centrif import Centrif
+from pyturbo.aero.airfoil_mp import Centrif
 from pyturbo.helper import line2D
 import numpy as np 
 
