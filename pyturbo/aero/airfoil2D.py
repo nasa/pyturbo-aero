@@ -11,8 +11,8 @@ class Airfoil2D():
     """Design a 2D Airfoil using bezier curves 
     """
     '''Initial values'''
-    alpha1:float                # Leading edge flow angle
-    alpha2:float                # Trailing edge flow angle
+    alpha1:float                # Leading edge metal angle
+    alpha2:float                # Trailing edge metal angle
     stagger:float               # Angle from Leading Edge to Trailing edge 
     chord:float                 # Length from leading edge to trailing edge
 
@@ -991,116 +991,3 @@ class Airfoil2D():
         t_ss = t_ss_min[-1] # TODO Need to check if this is the most efficient way of doing it
         
         return s,x_ss,x_ps,y_ss,y_ps,turb2
-
-    def le_radius_estimate(self):
-        '''
-            Assumes the blade's leading edge thickness, suction side, pressure side are already defined. 
-        '''
-        pass
-        # t = np.linspace(0,1,100)
-        # [xps,yps] = self.psBezier.get_point(t)
-        # [xss,yss] = self.ssBezier.get_point(t)
-        # xcam = (xss+xps)/2.0
-        # ycam = (yss+yps)/2.0
-        
-        # ps_spline = CubicSpline(np.flip(yps),np.flip(xps))
-        # ss_spline = CubicSpline(np.flip(yss),np.flip(xss))
-        # cam_spline = CubicSpline(np.flip(ycam),np.flip(xcam))
-        # y = np.linspace(ycam[0],ycam[-1],100)
-        # xps_interp = ps_spline(y)
-        # xss_interp = ss_spline(y)
-        # x_cam = cam_spline(y)
-       
-        # temp_ps = np.abs(np.diff(xps_interp)*np.diff(x_cam))
-        # temp_ss = np.abs(np.diff(xss_interp)*np.diff(x_cam))
-        # blade_area = np.cumsum(temp_ps+temp_ss)
-        
-        # # Positioning the Leading Edge Circle
-        # dx_LE = self.cambBezierX[1] - self.cambBezierX[0]
-        # dy_LE = self.cambBezierY[1] - self.cambBezierY[0]
-        # m = sqrt(dx_LE*dx_LE+dy_LE*dy_LE)
-        # dx_LE = dx_LE/m # Normalize the vector at the leading edge
-        # dy_LE = dy_LE/m
-
-        # # pspline_ss = pspline(xss,yss)
-        # # pspline_ps = pspline(xps,yps)
-        # def find_blade_area(r):
-        #     y_temp = dy_LE * r 
-        #     y = np.linspace(ycam[0],ycam[0] + y_temp,50)
-        #     # temp_ps = np.abs(np.diff(ps_spline(y)-cam_spline(y))*np.diff(y))
-        #     # temp_ss = np.abs(np.diff(ss_spline(y)-cam_spline(y))*np.diff(y))
-        #     x_ps = ps_spline(y)
-        #     ps_area_trapz = np.abs(np.trapz(y,x_ps))
-
-        #     x_ss = ss_spline(y)
-        #     ss_area_trapz = np.abs(np.trapz(y,x_ss))
-        #     blade_area = np.abs(ps_area_trapz-ss_area_trapz) # rectangle integration method
-        #     return blade_area
-        
-
-        # def find_radius(r):
-        #     # Step 1: Pick a radius, get the circle area
-        #     circle_area = pi*r*r
-        #     # Check for circle intersection with pressure side
-        #     blade_area = find_blade_area(r)
-         
-        #     return find_blade_area(r)-circle_area
-        
-        # res = minimize_scalar(find_radius,bounds=(self.le_thickness/2,self.le_thickness*2),method="bounded",tol=1e-6)
-        # r = 0.002 # res.x
-        # find_blade_area(r)
-        # # find_radius(r)
-        # # Debug: Plotting Functions
-        # 
-        # fig,ax = plt.subplots()
-        # ax.plot(xps,yps, color='blue', linestyle='solid', linewidth=2)
-        # ax.plot(xss,yss, color='red', linestyle='solid', linewidth=2)
-        # ax.plot(xcam,ycam, color='black', linestyle='solid', linewidth=2)
-        # x = r*np.cos(np.linspace(0,2*pi,50))
-        # y = r*np.sin(np.linspace(0,2*pi,50))
-        # ax.plot(xcam[0]+dx_LE*r+x,ycam[0]+dy_LE*r+y, color='orange', linestyle='solid', linewidth=1)
-        # ax.set_aspect('equal')
-        # plt.show()
-        # for i in np.linspace(0,self.le_thickness,5):
-        #     # Plot the circles in direction of dy and dx
-        #     dy = dy_LE*i
-        #     dx = dx_LE*i
-        #     r = np.sqrt(dy*dy+dx*dx)
-        #     x = r*np.cos(np.linspace(0,2*pi,50))
-        #     y = r*np.sin(np.linspace(0,2*pi,50))
-        #     ax2.plot(xcam[0]+dx_LE*i+x,ycam[0]+dy_LE*i+y, color='orange', linestyle='solid', linewidth=1)
-
-
-        # yy = np.linspace(y[0],y[-1],1000)
-        # for i in np.linspace(0,self.le_thickness,200):
-        #     dy = dy_LE*i
-        #     dx = dx_LE*i
-        #     radius = np.sqrt(dy*dy + dx*dx)
-        #     circle_area.append(pi*radius*radius*180/360)
-
-    
-
-
-        
-
-        # fig,(ax1,ax2) = plt.subplots(1,2)
-        # ax1.plot(y[1:],blade_area, color='red', linestyle='solid', linewidth=2)
-        # ax1.plot(yy[1:],circle_area, color='blue', linestyle='solid', linewidth=2)
-
-        # ax2.plot(xps,yps, color='blue', linestyle='solid', linewidth=2)
-        # ax2.plot(xss,yss, color='red', linestyle='solid', linewidth=2)
-        # ax2.plot(xcam,ycam, color='black', linestyle='solid', linewidth=2)
-        # for i in np.linspace(0,self.le_thickness,5):
-        #     # Plot the circles in direction of dy and dx
-        #     dy = dy_LE*i
-        #     dx = dx_LE*i
-        #     r = np.sqrt(dy*dy+dx*dx)
-        #     x = r*np.cos(np.linspace(0,2*pi,50))
-        #     y = r*np.sin(np.linspace(0,2*pi,50))
-        #     ax2.plot(xcam[0]+dx_LE*i+x,ycam[0]+dy_LE*i+y, color='orange', linestyle='solid', linewidth=1)
-
-        # ax2.set_aspect('equal')
-        # plt.show()
-
-
-            
