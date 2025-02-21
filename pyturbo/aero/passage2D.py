@@ -1,20 +1,15 @@
 from typing import List
 import numpy as np
-from scipy.special import comb
-from scipy.interpolate import CubicSpline
 from scipy.interpolate import PchipInterpolator
-import math
 import json
-from scipy.special import comb
-from ..helper import spline_type, pspline
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from .airfoil3D import Airfoil3D
 
 class Passage2D:
     """Passage2D fits 3D blades inside of a channel
     """
-    def __init__(self,airfoil_array,spacing_array):
+    def __init__(self,airfoil_array:List[Airfoil3D],spacing_array:List[float]):
         '''
         Initialize the passage with airfoils and spacing array
             airfoil_array = array of airfoil3D objects

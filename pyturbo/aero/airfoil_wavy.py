@@ -1,22 +1,25 @@
+from typing import List
 from scipy.interpolate import CubicSpline
 from scipy.interpolate import PchipInterpolator
 from scipy.optimize import minimize
-from .airfoil3D import *
-from ..helper import derivative_1, bezier,cosd,sind
-import math
+from .airfoil3D import Airfoil3D
+from .airfoil2D import Airfoil2D
+from ..helper import derivative_1, bezier,cosd,sind, convert_to_ndarray
+import math, copy
+import numpy as np 
 
-class Airfoil3D_Wavy(Airfoil3D):
+class AirfoilWavy(Airfoil3D):
     """Makes the surface of the airfoil: LE, TE, SS, PS wavy
     """
-    def __init__(self,profileArray,profile_loc,height):
-        """Initializes a wavy airfoil from an array of profiles, location and height, same as Airfoil3D
+    def __init__(self,profileArray:List[Airfoil2D],profile_loc:List[float],height:float):
+        """Initializes a wavy airfoil from an array of profiles, location and height, same as airfoil3D
 
         Args:
             profileArray ([Airfoil2D]): Array of 2D airfoil profiles 
             profile_loc ([List[float]]): Locations in terms of percent span where these 2D airfoils are located 
-            height ([float]): height of the airfoil
+            height (float): height of the airfoil
         """
-        super(Airfoil3D_Wavy, self).__init__(profileArray,profile_loc,height)
+        super(AirfoilWavy, self).__init__(profileArray,profile_loc,height)
    
 
     def stretch_thickness_chord(self,SSRatio,PSRatio,LERatio,TERatio,LE_wave_angle,TE_wave_angle,TE_smooth=0.85):
@@ -251,7 +254,7 @@ class Airfoil3D_Wavy(Airfoil3D):
                     break
 
             if (vibrissaeIndx[i]==-1):
-                vibrissaeIndx[i] = ceil(0.2*npointsPerProfile)
+                vibrissaeIndx[i] = math.ceil(0.2*npointsPerProfile)
             
             # use self for wavy TE
 
@@ -483,7 +486,7 @@ class Airfoil3D_Wavy(Airfoil3D):
                 There is no scaling near the trailing edge
             ''' 
             percentSpan = profile_indx/(nprofiles-1)
-            t = [0,vibrissaeIndx[profile_indx],floor((npoints_no_TE-2)*TE_smooth),npoints_no_TE-2]
+            t = [0,vibrissaeIndx[profile_indx],math.floor((npoints_no_TE-2)*TE_smooth),npoints_no_TE-2]
 
             profile_scale = convert_to_ndarray([self.spanw_leratio_fn(percentSpan),SSRatio,
                 self.spanw_teratio_fn(percentSpan),self.spanw_teratio_fn(percentSpan)])
@@ -632,7 +635,7 @@ class Airfoil3D_Wavy(Airfoil3D):
                     break
 
             if (vibrissaeIndx[i]==-1):
-                vibrissaeIndx[i] = ceil(0.2*npointsPerProfile)
+                vibrissaeIndx[i] = math.ceil(0.2*npointsPerProfile)
 
             chord[i]=math.sqrt((self.shft_yss[i,-1]-self.shft_yss[i,0])**2+(self.shft_xss[i,-1]-self.shft_xss[i,0])**2)
             

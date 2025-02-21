@@ -5,6 +5,7 @@ from typing import List
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
 from .airfoil2D import Airfoil2D
+from ..helper import StackType
 from scipy.optimize import minimize_scalar
 import enum
 import copy
@@ -16,30 +17,17 @@ from mpl_toolkits.mplot3d import Axes3D
 from tqdm import trange
 from stl import mesh
 
-
-class stack_type(enum.Enum):
-    """class defining the type of stacking for Airfoil2D profiles
-
-    Args:
-        enum (enum.Emum): inherits enum
-    """
-    leading_edge = 1
-    centroid = 2
-    trailing_edge = 3
-
-
-
 class Airfoil3D():
     '''
         Properties
     '''
     profileArray: List[Airfoil2D]
-    profileSpan: List[float]
-    span:float
+    profileSpan: List[float] 
+    span:float 
     IsSplineFitted: bool
-    IsSplineFittedShell: bool
-
-    stackType:stack_type
+    IsSplineFittedShell: bool 
+    
+    stackType:StackType 
     '''Bezier X,Y,Z are for the stacking line of the blade'''
     bezierX: List[float]
     bezierY: List[float]
@@ -135,11 +123,11 @@ class Airfoil3D():
         self.IsSplineFitted = False
         self.IsSplineFittedShell = False
 
-    def stack(self, stackType=stack_type.centroid):
+    def stack(self, stackType=StackType.centroid):
         """Defines how the airfoil profiles are stacked
 
         Args:
-            stackType (stack_type, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to stack_type.centroid.
+            stackType (StackType, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to StackType.centroid.
         """
         self.bezierX = []; self.bezierY = []; self.bezierZ = []
         self.stackType = stackType
@@ -147,7 +135,7 @@ class Airfoil3D():
         self.te_center_y = np.zeros(len(self.profileArray))
         if (len(self.profileArray) >= 2):
             # Stack the airfoils about LE
-            if (stackType == stack_type.leading_edge):
+            if (stackType == StackType.leading_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(0)
                 self.bezierX.append(hx[0])
@@ -173,7 +161,7 @@ class Airfoil3D():
                     self.te_center_x[i] = hx_te[0]
                     self.te_center_y[i] = hy_te[0]
             # Stack the airfoils about TE
-            elif (stackType == stack_type.trailing_edge):
+            elif (stackType == StackType.trailing_edge):
                 hub = self.profileArray[0]
                 [hx, hy] = hub.camberBezier.get_point(1)
                 self.bezierX.append(hx[0])
@@ -199,7 +187,7 @@ class Airfoil3D():
                     self.te_center_x[i] = hx_te[0]
                     self.te_center_y[i] = hy_te[0]
 
-            elif (stackType == stack_type.centroid):
+            elif (stackType == StackType.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
                 self.bezierX.append(hx)
                 self.bezierY.append(hy)
@@ -230,7 +218,7 @@ class Airfoil3D():
             self.b3 = bezier3(self.bezierX,self.bezierY,self.bezierZ)
             self.bImportedBlade = False
 
-    def sweep(self,sweep_y=[],sweep_z=[]):
+    def add_sweep(self,sweep_y:List[float]=[],sweep_z:List[float]=[]):
         """Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied
 
         Args:
@@ -265,7 +253,7 @@ class Airfoil3D():
         if (self.bImportedBlade): # imported blade doesn't have 2D airfoil profiles defined, just points
             self.profiles_shift()
 
-    def lean(self,leanX:List[float],leanZ:List[float]):
+    def add_lean(self,leanX:List[float],leanZ:List[float]):
         """Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.
 
         Args:
@@ -300,10 +288,10 @@ class Airfoil3D():
         self.bezierY = self.bezierY[indx]
 
         if (self.bImportedBlade):
-            self.profiles_shift()
-
-    def create_blade(self,nProfiles:int,num_points:int,trailing_edge_points:int):
-        """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later.
+            self.profiles_shift()     
+        
+    def build(self,nProfiles:int,num_points:int,trailing_edge_points:int):
+        """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. 
 
         Args:
             nProfiles (int): number of intermeidate profiles to generate
@@ -401,7 +389,7 @@ class Airfoil3D():
         self.profiles_shift()
 
     def shift(self,x:float,y:float):
-        """Moves the blade and recomputes the geometry
+        """Moves the blade
             Step 1 - shifts the profiles
             Step 2 - add lean and sweep again
             Step 3 - recompute the geometry if npts != 0
@@ -886,12 +874,12 @@ class Airfoil3D():
 
         for i in range(0,nprofiles):
             x = bx[i]; y = by[i]
-            if (self.stackType == stack_type.centroid):
+            if (self.stackType == StackType.centroid):
                 sx = cx[i]; sy = cy[i]
-            elif (self.stackType == stack_type.leading_edge):
+            elif (self.stackType == StackType.leading_edge):
                 sx = self.xps[i,0]
                 sy = self.yps[i,0]
-            else: # (self.stackType == stack_type.trailing_edge)
+            else: # (self.stackType == StackType.trailing_edge)
                 sx = 0
                 sy = 0
 

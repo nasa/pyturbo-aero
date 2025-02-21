@@ -1,45 +1,48 @@
-from typing import List, Optional, Union
+from typing import List, Tuple, Union
 import numpy as np
+import numpy.typing as npt
 from scipy.special import comb
 import scipy.interpolate as sp_intp
 from scipy.optimize import minimize_scalar 
 import matplotlib.pyplot as plt
-import matplotlib as mpl
 import math 
 from scipy.special import comb
 from .arc import arclen3, arclen
 from .convert_to_ndarray import convert_to_ndarray
+import numpy.typing as npt 
 
 # https://www.journaldev.com/14893/python-property-decorator
 # https://www.codementor.io/sheena/advanced-use-python-decorators-class-function-du107nxsv
 # https://stackabuse.com/pythons-classmethod-and-staticmethod-explained/
 
-class bezier():
+class bezier:
     n:int           # Number of control points
     c:np.ndarray    # bezier coefficients
     x:np.ndarray    # x-control points
     y:np.ndarray    # y-control points
 
 
-    def __init__(self, x,y):
+    def __init__(self, x:List[float],y:List[float]):
+        """Initializes a 2D bezier curve
+
+        Args:
+            x (List[float]): x coordinates
+            y (List[float]): y coordinates
+        """
         self.n = len(x)
-        self.c = np.zeros(self.n) 
         self.x = convert_to_ndarray(x)
         self.y = convert_to_ndarray(y)
 
-        for i in range(0,self.n):
-            self.c[i] = comb(self.n-1, i, exact=False) # use floating point
-
     def flip(self):
-        '''
-            Reverses the direction of the bezier curve
-            returns:
-                flipped bezier curve
-        '''
+        """Reverses the direction of the bezier curve
+
+        Returns:
+            bezier: flipped bezier curve
+        """
         return bezier(np.flip(self.x),np.flip(self.y))
 
     @property
-    def get_x_y(self):
+    def get_x_y(self) -> Tuple[List[float],List[float]]:
         return self.x,self.y
     
     def get_curve_length(self) -> float:
@@ -55,7 +58,7 @@ class bezier():
         
         return sum(d)[0] # Linear approximation of curve length
 
-    def __equal_space__(self,t:np.ndarray,x,y):
+    def __equal_space__(self,t:npt.NDArray,x:npt.NDArray,y:npt.NDArray):
         """
             Equally space points along a bezier curve using arc length
             Inputs 
@@ -82,31 +85,77 @@ class bezier():
             mean_old = mean_new
         return x,y
 
-    def get_point(self,t,equal_space=False):
-        """
-            Get a point or points along a bezier curve
-            Inputs:
-                t - scalar, list, or numpy array
-                equal_space - try to space points equally 
-            Outputs: 
-                Bx, By - scalar or numpy array
+    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+        return self.get_point(t,equal_space)
+    
+    @staticmethod
+    def __B__(n:int,i:int,t:float):
+        return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
+    
+    def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+        """Get a point or points along a bezier curve
+
+        Args:
+            t (Union[float,npt.NDArray]): scalar, list, or numpy array 
+            equal_space (bool, optional): True = space points equally. Defaults to False.
+
+        Returns:
+            Tuple: containing x and y points
         """
         t = convert_to_ndarray(t)
-        Bx,By = np.zeros(t.size),np.zeros(t.size)
-        for i in range(len(t)):
-            tempx,tempy = 0.0, 0.0
-            for j in range(0,self.n):
-                u = self.c[j]*pow(1-t[i], self.n-j-1)*pow(t[i],j)
-                tempx += u*self.x[j]
-                tempy += u*self.y[j]
-                
-            Bx[i],By[i] = tempx,tempy
+        x = 0; y = 0  
+        for i in range(self.n):
+            x += self.__B__(self.n-1,i,t)*self.x[i]
+            y += self.__B__(self.n-1,i,t)*self.y[i]
+        
+        if (equal_space and len(x)>2):
+            x,y = self.__equal_space__(t,x,y)
+            return x,y
+        return x,y
+    
+    def get_point_dt(self,t:Union[npt.NDArray]):
+        """Gets the derivative dx,dy as a function of t 
 
-        if (equal_space and len(Bx)>2):
-            Bx,By = self.__equal_space__(t,Bx,By)
-            return Bx,By
-        return Bx,By
+        Args:
+            t (Union[np.ndarray]): Array or float from 0 to 1 
+            
+        Returns:
+            tuple: containing
 
+                **dx** (npt.NDArray): Derivative of x as a function of t 
+                **dy** (npt.NDArray): Derivative of y as a function of t 
+        """
+        t = convert_to_ndarray(t)
+        
+        dx = t*0; dy = t*0
+        for i in range(self.n-1):
+            dx += self.__B__(self.n-2,i,t)*(self.x[i+1]-self.x[i])
+            dy += self.__B__(self.n-2,i,t)*(self.y[i+1]-self.y[i])
+        dx*=self.n
+        dy*=self.n
+        return dx,dy
+
+    def get_point_dt2(self,t:Union[npt.NDArray]):
+        t = convert_to_ndarray(t)
+        
+        dx2 = t*0; dy2 = t*0
+        for i in range(self.n-2):
+            dx2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+        return dx2,dy2
+    
+    def rotate(self,angle:float):
+        """Rotate 
+
+        Args:
+            angle (float): _description_
+        """
+        angle = np.radians(angle)
+        rot_matrix = np.array([[math.cos(angle) -math.sin(angle)],[math.sin(angle), math.cos(angle)]])
+        ans = (rot_matrix*self.x.transpose()).transpose()
+        self.x = ans[:,0]
+        self.y = ans[:,1]
+        
     def plot2D(self,equal_space=False):
         """Creates a 2D Plot of a bezier curve 
 
@@ -124,50 +173,6 @@ class bezier():
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
-
-    def get_point_dt(self,t):
-        """
-         Gets the derivative
-        """
-        if type(t) is not np.ndarray:
-            t = np.array([t],dtype=float) # the brackets [] are really helpful. scalars have to be converted to array before passing
-        tmin = np.min(t)
-        tmax = np.max(t)
-            
-        Bx = np.zeros(len(t))
-        By = np.zeros(len(t))
-        for i in range(len(t)):                      
-            tempx = 0; tempy = 0;                
-            if (t[i] == 1): # Use downwind
-                tempx = self.x[-1] - self.x[-2]
-                tempy = self.y[-1]- self.y[-2]             
-            elif (t[i] == 0):
-                tempx = self.x[1] - self.x[0]
-                tempy = self.y[1]- self.y[0]          
-            else:
-                for j in range(self.n-1): # n-1      
-                    b = (comb(self.n-2,j,exact=True)*t[i]**j) * (1-t[i])**(self.n-2-j)    # Bn-1                    
-                    tempx = tempx + b*(self.x[j+1]-self.x[j]) # Note: j+1 = j
-                    tempy = tempy + b*(self.y[j+1]-self.y[j])                   
-                
-                tempx = tempx*(self.n-1)
-                tempy = tempy*(self.n-1)
-            
-            Bx[i] = tempx
-            By[i] = tempy
-        return Bx,By
-
-    def rotate(self,angle:float):
-        """Rotate 
-
-        Args:
-            angle (float): _description_
-        """
-        angle = np.radians(angle)
-        rot_matrix = np.array([[math.cos(angle) -math.sin(angle)],[math.sin(angle), math.cos(angle)]])
-        ans = (rot_matrix*self.x.transpose()).transpose()
-        self.x = ans[:,0]
-        self.y = ans[:,1]
 
 
 class bezier3:
@@ -217,6 +222,9 @@ class bezier3:
             mean_old = mean_new
         return x,y,z
     
+    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+        return self.get_point(t,equal_space)
+    
     def get_point(self,t,equal_space = True):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
@@ -252,47 +260,30 @@ class bezier3:
         return Bx,By,Bz
     
     def get_point_dt(self,t:Union[float,List[float],np.ndarray]):
-        """Returns the derivative at a particular percentage 
+        """Gets the derivative dx,dy as a function of t 
 
         Args:
-            t (Union[float,List[float],np.ndarray]): Percentage from 0 to 1
-
+            t (Union[np.ndarray]): Array or float from 0 to 1 
+            
         Returns:
-            (Tuple): containing
-                - *dx* (np.ndarray): dx_dt
-                - *dy* (np.ndarray): dy_dt
-                - *dz* (np.ndarray): dz_dt
+            tuple: containing
+
+                **dx** (npt.NDArray): Derivative of x as a function of t 
+                **dy** (npt.NDArray): Derivative of y as a function of t 
         """
         t = convert_to_ndarray(t)
+        
+        def B(n:int,i:int,t:float):
+            c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
+            return c*t**i *(1-t)**(n-i)
+        
+        dx = 0; dy = 0
+        for i in range(self.n-1):
+            dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
+            dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
+            dz += B(self.n-1,i,t)*self.n*(self.z[i+1]-self.z[i])
 
-        tmin = np.min(t)
-        tmax = np.max(t)
-            
-        Bx = np.zeros((len(t),1))
-        By = np.zeros((len(t),1))
-        Bz = np.zeros((len(t),1))
-        for i in range(len(t)):                      
-            tempx = 0; tempy = 0; tempz=0              
-            if (t[i] == 1): # Use downwind
-                tempx = self.x[-1] - self.x[-2]
-                tempy = self.y[-1]- self.y[-2]                  
-            elif (t[i] == 0):
-                tempx = self.x(2) - self.x(1)
-                tempy = self.y(2)- self.y(1)                 
-            else:
-                for j in range(self.n-1): # n-1      
-                    b = (comb(self.n-1,j,True)*t[i]**j) * (1-t[i])**(self.n-1-j)    # Bn-1                    
-                    tempx = tempx + b*(self.x[j+2]-self.x[j+1]) # Note: j+1 = j
-                    tempy = tempy + b*(self.y[j+2]-self.y[j+1])                   
-                    tempz = tempz + b*(self.z[j+2]-self.z[j+1]) 
-                tempx = tempx*(self.n-1)
-                tempy = tempy*(self.n-1)
-                tempz = tempz*(self.n-1)
-
-            Bx[i] = tempx
-            By[i] = tempy
-            Bz[i] = tempz
-        return Bx,By,Bz
+        return dx,dy
 
 
 def time_this(original_function):

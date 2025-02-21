@@ -46,8 +46,8 @@ stator_tip.flow_guidance2(6)
 # Begin 3D design
 stator3D = airfoil3D([stator_hub,stator_tip],[0,1],0.05)
 stator3D.stack(stack_type.trailing_edge)
-# stator3D.lean_add([0, 0.05, 1], [0,0.5,1])
-stator3D.create_blade(100,80,20)
+# stator3D.add_lean([0, 0.05, 1], [0,0.5,1])
+stator3D.build(100,80,20)
 stator3D.plot3D()
 ```
 
@@ -97,8 +97,8 @@ If trailing edge radius is not a problem and you want to explore designs that ca
 span = 0.05
 stator3D = airfoil3D([stator_hub,stator_tip],[0,1],0.05)
 stator3D.stack(stack_type.trailing_edge)
-stator3D.lean_add([0, 0.05, 0], [0,0.5,1])
-stator3D.create_blade(100,100,20)
+stator3D.add_lean([0, 0.05, 0], [0,0.5,1])
+stator3D.build(100,100,20)
 # stator3D.plot3D()
 
 # Wavy Geometry
@@ -134,8 +134,8 @@ Of course it can. All I have to do is remove one of the parameters, in this case
 span = 0.05
 stator3D = airfoil3D([stator_hub,stator_tip],[0,1],0.05)
 stator3D.stack(stack_type.trailing_edge)
-stator3D.lean_add([0, 0.05, 0], [0,0.5,1])
-stator3D.create_blade(100,100,20)
+stator3D.add_lean([0, 0.05, 0], [0,0.5,1])
+stator3D.build(100,100,20)
 stator3D.plot3D()
 
 # Wavy Geometry
@@ -167,8 +167,8 @@ Sometimes you need to create a shell. This is useful for designing internal cool
 span = 0.05
 stator3D = airfoil3D([stator_hub,stator_tip],[0,1],0.05)
 stator3D.stack(stack_type.trailing_edge)
-stator3D.lean_add([0, 0.05, 0], [0,0.5,1])
-stator3D.create_blade(100,100,20)
+stator3D.add_lean([0, 0.05, 0], [0,0.5,1])
+stator3D.build(100,100,20)
 # stator3D.plot3D()
 [ss_x_new,ss_y_new,ps_x_new,ps_y_new] = stator3D.get_shell_2D(percent_span,shell_thickness)
 stator3D.plot_shell_2D(0.2,-0.002)

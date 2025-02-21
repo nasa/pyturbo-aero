@@ -1,23 +1,27 @@
+from typing import List
 import numpy as np
 import math
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import numpy.typing as npt 
 
 class wave_control:
-    """
-        This is used to control a wave's starting ending location as well as invert the wave
-        Invert - wave starts on the outside of the end points
-                wave_____________wave
-        NoInvert - wave starts between the bounds
-                ___wave_wave___
+    """This is used to control a wave's starting ending location as well as invert the wave
     """
     
-    def __init__(self,wave_array):            
+    def __init__(self,wave_array:List[float]):            
         self.wave_vector=wave_array
         
     def get_wave(self,percent_start=0,percent_end=1,bInverse=False):
-        """
-            Returns the wave back as a percent
+        """Get the normalized value of the waves 
+
+        Args:
+            percent_start (int, optional): _description_. Defaults to 0.
+            percent_end (int, optional): _description_. Defaults to 1.
+            bInverse (bool, optional): True - wave starts on the outside of the end points. False - wave starts between the bounds. Defaults to False.
+
+        Returns:
+            npt.NDArray: array containing the wave
         """
         n = len(self.wave_vector)
         indx20 = percent_start*n
