@@ -322,8 +322,8 @@ class Centrif:
         else:
             camber_bezier_mp_th = np.zeros(shape=(4+len(profile.wrap_displacements),2)) # Bezier Control points in the t,theta plane
             camber_bezier_mp_th[0,:] = [0, 0]
-            camber_bezier_mp_th[1,:] = [profile.LE_Metal_Angle_Loc, dth_LE]
-            camber_bezier_mp_th[-2,:] = [profile.TE_Metal_Angle_Loc, dth_TE]
+            camber_bezier_mp_th[1,:] = [profile.LE_Metal_Angle_Loc*camb_len, dth_LE]
+            camber_bezier_mp_th[-2,:] = [profile.TE_Metal_Angle_Loc*camb_len, dth_TE]
             camber_bezier_mp_th[-1,:] = [camb_len, dth_wrap]
             x = np.hstack([camber_bezier_mp_th[0:2,0], camber_bezier_mp_th[-2:,0]])
             y = np.hstack([camber_bezier_mp_th[0:2,1], camber_bezier_mp_th[-2:,1]])
@@ -339,7 +339,7 @@ class Centrif:
                 nx,ny = camber_bezier.get_point_dt(l)
                 x1,y1 = camber_bezier.get_point(l)
                 x2 = x1
-                y2 = displacement + y1
+                y2 = -displacement*dth_wrap + dth_wrap
                 camber_bezier_mp_th[j,0] = x2
                 camber_bezier_mp_th[j,1] = y2
                 j+=1
@@ -462,10 +462,10 @@ class Centrif:
         SS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle-90))   # mp
         SS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle-90))   # theta
         
-        # tss = np.linspace(camber_start,1,len(profile.ss_thickness)+2)
-        tss = camber_start + exp_ratio(1.3,len(profile.ss_thickness)+2,1-camber_start)
-        # tps = np.linspace(camber_start,1,len(profile.ps_thickness)+2)
-        tps = camber_start + exp_ratio(1.3,len(profile.ps_thickness)+2,1-camber_start)
+        tss = np.linspace(camber_start,1,len(profile.ss_thickness)+2)
+        # tss = camber_start + exp_ratio(1.3,len(profile.ss_thickness)+2,1-camber_start)
+        tps = np.linspace(camber_start,1,len(profile.ps_thickness)+2)
+        # tps = camber_start + exp_ratio(1.3,len(profile.ps_thickness)+2,1-camber_start)
 
         if profile.trailing_edge_properties.TE_Cut:
             SS[:,2] = np.hstack([[camber_start],tss,np.ones((TE_cut_strength+1,))])
@@ -743,8 +743,9 @@ class Centrif:
             self.camber_mp_th.append(self.__build_camber__(profile,theta_wrap,use_ray_intersection=self.use_ray_camber)[0])
             self.apply_camber_shifts(self.le_theta_shifts,self.te_theta_shifts)
             self.profiles_debug.append(self.__apply_thickness__(profile,i,camber_start=0,npts_chord=npts_chord))  # Creates the flattened profiles
-            if self.splitter_start != 0 and len(self.splitter_profiles)>0:
-                self.splitter_debug.append(self.__apply_thickness__(self.splitter_profiles,camber_starts=self.splitter_start,npts_chord=npts_chord))  # Creates the flattened profiles
+        if self.splitter_start != 0 and len(self.splitter_profiles)>0:
+            for s,splitter_profile in enumerate(self.splitter_profiles):
+                self.splitter_debug.append(self.__apply_thickness__(splitter_profile,profile_indx=s,camber_start=self.splitter_start,npts_chord=npts_chord))  # Creates the flattened profiles
         self.mainblade = self.__interpolate__(self.profiles_debug)
         if self.splitter_start != 0 and len(self.splitter_profiles)>0:
             self.splitterblade = self.__interpolate__(self.splitter_debug)
