@@ -10,6 +10,7 @@ from geomdl import NURBS, knotvector
 from scipy.optimize import minimize_scalar
 import copy
 import scipy.interpolate as spi
+from itertools import combinations, combinations_with_replacement
 
 class WaveDirection(Enum):
     x:int = 0
@@ -35,6 +36,11 @@ class WavyBladeProperties:
 @dataclass
 class SplitterProperties:    
     position:Tuple[float,float] = (0.5,1)
+
+@dataclass
+class PatternPairCentrif:
+    chord_scaling:float
+    rotation_ajustment:float
     
 @dataclass
 class CentrifProfile:
@@ -120,6 +126,8 @@ class Centrif:
     use_mid_wrap_angle:bool
     use_ray_camber:bool
     
+    patterns:List[PatternPairCentrif] = []
+
     def __init__(self,blade_position:Tuple[float,float]=(0.1,0.9),
                  use_mid_wrap_angle:bool=True,
                  use_bezier_thickness:bool=False,
@@ -141,6 +149,8 @@ class Centrif:
         self.use_mid_wrap_angle = use_mid_wrap_angle
         self.use_bezier_thickness = use_bezier_thickness
         self.camber_mp_th = list()
+        self.patterns.append(PatternPairCentrif(chord_scaling=1,rotation_ajustment=0)) # adds a default pattern, this is no modification
+
 
     def set_blade_position(self,t_start:float,t_end:float):
         """Sets the starting location of blade along the hub. 
@@ -204,6 +214,14 @@ class Centrif:
         """
         self.te_theta_shifts = theta_shifts
 
+    def add_pattern_pair(self,pair:PatternPairCentrif):
+        """Patterns are repeated for n number of blades but the goal is to repeat without patterns in a row. 
+
+        Args:
+            pair (PatternPairCentrif): Create a pattern pair. 
+        """
+        self.patterns.append(pair)
+        
     @property
     def tip_clearance(self):
         return self.__tip_clearance_percent
@@ -751,7 +769,36 @@ class Centrif:
             self.splitterblade = self.__interpolate__(self.splitter_debug)
 
         self.__create_fullwheel__(nblades,nsplitters)
+    
+    def __apply_pattern__(self,nblades:int):
+        """Apply patterns modifications to the design. The intent of this is to reduce the peaks associated with a compressor by creating small variations in the geometry. 
         
+        Args:
+            nblades (int): number of blades
+            blades (List[Centrif3D]): List of blades 
+        """
+        total_combinations = []
+
+        if len(self.patterns) == 1:
+            total_combinations = [self.patterns[0] for _ in range(nblades)]
+        else:
+            for i in range(1,len(self.patterns)):
+                combos = list(combinations(self.patterns,i))
+                temp = [cc for c in combos for cc in c]
+                total_combinations.extend(temp)
+            assert len(total_combinations)>nblades, "Combinations should be more than number of blades. Please add more patterns."
+            total_combinations = total_combinations[:nblades]
+        
+        for i,pattern in enumerate(total_combinations):
+            start_pos = self.blades[i].blade_position[0]
+            end_pos = self.blades[i].blade_position[1]
+            
+            start_pos = end_pos - (end_pos-start_pos)*pattern.chord_scaling
+            self.blades[i].set_blade_position(start_pos,end_pos)
+            
+            self.blades[i].build(self.blades[i].npts_span,self.blades[i].npts_chord)
+            self.blades[i].rotate(self.blades[i].rotation_angle+pattern.rotation_ajustment) # Rotate the blade 
+            
     def plot_camber(self,plot_hub_shroud:bool=True):
         """Plot the camber line
         """
