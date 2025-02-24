@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -6,18 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PyTurbo Helper Functions &mdash; pyturbo-aero 1.0.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=a4fe78c3"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=a4fe78c3"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -36,9 +34,6 @@
           <a href="../index.html">
             
           </a>
-              <div class="version">
-                1.0.12
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -80,7 +75,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -121,31 +116,62 @@
 <h1>PyTurbo Helper Functions<a class="headerlink" href="#pyturbo-helper-functions" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.arc.arc">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_stop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arc" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">yc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arc" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function" id="module-pyturbo.helper.arc">
 <dt class="sig sig-object py" id="pyturbo.helper.arc.arclen">
-<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arclen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arclen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arclen" title="Link to this definition"></a></dt>
-<dd><p>Computes the length between points
-Inputs</p>
-<blockquote>
-<div><p>x,y - this can be a list or a numpy array but not a scalar</p>
-</div></blockquote>
+<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arclen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arclen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arclen" title="Link to this definition"></a></dt>
+<dd><p>Calculates the arc length</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>npt.NDArray</em>) – array of x values</p></li>
+<li><p><strong>y</strong> (<em>npt.NDArray</em>) – array of y values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>arc length</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="pyturbo.helper.arc.arclen3">
-<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arclen3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arclen3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arclen3" title="Link to this definition"></a></dt>
-<dd><p>Equally space points along a bezier curve using arc length</p>
+<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.arc.</span></span><span class="sig-name descname"><span class="pre">arclen3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/arc.html#arclen3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.arc.arclen3" title="Link to this definition"></a></dt>
+<dd><p>Computes the arc length in 3D</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>npt.NDArray</em>) – array of x values</p></li>
+<li><p><strong>y</strong> (<em>npt.NDArray</em>) – array of y values</p></li>
+<li><p><strong>z</strong> (<em>npt.NDArray</em>) – array of z values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>arc length</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">bezier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">bezier</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier" title="Link to this definition"></a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.__call__" title="Link to this definition"></a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier.__equal_space__">
-<span class="sig-name descname"><span class="pre">__equal_space__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.__equal_space__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.__equal_space__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__equal_space__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.__equal_space__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.__equal_space__" title="Link to this definition"></a></dt>
 <dd><p>Equally space points along a bezier curve using arc length
 Inputs</p>
 </dd></dl>
@@ -153,8 +179,15 @@ Inputs</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier.flip">
 <span class="sig-name descname"><span class="pre">flip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.flip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.flip" title="Link to this definition"></a></dt>
-<dd><p>Reverses the direction of the bezier curve
-:returns: flipped bezier curve</p>
+<dd><p>Reverses the direction of the bezier curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>flipped bezier curve</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier">bezier</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -173,23 +206,44 @@ Inputs</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier.get_point">
-<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.get_point" title="Link to this definition"></a></dt>
-<dd><p>Get a point or points along a bezier curve
-Inputs:</p>
-<blockquote>
-<div><p>t - scalar, list, or numpy array
-equal_space - try to space points equally</p>
-</div></blockquote>
-<dl class="simple">
-<dt>Outputs:</dt><dd><p>Bx, By - scalar or numpy array</p>
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.get_point" title="Link to this definition"></a></dt>
+<dd><p>Get a point or points along a bezier curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>Union</em><em>[</em><em>float</em><em>,</em><em>npt.NDArray</em><em>]</em>) – scalar, list, or numpy array</p></li>
+<li><p><strong>equal_space</strong> (<em>bool</em><em>, </em><em>optional</em>) – True = space points equally. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>containing x and y points</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier.get_point_dt">
-<span class="sig-name descname"><span class="pre">get_point_dt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.get_point_dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.get_point_dt" title="Link to this definition"></a></dt>
-<dd><p>Gets the derivative</p>
+<span class="sig-name descname"><span class="pre">get_point_dt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier.get_point_dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier.get_point_dt" title="Link to this definition"></a></dt>
+<dd><p>Gets the derivative dx,dy as a function of t</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>]</em>) – Array or float from 0 to 1</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>containing</p>
+<blockquote>
+<div><p><strong>dx</strong> (npt.NDArray): Derivative of x as a function of t
+<strong>dy</strong> (npt.NDArray): Derivative of y as a function of t</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -221,8 +275,14 @@ equal_space - try to space points equally</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier3">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">bezier3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier3" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">bezier3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier3" title="Link to this definition"></a></dt>
 <dd><dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier3.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier3.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier3.__call__" title="Link to this definition"></a></dt>
+<dd><p>Call self as a function.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier3.__equal_space__">
 <span class="sig-name descname"><span class="pre">__equal_space__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier3.__equal_space__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier3.__equal_space__" title="Link to this definition"></a></dt>
 <dd><p>Equally space points along a bezier curve using arc length</p>
@@ -281,24 +341,21 @@ equal_space - try to space points equally</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.bezier3.get_point_dt">
 <span class="sig-name descname"><span class="pre">get_point_dt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#bezier3.get_point_dt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.bezier3.get_point_dt" title="Link to this definition"></a></dt>
-<dd><p>Returns the derivative at a particular percentage</p>
+<dd><p>Gets the derivative dx,dy as a function of t</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>t</strong> (<em>Union</em><em>[</em><em>float</em><em>,</em><em>List</em><em>[</em><em>float</em><em>]</em><em>,</em><em>np.ndarray</em><em>]</em>) – Percentage from 0 to 1</p>
+<dd class="field-odd"><p><strong>t</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>]</em>) – Array or float from 0 to 1</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><dl class="simple">
-<dt>containing</dt><dd><ul class="simple">
-<li><p><em>dx</em> (np.ndarray): dx_dt</p></li>
-<li><p><em>dy</em> (np.ndarray): dy_dt</p></li>
-<li><p><em>dz</em> (np.ndarray): dz_dt</p></li>
-</ul>
-</dd>
-</dl>
+<dd class="field-even"><p><p>containing</p>
+<blockquote>
+<div><p><strong>dx</strong> (npt.NDArray): Derivative of x as a function of t
+<strong>dy</strong> (npt.NDArray): Derivative of y as a function of t</p>
+</div></blockquote>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>(Tuple)</p>
+<dd class="field-odd"><p>tuple</p>
 </dd>
 </dl>
 </dd></dl>
@@ -307,7 +364,7 @@ equal_space - try to space points equally</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.pw_bezier2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">pw_bezier2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier"><span class="pre">bezier</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#pw_bezier2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.pw_bezier2D" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bezier.</span></span><span class="sig-name descname"><span class="pre">pw_bezier2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier"><span class="pre">bezier</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#pw_bezier2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.pw_bezier2D" title="Link to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.bezier.pw_bezier2D.__equal_space__">
 <span class="sig-name descname"><span class="pre">__equal_space__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bezier.html#pw_bezier2D.__equal_space__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bezier.pw_bezier2D.__equal_space__" title="Link to this definition"></a></dt>
@@ -367,19 +424,24 @@ equal_space - try to space points equally</p>
 
 <dl class="py function" id="module-pyturbo.helper.bisect">
 <dt class="sig sig-object py" id="pyturbo.helper.bisect.bisect">
-<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bisect.</span></span><span class="sig-name descname"><span class="pre">bisect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bisect.html#bisect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bisect.bisect" title="Link to this definition"></a></dt>
-<dd><p>Bisection method, solves for 0 given a function, lower bound, upper bound
-inputs:</p>
-<blockquote>
-<div><p>func - function handle
-lb - lower bound
-ub - upper bound
-tol - tolerance, when to stop the minimization
-<a href="#id1"><span class="problematic" id="id2">*</span></a>args - arguments that will be passed in addition to the function</p>
-</div></blockquote>
-<dl class="simple">
-<dt>returns</dt><dd><p>x - value that minimizes the function
-flag = 1 (good,passed) -1 (max iterations reached)</p>
+<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.bisect.</span></span><span class="sig-name descname"><span class="pre">bisect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ub</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/bisect.html#bisect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.bisect.bisect" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>func</strong> (<em>function</em>) – function handle</p></li>
+<li><p><strong>lb</strong> (<em>float</em>) – Lower bound</p></li>
+<li><p><strong>ub</strong> (<em>float</em>) – Upper bound</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em>) – display steps. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>x</strong> (float): minimum value
+<strong>flag</strong> (int): 1 = success, -1 failed due to max iterations reached</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
 </dd>
 </dl>
 </dd></dl>
@@ -427,19 +489,29 @@ Detailed explanation goes here</p>
 
 <dl class="py function" id="module-pyturbo.helper.exp_ratio">
 <span id="module-pyturbo.helper.dist"></span><dt class="sig sig-object py" id="pyturbo.helper.exp_ratio.exp_ratio">
-<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.exp_ratio.</span></span><span class="sig-name descname"><span class="pre">exp_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/exp_ratio.html#exp_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.exp_ratio.exp_ratio" title="Link to this definition"></a></dt>
-<dd><p>Expansion Ratio
-Inputs:</p>
-<blockquote>
-<div><p>ratio - 1 = no epxansion simple linspace 1.2 or 1.4 probably max
-npoints - number of points to use
-max - max value</p>
-</div></blockquote>
+<span class="sig-prename descclassname"><span class="pre">pyturbo.helper.exp_ratio.</span></span><span class="sig-name descname"><span class="pre">exp_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">npoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxvalue</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flip_direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/exp_ratio.html#exp_ratio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.exp_ratio.exp_ratio" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ratio</strong> (<em>float</em>) – _description_</p></li>
+<li><p><strong>npoints</strong> (<em>int</em>) – _description_</p></li>
+<li><p><strong>maxvalue</strong> (<em>float</em><em>, </em><em>optional</em>) – _description_. Defaults to 1.</p></li>
+<li><p><strong>flip_direction</strong> (<em>bool</em><em>, </em><em>optional</em>) – _description_. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>_description_</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_type_</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.line2D.</span></span><span class="sig-name descname"><span class="pre">line2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pt1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.line2D.</span></span><span class="sig-name descname"><span class="pre">line2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pt1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pt2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D" title="Link to this definition"></a></dt>
 <dd><dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.__eq__" title="Link to this definition"></a></dt>
@@ -458,29 +530,59 @@ max - max value</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.add_length">
-<span class="sig-name descname"><span class="pre">add_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.add_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.add_length" title="Link to this definition"></a></dt>
-<dd><p>Increase the length of the line by a percent</p>
+<span class="sig-name descname"><span class="pre">add_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.add_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.add_length" title="Link to this definition"></a></dt>
+<dd><p>_Increase the length of the line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len</strong> (<em>float</em>) – new length</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.angle_between">
+<span class="sig-name descname"><span class="pre">angle_between</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.angle_between"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.angle_between" title="Link to this definition"></a></dt>
+<dd><p>Returns the angle between two lines</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>line2</strong> (<a class="reference internal" href="#pyturbo.helper.line2D.line2D" title="pyturbo.helper.line2D.line2D"><em>line2D</em></a>) – another line</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>angle between two lines in degrees</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.average">
 <span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.average"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.average" title="Link to this definition"></a></dt>
-<dd><p>averages the line with another line</p>
+<dd><p>Averages the line with another line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_line</strong> (<a class="reference internal" href="#pyturbo.helper.line2D.line2D" title="pyturbo.helper.line2D.line2D"><em>line2D</em></a>) – new line</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.fillet">
-<span class="sig-name descname"><span class="pre">fillet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filletR</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.fillet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.fillet" title="Link to this definition"></a></dt>
-<dd><p>Creates a fillet with the previous line, how the line terminates doesn’t matter
-inputs:</p>
-<blockquote>
-<div><p>prev_line - Line2D class
-filletR - fillet radius</p>
-</div></blockquote>
+<span class="sig-name descname"><span class="pre">fillet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prev_line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filletR</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier"><span class="pre">bezier</span></a></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.fillet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.fillet" title="Link to this definition"></a></dt>
+<dd><p>Creates a fillet with the previous line, how the line terminates doesn’t matter</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>prev_line - previous line
-fillet</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prev_line</strong> (<a class="reference internal" href="#pyturbo.helper.line2D.line2D" title="pyturbo.helper.line2D.line2D"><em>line2D</em></a>) – previous line</p></li>
+<li><p><strong>filletR</strong> (<em>float</em>) – fillet radius</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>bezier curve describing the fillet</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier">bezier</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -526,6 +628,23 @@ fillet</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.get_t">
+<span class="sig-name descname"><span class="pre">get_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.get_t"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.get_t" title="Link to this definition"></a></dt>
+<dd><p>Returns the t that give a certain length</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>length</strong> (<em>float</em>) – length of line</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>time</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Union[float, npt.NDArray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.get_y">
 <span class="sig-name descname"><span class="pre">get_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.get_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.get_y" title="Link to this definition"></a></dt>
 <dd><p>Given an x value, output a y value</p>
@@ -545,38 +664,134 @@ fillet</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.intersect_check">
 <span class="sig-name descname"><span class="pre">intersect_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.intersect_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.intersect_check" title="Link to this definition"></a></dt>
-<dd><p>Intersect check returns true if line segment ‘p1q1’ and ‘p2q2’ intersect.</p>
+<dd><p>Checks for intersection with another line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>line2</strong> (<a class="reference internal" href="#pyturbo.helper.line2D.line2D" title="pyturbo.helper.line2D.line2D"><em>line2D</em></a>) – another line</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True - intersects, False - no intersection</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.intersect_ray">
 <span class="sig-name descname"><span class="pre">intersect_ray</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyturbo.helper.ray.ray2D" title="pyturbo.helper.ray.ray2D"><span class="pre">ray2D</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.intersect_ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.intersect_ray" title="Link to this definition"></a></dt>
-<dd><p>INTERSECTRAY - CHECK IF A RAY WILL INTERSECT THE LINE</p>
+<dd><p>Check if ray will intersect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>r2</strong> (<a class="reference internal" href="#pyturbo.helper.ray.ray2D" title="pyturbo.helper.ray.ray2D"><em>ray2D</em></a>) – ray</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>t</strong> (float): t value of ray
+<strong>bIntersect</strong> (bool): True = intersect, False, no intersection</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.line_intersect">
-<span class="sig-name descname"><span class="pre">line_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.line_intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.line_intersect" title="Link to this definition"></a></dt>
-<dd><p>line_intersect - used to be called rayintersect but that’s kind of misleading. Output changed to return the point of intersection and t1, t2</p>
-<p>Returns [x,y,t1,t2,bIntersect]</p>
+<span class="sig-name descname"><span class="pre">line_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.line_intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.line_intersect" title="Link to this definition"></a></dt>
+<dd><p>Checks if two lines intersect</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>line2</strong> (<a class="reference internal" href="#pyturbo.helper.line2D.line2D" title="pyturbo.helper.line2D.line2D"><em>line2D</em></a>) – another line</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if intersect</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.mag">
+<span class="sig-name descname"><span class="pre">mag</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.mag"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.mag" title="Link to this definition"></a></dt>
+<dd><p>returns the magnitude</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>magnitude</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.plot2D">
+<span class="sig-name descname"><span class="pre">plot2D</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.plot2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.plot2D" title="Link to this definition"></a></dt>
+<dd><p>Plot the line</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.ray">
+<span class="sig-name descname"><span class="pre">ray</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyturbo.helper.ray.ray2D" title="pyturbo.helper.ray.ray2D"><span class="pre">ray2D</span></a></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.ray"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.ray" title="Link to this definition"></a></dt>
+<dd><p>returns a ray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ray</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyturbo.helper.ray.ray2D" title="pyturbo.helper.ray.ray2D">ray2D</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.set_length">
+<span class="sig-name descname"><span class="pre">set_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.set_length"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.set_length" title="Link to this definition"></a></dt>
+<dd><p>Sets the length of a line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>len</strong> (<em>float</em>) – new length</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.shrink_end">
-<span class="sig-name descname"><span class="pre">shrink_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shrink_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.shrink_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.shrink_end" title="Link to this definition"></a></dt>
-<dd><p>Calculates the new end point</p>
+<span class="sig-name descname"><span class="pre">shrink_end</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shrink_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.shrink_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.shrink_end" title="Link to this definition"></a></dt>
+<dd><p>Calculates new end point by shrinking hte line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>shrink_len</strong> (<em>float</em>) – amount to shrink the line by</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.shrink_start">
-<span class="sig-name descname"><span class="pre">shrink_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shrink_len</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.shrink_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.shrink_start" title="Link to this definition"></a></dt>
-<dd><p>Calculates the new starting point</p>
+<span class="sig-name descname"><span class="pre">shrink_start</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shrink_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.shrink_start"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.shrink_start" title="Link to this definition"></a></dt>
+<dd><p>calculates new starting point by shrinking the line</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>shrink_len</strong> (<em>float</em>) – amount to shrink the line by</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.line2D.line2D.to_bezier">
-<span class="sig-name descname"><span class="pre">to_bezier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.to_bezier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.to_bezier" title="Link to this definition"></a></dt>
-<dd><p>returns a bezier version of a line</p>
+<span class="sig-name descname"><span class="pre">to_bezier</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier"><span class="pre">bezier</span></a></span></span><a class="reference internal" href="../_modules/pyturbo/helper/line2D.html#line2D.to_bezier"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.line2D.line2D.to_bezier" title="Link to this definition"></a></dt>
+<dd><p>returns bezier curve</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>returns a bezier curve</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#pyturbo.helper.bezier.bezier" title="pyturbo.helper.bezier.bezier">bezier</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -606,24 +821,39 @@ Zb - numpy matrix</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.pspline.pspline">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">pspline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">spline_type.pchip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.pspline" title="Link to this definition"></a></dt>
-<dd><p>Percentage Spline - fits a spline on a curve and allows you to extract points with a percentage as input</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">pspline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">px</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">spline_type.pchip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.pspline" title="Link to this definition"></a></dt>
+<dd><p>fits a spline on a curve and allows you to extract points with a percentage as input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>_type_</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.pspline.pspline.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.pspline.__call__" title="Link to this definition"></a></dt>
-<dd><p>Call self as a function.</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">No-index<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.pspline.pspline.get_point">
-<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.pspline.get_point" title="Link to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Inputs:</dt><dd><p>t is from 0 to 1</p>
-</dd>
-</dl>
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.pspline.get_point" title="Link to this definition"></a></dt>
+<dd><p>Gets the points anywhere along the spline</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>x,y,(z) of the spline curve</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>Union</em><em>[</em><em>float</em><em>,</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – array or float from 0 to 1</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(npt.NDArray): x,y,z value of the spline
+(npt.NDArray): dudt - derivative with time</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
 </dd>
 </dl>
 </dd></dl>
@@ -638,24 +868,39 @@ Zb - numpy matrix</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="id0">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">pspline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">spline_type.pchip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
-<dd><p>Percentage Spline - fits a spline on a curve and allows you to extract points with a percentage as input</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">pspline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">px</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">py</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">spline_type.pchip</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>fits a spline on a curve and allows you to extract points with a percentage as input</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_description_</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>_type_</p>
+</dd>
+</dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
-<dd><p>Call self as a function.</p>
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">No-index<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="id4">
-<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>Inputs:</dt><dd><p>t is from 0 to 1</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">get_point</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#pspline.get_point"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd><p>Gets the points anywhere along the spline</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>x,y,(z) of the spline curve</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>t</strong> (<em>Union</em><em>[</em><em>float</em><em>,</em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – array or float from 0 to 1</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>(npt.NDArray): x,y,z value of the spline
+(npt.NDArray): dudt - derivative with time</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple containing</p>
 </dd>
 </dl>
 </dd></dl>
@@ -664,24 +909,36 @@ Zb - numpy matrix</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.pspline.spline_type">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">spline_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#spline_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.spline_type" title="Link to this definition"></a></dt>
-<dd><p>An enumeration.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="id5">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">spline_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#spline_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
-<dd><p>An enumeration.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="pyturbo.helper.ray.ray2D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.ray.</span></span><span class="sig-name descname"><span class="pre">ray2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/ray.html#ray2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.ray.ray2D" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">spline_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#spline_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.pspline.spline_type" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="id3">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.pspline.</span></span><span class="sig-name descname"><span class="pre">spline_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/pspline.html#spline_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pyturbo.helper.ray.ray2D">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.ray.</span></span><span class="sig-name descname"><span class="pre">ray2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/ray.html#ray2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.ray.ray2D" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="pyturbo.helper.ray.ray2D.perpendicular">
+<span class="sig-name descname"><span class="pre">perpendicular</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarType_co</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/ray.html#ray2D.perpendicular"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.ray.ray2D.perpendicular" title="Link to this definition"></a></dt>
+<dd><p>this function finds the t where the ray is perpendicular to a point given a point in space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – x coordinate of a point</p></li>
+<li><p><strong>y</strong> (<em>float</em>) – y coordinate of a point</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="pyturbo.helper.ray.ray3D">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.ray.</span></span><span class="sig-name descname"><span class="pre">ray3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/ray.html#ray3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.ray.ray3D" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.ray.</span></span><span class="sig-name descname"><span class="pre">ray3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/ray.html#ray3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.ray.ray3D" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function" id="module-pyturbo.helper.rotate_array_values">
@@ -692,20 +949,27 @@ Zb - numpy matrix</p>
 
 <dl class="py class" id="module-pyturbo.helper.unique_xy">
 <dt class="sig sig-object py" id="pyturbo.helper.wave.wave_control">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.wave.</span></span><span class="sig-name descname"><span class="pre">wave_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wave_array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/wave.html#wave_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.wave.wave_control" title="Link to this definition"></a></dt>
-<dd><p>This is used to control a wave’s starting ending location as well as invert the wave
-Invert - wave starts on the outside of the end points</p>
-<blockquote>
-<div><p>wave_____________wave</p>
-</div></blockquote>
-<dl class="simple">
-<dt>NoInvert - wave starts between the bounds</dt><dd><p>___wave_wave___</p>
-</dd>
-</dl>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyturbo.helper.wave.</span></span><span class="sig-name descname"><span class="pre">wave_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wave_array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/wave.html#wave_control"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.wave.wave_control" title="Link to this definition"></a></dt>
+<dd><p>This is used to control a wave’s starting ending location as well as invert the wave</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyturbo.helper.wave.wave_control.get_wave">
 <span class="sig-name descname"><span class="pre">get_wave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bInverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pyturbo/helper/wave.html#wave_control.get_wave"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pyturbo.helper.wave.wave_control.get_wave" title="Link to this definition"></a></dt>
-<dd><p>Returns the wave back as a percent</p>
+<dd><p>Get the normalized value of the waves</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>percent_start</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 0.</p></li>
+<li><p><strong>percent_end</strong> (<em>int</em><em>, </em><em>optional</em>) – _description_. Defaults to 1.</p></li>
+<li><p><strong>bInverse</strong> (<em>bool</em><em>, </em><em>optional</em>) – True - wave starts on the outside of the end points. False - wave starts between the bounds. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>array containing the wave</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>npt.NDArray</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

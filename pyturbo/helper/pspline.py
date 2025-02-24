@@ -7,8 +7,6 @@ from scipy import integrate
 import math
 import enum
 import copy
-from scipy.interpolate import CubicSpline
-from scipy.interpolate import PchipInterpolator
 from scipy.optimize import minimize
 import numpy.typing as npt 
 
@@ -59,11 +57,7 @@ def pspline_intersect(pspline1,pspline2,tmin,tmax):
         return res.x*0-1 # return -1 for no intersect
         
 class pspline:
-    """fits a spline on a curve and allows you to extract points with a percentage as input
-
-    Returns:
-        _type_: _description_
-    """
+    """fits a spline on a curve and allows you to extract points with a percentage as input"""
    
     def __segkernel__(self,y,t):
         t = convert_to_ndarray(t)
@@ -170,6 +164,7 @@ class pspline:
         self.cumseglen = np.append(np.zeros(1),np.cumsum(self.seglen))
 
     def __call__(self, t):
+        """:no-index:"""
         return self.get_point(t)
 
     def get_curve_len(self,t):

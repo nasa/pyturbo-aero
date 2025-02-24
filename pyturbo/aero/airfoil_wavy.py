@@ -1,11 +1,11 @@
 from typing import List
-from scipy.interpolate import CubicSpline
 from scipy.interpolate import PchipInterpolator
 from scipy.optimize import minimize
 from .airfoil3D import Airfoil3D
 from .airfoil2D import Airfoil2D
-from ..helper import derivative_1, bezier,cosd,sind, convert_to_ndarray
-import math, copy
+from ..helper import derivative_1,cosd,sind, convert_to_ndarray
+import math
+import copy
 import numpy as np 
 
 class AirfoilWavy(Airfoil3D):

@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
@@ -5,18 +7,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.line2D &mdash; pyturbo-aero 1.0.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=a4fe78c3"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=a4fe78c3"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -33,9 +31,6 @@
           <a href="../../../index.html">
             
           </a>
-              <div class="version">
-                1.0.12
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -77,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -115,7 +110,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.line2D</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">.ray</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -126,7 +121,14 @@
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D">[docs]</a>
 <span class="k">class</span> <span class="nc">line2D</span><span class="p">():</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pt1</span><span class="p">,</span><span class="n">pt2</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">pt1</span><span class="p">:</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">float</span><span class="p">],</span><span class="n">pt2</span><span class="p">:</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Intializes a line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pt1 (Tuple[float,float]): start point in x,y</span>
+<span class="sd">            pt2 (Tuple[float,float]): end point in x,y</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">]])</span>
         <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pt1</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
@@ -140,22 +142,40 @@
 
 <div class="viewcode-block" id="line2D.to_bezier">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.to_bezier">[docs]</a>
-    <span class="k">def</span> <span class="nf">to_bezier</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            returns a bezier version of a line</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">to_bezier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bezier</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns bezier curve</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bezier: returns a bezier curve</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">bezier</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">b</span></div>
 
 
-    <span class="k">def</span> <span class="nf">ray</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">ray2D</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<div class="viewcode-block" id="line2D.ray">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.ray">[docs]</a>
+    <span class="k">def</span> <span class="nf">ray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ray2D</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns a ray </span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ray2D: ray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ray2D</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
         
 <div class="viewcode-block" id="line2D.intersect_ray">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.intersect_ray">[docs]</a>
     <span class="k">def</span> <span class="nf">intersect_ray</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">r2</span><span class="p">:</span><span class="n">ray2D</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            INTERSECTRAY - CHECK IF A RAY WILL INTERSECT THE LINE</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if ray will intersect </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            r2 (ray2D): ray</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple containing: </span>
+<span class="sd">            </span>
+<span class="sd">                **t** (float): t value of ray</span>
+<span class="sd">                **bIntersect** (bool): True = intersect, False, no intersection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ray</span><span class="p">()</span>
         <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span> <span class="p">[</span><span class="n">r1</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="n">r2</span><span class="o">.</span><span class="n">dx</span><span class="p">],[</span><span class="n">r1</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="o">-</span><span class="n">r2</span><span class="o">.</span><span class="n">dy</span><span class="p">]</span> <span class="p">])</span>
@@ -183,9 +203,11 @@
     
 <div class="viewcode-block" id="line2D.add_length">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.add_length">[docs]</a>
-    <span class="k">def</span> <span class="nf">add_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">len</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Increase the length of the line by a percent</span>
+    <span class="k">def</span> <span class="nf">add_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">len</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;_Increase the length of the line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            len (float): new length</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nb">len</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nb">len</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
@@ -209,10 +231,18 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
     
-    <span class="k">def</span> <span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">len</span><span class="p">):</span>
+<div class="viewcode-block" id="line2D.set_length">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.set_length">[docs]</a>
+    <span class="k">def</span> <span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="nb">len</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sets the length of a line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            len (float): new length</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nb">len</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="nb">len</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span> <span class="o">=</span> <span class="n">line2D</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="bp">self</span> <span class="o">=</span> <span class="n">line2D</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span></div>
+
     
     
 <div class="viewcode-block" id="line2D.get_point">
@@ -261,17 +291,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-
-    <span class="k">def</span> <span class="nf">bezier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">npoints</span><span class="p">):</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">npoints</span><span class="p">)</span>
-        <span class="p">[</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="n">bezier</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span>
     
 <div class="viewcode-block" id="line2D.average">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.average">[docs]</a>
     <span class="k">def</span> <span class="nf">average</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">new_line</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            averages the line with another line</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Averages the line with another line </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            new_line (line2D): new line </span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_line</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_line</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
@@ -282,21 +309,44 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">angle</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">atan2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
     
+<div class="viewcode-block" id="line2D.get_t">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.get_t">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">length</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the t that give a certain length </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            length (float): length of line</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Union[float, npt.NDArray]: time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">length</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span></div>
+
                     
+<div class="viewcode-block" id="line2D.plot2D">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.plot2D">[docs]</a>
     <span class="k">def</span> <span class="nf">plot2D</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot the line</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;or&#39;</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="s1">&#39;-b&#39;</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;x-label&quot;</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;y-label&quot;</span><span class="p">)</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="line2D.intersect_check">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.intersect_check">[docs]</a>
     <span class="k">def</span> <span class="nf">intersect_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">line2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Intersect check returns true if line segment &#39;p1q1&#39; and &#39;p2q2&#39; intersect.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks for intersection with another line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line2 (line2D): another line</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True - intersects, False - no intersection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bIntersect</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">p</span><span class="p">;</span> <span class="n">q1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span>
@@ -340,38 +390,43 @@
 
 <div class="viewcode-block" id="line2D.line_intersect">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.line_intersect">[docs]</a>
-    <span class="k">def</span>  <span class="nf">line_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">line2</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            line_intersect - used to be called rayintersect but that&#39;s kind of misleading. Output changed to return the point of intersection and t1, t2</span>
+    <span class="k">def</span> <span class="nf">line_intersect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">line2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Checks if two lines intersect</span>
 
-<span class="sd">            Returns [x,y,t1,t2,bIntersect] </span>
+<span class="sd">        Args:</span>
+<span class="sd">            line2 (line2D): another line</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            (bool): True if intersect</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
-        <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ray</span><span class="p">()</span>
-        <span class="n">r2</span> <span class="o">=</span> <span class="n">line2</span><span class="o">.</span><span class="n">ray</span><span class="p">()</span>
-        <span class="n">A</span> <span class="o">=</span> <span class="p">[[</span><span class="n">r1</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="n">r2</span><span class="o">.</span><span class="n">dx</span><span class="p">],</span> <span class="p">[</span><span class="n">r1</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="o">-</span><span class="n">r2</span><span class="o">.</span><span class="n">dy</span><span class="p">]]</span>
-        <span class="n">b</span> <span class="o">=</span> <span class="p">[[</span><span class="n">r2</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">r1</span><span class="o">.</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">r2</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">r1</span><span class="o">.</span><span class="n">y</span><span class="p">]]</span>
-        <span class="n">T</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> 
-
-        <span class="n">t1</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="n">t2</span> <span class="o">=</span> <span class="n">T</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-        <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">r1</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t1</span><span class="p">)</span>
-        <span class="p">[</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">]</span> <span class="o">=</span> <span class="n">r2</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">x2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="n">y2</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.001</span><span class="p">):</span>
-            <span class="k">return</span> <span class="kc">False</span>
-        
-        <span class="k">if</span> <span class="p">(</span><span class="n">t1</span><span class="o">&gt;</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">t1</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">or</span> <span class="n">t2</span><span class="o">&gt;</span><span class="mi">1</span> <span class="ow">or</span> <span class="n">t2</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">):</span> <span class="c1"># if time is more than 1, the lines wont intersect </span>
-            <span class="k">return</span> <span class="kc">False</span>
-        
-        <span class="k">return</span> <span class="kc">True</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intersect_check</span><span class="p">(</span><span class="n">line2</span><span class="p">)</span></div>
 
     
-    <span class="k">def</span> <span class="nf">mag</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">^</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<div class="viewcode-block" id="line2D.mag">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.mag">[docs]</a>
+    <span class="k">def</span> <span class="nf">mag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;returns the magnitude</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: magnitude</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span></div>
+
     
     
-    <span class="k">def</span> <span class="nf">angle_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">line2</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mag</span><span class="p">()</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">mag</span><span class="p">())))</span>
+<div class="viewcode-block" id="line2D.angle_between">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.angle_between">[docs]</a>
+    <span class="k">def</span> <span class="nf">angle_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">line2</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns the angle between two lines </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line2 (line2D): another line</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: angle between two lines in degrees</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">acos</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">dx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">dy</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mag</span><span class="p">()</span><span class="o">*</span><span class="n">line2</span><span class="o">.</span><span class="n">mag</span><span class="p">())))</span></div>
+
 
     <span class="k">def</span> <span class="nf">__onSegment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">q</span><span class="p">,</span><span class="n">r</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Private Functions </span>
@@ -405,10 +460,12 @@
     
 <div class="viewcode-block" id="line2D.shrink_start">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.shrink_start">[docs]</a>
-    <span class="k">def</span> <span class="nf">shrink_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shrink_len</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Calculates the new starting point</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">shrink_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shrink_len</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;calculates new starting point by shrinking the line</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shrink_len (float): amount to shrink the line by</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="n">shrink_len</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="n">shrink_len</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -420,10 +477,12 @@
 
 <div class="viewcode-block" id="line2D.shrink_end">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.shrink_end">[docs]</a>
-    <span class="k">def</span> <span class="nf">shrink_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shrink_len</span><span class="p">):</span>        
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Calculates the new end point</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">shrink_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">shrink_len</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>        
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates new end point by shrinking hte line </span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            shrink_len (float): amount to shrink the line by</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="n">shrink_len</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span><span class="o">-</span><span class="n">shrink_len</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">length</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -435,16 +494,16 @@
     
 <div class="viewcode-block" id="line2D.fillet">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.line2D.line2D.fillet">[docs]</a>
-    <span class="k">def</span> <span class="nf">fillet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">prev_line</span><span class="p">,</span><span class="n">filletR</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">            Creates a fillet with the previous line, how the line terminates doesn&#39;t matter</span>
-<span class="sd">            inputs:</span>
-<span class="sd">                prev_line - Line2D class</span>
-<span class="sd">                filletR - fillet radius</span>
-<span class="sd">            returns:</span>
-<span class="sd">                prev_line - previous line</span>
-<span class="sd">                fillet</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">fillet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">prev_line</span><span class="p">,</span><span class="n">filletR</span><span class="p">:</span><span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">bezier</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a fillet with the previous line, how the line terminates doesn&#39;t matter</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prev_line (line2D): previous line</span>
+<span class="sd">            filletR (float): fillet radius</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bezier: bezier curve describing the fillet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Check the start and end points see where it intersects</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">prev_line</span><span class="o">.</span><span class="n">p</span><span class="p">):</span> 
             <span class="c1"># Beginning of first line and beginning of 2nd line, intersections happen at start</span>
