@@ -96,7 +96,7 @@ class pspline:
 
         self.chordlen = np.sqrt( 
             np.sum( 
-                np.array((np.power(np.diff(self.px),2), np.power(np.diff(self.py),2)),dtype=np.float64)
+                np.array((np.power(np.diff(self.px),2), np.power(np.diff(self.py),2)),dtype=float)
                 ,axis=0))
         self.chordlen = self.chordlen/np.sum(self.chordlen)
 

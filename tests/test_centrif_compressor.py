@@ -1,74 +1,139 @@
-import numpy as np
 from pyturbo.aero import Centrif, CentrifProfile, TrailingEdgeProperties
-from pyturbo.helper import create_passage
+from pyturbo.helper import arc
+import numpy as np
+import numpy.typing as npt
+import matplotlib.pyplot as plt
 from copy import deepcopy
 
-def test_blade_and_passage(bSplitter:bool=False,TE_Cut:bool=False,TE_Radius:float=0.015):
-    """Creates a centrif blade with or without splitter
 
-    Args:
-        bSplitter (bool, optional): Adds splitter. Defaults to False.
-        TE_Cut (bool, optional): Cut TE instead of rounded. Defaults to False.
-    """
-    # Create the passage using code translated from https://whittle.digital/2024/Radial_Compressor_Designer/
-    hub,shroud,V3,T3,P3,Ma3,eta_ts,eta_now,Power,RPM,Alrel1_deg,Alrel2_deg = create_passage(PR=2.4,phi1=0.7, 
-                       M1_rel=0.6, HTR1=0.5,
-                       deHaller=1, outlet_yaw=-64, 
-                       blade_circulation=0.6, tip_clearance=0.01,
-                       P01=1, T01=300, mdot=5)
-    cen = Centrif(blade_position=(0.05,0.96))
-    cen.add_hub(hub[:,0],hub[:,1])
-    cen.add_shroud(shroud[:,0],shroud[:,1])
-    
-    LE_Thickness = 0.02
-    LE_Metal_Angle = -50
-    TE_Metal_Angle = 50
-    LE_Metal_Angle_Loc = 0.15
-    TE_Metal_Angle_Loc = 0.85
-    wrap_angle=-30
-    wrap_displacements = [0.1, 0.3]
-    wrap_displacement_locs = [0.4,0.8]
-    ss_thickness = [0.04,0.03,0.03,0.03,0.03,0.03,0.03]
-    ps_thickness = [0.02,0.03,0.03,0.03,0.03,0.03,0.03]
-    
-    te_props = TrailingEdgeProperties(TE_Cut=TE_Cut,TE_Radius=TE_Radius)
-    hub = CentrifProfile(percent_span=0,LE_Thickness=LE_Thickness,
-                                   trailing_edge_properties=te_props,
-                                   LE_Metal_Angle=LE_Metal_Angle,
-                                   TE_Metal_Angle=TE_Metal_Angle,
-                                   LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,
-                                   TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
-                                   ss_thickness=ss_thickness,
-                                   ps_thickness=ps_thickness,
-                                   wrap_angle=wrap_angle,
-                                   wrap_displacements=wrap_displacements,
-                                   wrap_displacement_locs=wrap_displacement_locs)
-    mid = deepcopy(hub); mid.percent_span=0.5
-    tip = deepcopy(hub); tip.percent_span=1.0
-    
-    cen.add_profile(hub)
-    cen.add_profile(mid)
-    cen.add_profile(tip)
+def build_endwalls(radius:float,inlet_hub_shroud_ratio:float,outlet_hub_shroud_ratio:float,x_stretch_factor:float, rhub_out:float, alpha_start:float=180,alpha_stop:float=270):
+    shroud = arc(xc=0,yc=0,radius=radius,alpha_start=alpha_start,alpha_stop=alpha_stop)
+    hub = arc(xc=0,yc=0,radius=radius/inlet_hub_shroud_ratio,alpha_start=alpha_start,alpha_stop=alpha_stop)
 
-    if bSplitter:
-        # When creating splitter profiles, only the thicknesses matters. 
-        # Percent span doesn't matter
-        # Splitter will follow the camber line of the main blade
-        ss_thickness = [0.03,0.03,0.03]
-        ps_thickness = [0.03,0.03,0.03]
-        shub = deepcopy(hub); shub.ss_thickness = ss_thickness; shub.ps_thickness = ps_thickness
-        smid = deepcopy(mid); smid.ss_thickness = ss_thickness; shub.ps_thickness = ps_thickness
-        stip = deepcopy(tip); stip.ss_thickness = ss_thickness; stip.ps_thickness = ps_thickness
+    [xhub,rhub] = hub.get_point(np.linspace(0,1,100))
+    [xshroud,rshroud] = shroud.get_point(np.linspace(0,1,100))
 
-        splitter_profiles = [shub, smid, stip]
-        cen.add_splitter(splitter_profiles=splitter_profiles,splitter_starts=[0.5,0.45,0.4])
-    cen.build(npts_span=50, npts_chord=150,nblades=6,nsplitters=6)
-    cen.plot_mp_profile()
-    cen.plot()
-    # cen.plot_camber()
-    # cen.plot_fullwheel()
+    rhub = rhub/outlet_hub_shroud_ratio
+    xhub*=x_stretch_factor
+    xshroud*=x_stretch_factor
 
-if __name__ == "__main__":
-    # test_blade_and_passage(bSplitter=False,TE_Cut=False)
-    # test_blade_and_passage(bSplitter=True,TE_Cut=False)
-    test_blade_and_passage(bSplitter=True,TE_Cut=False,TE_Radius=0.01)
+    hub = np.vstack([xhub,rhub]).transpose()
+    shroud = np.vstack([xshroud, rshroud]).transpose()
+    shroud[:,1] += -hub[:,1].min() + rhub_out
+    hub[:,1] += -hub[:,1].min() + rhub_out
+    xshroud += -xhub.min()
+    xhub += -xhub.min()
+    return hub,shroud
+
+def compute_normals(x:npt.NDArray, y:npt.NDArray):
+    # Compute first derivatives
+    dx = np.gradient(x)
+    dy = np.gradient(y)
+
+    # Compute normal vectors (perpendicular to tangent)
+    length = np.hypot(dx, dy)
+    nx = -dy / length
+    ny = dx / length
+
+    return nx, ny
+
+def offset_curve(x:npt.NDArray, y:npt.NDArray, offset_distance:float):
+    nx, ny = compute_normals(x, y)
+
+    # Offset points along the normal direction
+    x_offset = x + offset_distance * nx
+    y_offset = y + offset_distance * ny
+
+    return x_offset, y_offset
+
+
+radius = 0.04 # meters
+inlet_hub_shroud_ratio = 0.85
+outlet_hub_shroud_ratio = 0.8
+x_stretch_factor=1.3
+rhub_out = 0.009 # meters
+nblades = 6
+
+hub1,shroud1 = build_endwalls(radius=radius,
+                                inlet_hub_shroud_ratio=inlet_hub_shroud_ratio,
+                                outlet_hub_shroud_ratio=outlet_hub_shroud_ratio,
+                                x_stretch_factor=x_stretch_factor,
+                                rhub_out=rhub_out,
+                                alpha_start=270,alpha_stop=360)
+
+hub2 = offset_curve(hub1[:,0],hub1[:,1],-radius*0.02)
+shroud2 = offset_curve(shroud1[:,0],shroud1[:,1],radius*0.02)
+hub2 = np.vstack(hub2).transpose()
+shroud2 = np.vstack(shroud2).transpose()
+
+# Lets see what it looks like
+# plt.figure(num=1,clear=True, dpi=150)
+# plt.plot(hub1[:,0],hub1[:,1],'k',linewidth=1.5,label='hub-1')
+# plt.plot(shroud1[:,0],shroud1[:,1],'k',linewidth=1.5,label='shroud-1')
+# plt.plot(hub2[:,0],hub2[:,1],'m',linewidth=1.5,label='hub-2')
+# plt.plot(shroud2[:,0],shroud2[:,1],'m',linewidth=1.5,label='shroud-2')
+# plt.xlabel('x-axial')
+# plt.ylabel('radius')
+# plt.axis('equal')
+# plt.legend()
+# plt.show()
+
+
+
+cen = Centrif(blade_position=(0.0,1.0),use_mid_wrap_angle=True,
+                  use_bezier_thickness=False,
+                  use_ray_camber=False)
+cen.add_hub(hub2[:,0],hub2[:,1])
+cen.add_shroud(shroud2[:,0],shroud2[:,1])
+
+TE_Cut = False
+te_props = TrailingEdgeProperties(TE_Cut=TE_Cut,TE_Radius=0.05)
+hub = CentrifProfile(percent_span=0,LE_Thickness=0.10,
+                              trailing_edge_properties=te_props,
+                              LE_Metal_Angle=-50,
+                              TE_Metal_Angle=-30,
+                              LE_Metal_Angle_Loc=0.1,
+                              TE_Metal_Angle_Loc=0.9,
+                              ss_thickness=[0.07,0.07,0.07,0.07,0.07],
+                              ps_thickness=[0.07,0.07,0.07,0.07,0.07],
+                              wrap_angle=-25, # this doesn't matter if you set use_mid_angle_wrap=True
+                              wrap_displacements=[0.5,0.5,0.5,0.5],
+                              wrap_displacement_locs=[0.3,0.4,0.5,0.7])
+
+te_props = TrailingEdgeProperties(TE_Cut=TE_Cut,TE_Radius=0.05)
+
+mid = CentrifProfile(percent_span=0.5,LE_Thickness=0.06,
+                              trailing_edge_properties=te_props,
+                              LE_Metal_Angle=-50,
+                              TE_Metal_Angle=-30,
+                              LE_Metal_Angle_Loc=0.1,
+                              TE_Metal_Angle_Loc=0.9,
+                              ss_thickness=[0.05,0.05,0.05,0.05,0.05],
+                              ps_thickness=[0.05,0.05,0.05,0.05,0.05],
+                              wrap_angle=-25, # this doesn't matter if you set use_mid_angle_wrap=True
+                              wrap_displacements=[0.5,0.5,0.5,0.5],
+                              wrap_displacement_locs=[0.3,0.4,0.5,0.7])
+
+tip = CentrifProfile(percent_span=1,LE_Thickness=0.03,
+                              trailing_edge_properties=te_props,
+                              LE_Metal_Angle=-50,
+                              TE_Metal_Angle=-30,
+                              LE_Metal_Angle_Loc=0.1,
+                              TE_Metal_Angle_Loc=0.9,
+                              ss_thickness=[0.05,0.05,0.05,0.05],
+                              ps_thickness=[0.05,0.05,0.05,0.05],
+                              wrap_angle=-25, # this doesn't matter if you set use_mid_angle_wrap=True
+                              wrap_displacements=[0.5,0.5,0.5,0.5],
+                              wrap_displacement_locs=[0.3,0.4,0.5,0.7])
+
+cen.add_profile(hub)
+cen.add_profile(mid)
+cen.add_profile(tip)
+cen.add_splitter([hub,mid,tip],splitter_starts=0.55)
+
+cen.build(npts_span=10, npts_chord=100,nblades=nblades)
+# s_c_b2b,_ = cen.pitch_to_chord()
+# cen.plot_camber()
+# cen.plot_mp_profile()
+# cen.plot()
+cen.plot_fullwheel()
