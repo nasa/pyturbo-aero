@@ -699,6 +699,8 @@ class Centrif:
 
             ss_mp_pts[:,j,0] = csapi(tspan_profiles,temp_ss_mp_pts[:,j,0],self.t_span[:,j])   # mp
             ss_mp_pts[:,j,1] = csapi(tspan_profiles,temp_ss_mp_pts[:,j,1],self.t_span[:,j])   # theta
+            ps_mp_pts[:,j,0] = csapi(tspan_profiles,temp_ps_mp_pts[:,j,0],self.t_span[:,j])   # mp
+            ps_mp_pts[:,j,1] = csapi(tspan_profiles,temp_ps_mp_pts[:,j,1],self.t_span[:,j])   # 
 
         for i in range(self.npts_span):
             theta = ss_cyl_pts[i,:,2]
