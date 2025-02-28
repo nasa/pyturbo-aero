@@ -86,20 +86,19 @@ def test_blade_and_passage(bSplitter:bool=False,TE_Cut:bool=False,TE_Radius:floa
     cen.add_shroud(shroud1[:,0],shroud1[:,1])
     
     LE_Thickness = 0.02
-    LE_Metal_Angle = -50
-    TE_Metal_Angle = 50
-    LE_Metal_Angle_Loc = 0.15
-    TE_Metal_Angle_Loc = 0.85
-    wrap_angle=-30
-    wrap_displacements = [0.1, 0.3]
+    LE_Metal_Angle = 0
+    TE_Metal_Angle = 60
+    LE_Metal_Angle_Loc = 0.1
+    TE_Metal_Angle_Loc = 0.9
+    wrap_angle=-20
+    wrap_displacements = [0.0, 0.0]
     wrap_displacement_locs = [0.4,0.8]
     ss_thickness = [0.04,0.03,0.03,0.03,0.03,0.03,0.03]
     ps_thickness = [0.02,0.03,0.03,0.03,0.03,0.03,0.03]
     
     te_props = TrailingEdgeProperties(TE_Cut=TE_Cut,TE_Radius=TE_Radius)
 
-
-    mid = CentrifProfile(percent_span=0,LE_Thickness=LE_Thickness,
+    hub = CentrifProfile(percent_span=0,LE_Thickness=LE_Thickness,
                                    trailing_edge_properties=te_props,
                                    LE_Metal_Angle=LE_Metal_Angle,
                                    TE_Metal_Angle=TE_Metal_Angle,
@@ -110,10 +109,35 @@ def test_blade_and_passage(bSplitter:bool=False,TE_Cut:bool=False,TE_Radius:floa
                                    wrap_angle=wrap_angle,
                                    wrap_displacements=wrap_displacements,
                                    wrap_displacement_locs=wrap_displacement_locs)
-    mid.percent_span=0.5
+    
+    mid = CentrifProfile(percent_span=0.5,LE_Thickness=LE_Thickness,
+                                   trailing_edge_properties=te_props,
+                                   LE_Metal_Angle=LE_Metal_Angle,
+                                   TE_Metal_Angle=TE_Metal_Angle,
+                                   LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,
+                                   TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
+                                   ss_thickness=ss_thickness,
+                                   ps_thickness=ps_thickness,
+                                   wrap_angle=wrap_angle,
+                                   wrap_displacements=wrap_displacements,
+                                   wrap_displacement_locs=wrap_displacement_locs)
+    
+    tip = CentrifProfile(percent_span=1,LE_Thickness=LE_Thickness,
+                                   trailing_edge_properties=te_props,
+                                   LE_Metal_Angle=LE_Metal_Angle,
+                                   TE_Metal_Angle=TE_Metal_Angle,
+                                   LE_Metal_Angle_Loc=LE_Metal_Angle_Loc,
+                                   TE_Metal_Angle_Loc=TE_Metal_Angle_Loc,
+                                   ss_thickness=ss_thickness,
+                                   ps_thickness=ps_thickness,
+                                   wrap_angle=wrap_angle,
+                                   wrap_displacements=wrap_displacements,
+                                   wrap_displacement_locs=wrap_displacement_locs)
+    cen.add_profile(hub)
     cen.add_profile(mid)
+    cen.add_profile(tip)
    
-    cen.build(npts_span=50, npts_chord=150,nblades=6,nsplitters=6)
+    cen.build(npts_span=10, npts_chord=150,nblades=6,nsplitters=0)
     cen.plot_mp_profile()
     cen.plot()
     # cen.plot_camber()
