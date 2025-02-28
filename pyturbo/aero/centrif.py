@@ -429,7 +429,7 @@ class Centrif:
             return np.abs(radius_e-d)
         
         t = minimize_scalar(dist,bounds=[0,1])
-        dx,dy = camber.get_point_dt(t.x)      # Gets the slope at the end
+        dx,dy = camber.get_point_dt((SS[-2,2]+t.x)/2)      # Gets the slope at the end
         theta = np.degrees(np.atan2(dy,dx))
         x,y = camber.get_point(t.x)           # Get the point at the end 
         SS[-1,2]=t.x
@@ -564,7 +564,7 @@ class Centrif:
             SS[:,2] = np.hstack([[camber_start],tss])
             PS[:,2] = np.hstack([[camber_start],tps])
         
-        for _ in range(2):
+        for _ in range(5):
             # Pressure side thicknesses
             for j in range(2,PS.shape[0]):  
                 mp_start,th_start = camber(PS[j,2])
