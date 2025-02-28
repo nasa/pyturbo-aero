@@ -429,7 +429,7 @@ class Centrif:
             return np.abs(radius_e-d)
         
         t = minimize_scalar(dist,bounds=[0,1])
-        dx,dy = camber.get_point_dt((SS[-2,2]+t.x)/2)      # Gets the slope at the end
+        dx,dy = camber.get_point_dt(t.x)      # Gets the slope at the end
         theta = np.degrees(np.atan2(dy,dx))
         x,y = camber.get_point(t.x)           # Get the point at the end 
         SS[-1,2]=t.x
@@ -507,6 +507,8 @@ class Centrif:
         
      
         te_radius = profile.trailing_edge_properties.TE_Radius
+        profile.ps_thickness.append(te_radius)
+        profile.ss_thickness.append(te_radius)
         # mp-full from slice start to end. Slice is between hub and shroud. 
         xr_full = self.__get_rx_slice__(profile.percent_span,np.linspace(0,1,self.npts_chord*2))
         dx = np.diff(xr_full[:,0])
@@ -564,7 +566,7 @@ class Centrif:
             SS[:,2] = np.hstack([[camber_start],tss])
             PS[:,2] = np.hstack([[camber_start],tps])
         
-        for _ in range(5):
+        for _ in range(2):
             # Pressure side thicknesses
             for j in range(2,PS.shape[0]):  
                 mp_start,th_start = camber(PS[j,2])

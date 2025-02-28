@@ -19,8 +19,6 @@ numpy-stl = "*"
 geomdl = "*"
 plot3d = "*"
 
-[tool.poetry.dev-dependencies]
-
 [build-system]
 requires = ["poetry>=1.1.2"]
 build-backend = "poetry.masonry.api"    
