@@ -60,6 +60,7 @@ class arc():
     
         ax1.plot(x, y, color=color, linestyle='-')
         ax1.plot(self.x, self.y, color='k', marker='o')
+        plt.axis('equal')
         plt.show()
 
 def arclen(x:npt.NDArray,y:npt.NDArray) -> float:
