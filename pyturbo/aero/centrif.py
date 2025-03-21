@@ -535,7 +535,6 @@ class Centrif:
         ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[2:], ss_arc.y[2:]]).transpose()])
         ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
         ss_mp_pts[:,:2] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,npts_chord)
-        
             
         m = 1/(self.t_hub.max()-self.t_hub.min())
         # Inversely solve for t_camber for each mp value
