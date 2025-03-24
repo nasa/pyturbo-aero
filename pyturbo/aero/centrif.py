@@ -535,6 +535,7 @@ class Centrif:
         ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[2:], ss_arc.y[2:]]).transpose()])
         ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
         ss_mp_pts[:,:2] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,npts_chord)
+        
             
         m = 1/(self.t_hub.max()-self.t_hub.min())
         # Inversely solve for t_camber for each mp value
@@ -849,33 +850,43 @@ class Centrif:
         plt.axis('equal')
         # plt.show()
         
-    def plot_mp_profile(self):
+    def plot_mp_profile(self,nblades:int=1,total_blades:int=1):
         """Plot the control profiles in the rx-theta plane
+        
+        Args:
+            nblades (int, optional): number of blades. Defaults to 1.
+            total_blades (int, optional): total blades, used to calculate dtheta. Defaults to 1.
         """
         def plot_data(profiles_debug:CentrifProfileDebug,prefix:str):
+            dtheta = 360/total_blades
             for i in range(len(profiles_debug)):
-                p = profiles_debug[i]
-                plt.figure(num=i*4,clear=True)    # mp view
-                plt.plot(p.camber_mp_th[:,0],p.camber_mp_th[:,3], color='black', linestyle='dashed',linewidth=2,label='camber')
-                plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction') 
-                plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
-                plt.plot(p.ss_mp_pts[:,0],p.ss_mp_pts[:,1],'r-',label='ss')
-                plt.plot(p.ps_mp_pts[:,0],p.ps_mp_pts[:,1],'b-',label='ps')
-                plt.plot(p.ss_arc.x,p.ss_arc.y,'ro',markerfacecolor='none',label='suction')
-                plt.plot(p.ps_arc.x,p.ps_arc.y,'bo',markerfacecolor='none',label='pressure')
+                theta = 0; p = profiles_debug[i]
+                plt.figure(num=i*4,clear=True)          # mp view
+                for n in range(nblades):
+                    plt.plot(p.camber_mp_th[:,0],p.camber_mp_th[:,3]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+                    plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction') 
+                    plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
+                    plt.plot(p.ss_mp_pts[:,0],p.ss_mp_pts[:,1]+theta,'r-',label='ss')
+                    plt.plot(p.ps_mp_pts[:,0],p.ps_mp_pts[:,1]+theta,'b-',label='ps')
+                    plt.plot(p.ss_arc.x,p.ss_arc.y+theta,'ro',markerfacecolor='none',label='suction')
+                    plt.plot(p.ps_arc.x,p.ps_arc.y+theta,'bo',markerfacecolor='none',label='pressure')
+                    theta += dtheta
                 plt.legend()
                 plt.xlabel('mprime')
                 plt.ylabel('theta')
                 plt.title(f'mprime profile-{i}')
                 plt.axis('equal')
-                # plt.show()
                 plt.savefig(f'{prefix} mp-theta {i:02d}.png',dpi=150)
                 
-                plt.figure(num=i*4+1,clear=True)    # x-theta view
-                xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-                plt.plot(xrth[:,0],xrth[:,2], color='black', linestyle='dashed',linewidth=2,label='camber')
-                plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,1],'r-',label='ss')
-                plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,1],'b-',label='ps')
+            for i in range(len(profiles_debug)):
+                theta = 0; p = profiles_debug[i]
+                plt.figure(num=i*4+1,clear=True)        # x-theta view
+                for n in range(nblades):
+                    xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+                    plt.plot(xrth[:,0],xrth[:,2]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+                    plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,1]+theta,'r-',label='ss')
+                    plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,1]+theta,'b-',label='ps')
+                    theta += dtheta
                 plt.legend()
                 plt.xlabel('X')
                 plt.ylabel('Theta')
@@ -883,31 +894,39 @@ class Centrif:
                 plt.axis('equal')
                 plt.savefig(f'{prefix} x-theta {i:02d}.png',dpi=150)
                 
-                plt.figure(num=i*4+2,clear=True)    # theta-r view
-                xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-                plt.plot(np.degrees(xrth[:,2]),xrth[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
-                plt.plot(np.degrees(p.ss_mp_pts[:,1]),p.ss_mp_pts[:,2],'r-',label='ss')
-                plt.plot(np.degrees(p.ps_mp_pts[:,1]),p.ps_mp_pts[:,2],'b-',label='ps')
+            for i in range(len(profiles_debug)):
+                theta = 0; p = profiles_debug[i]
+                plt.figure(num=i*4+2,clear=True)        # theta-r view
+                for n in range(nblades):
+                    xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+                    plt.plot(np.degrees(xrth[:,2]),xrth[:,1]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+                    plt.plot(np.degrees(p.ss_mp_pts[:,1]),p.ss_mp_pts[:,2]+theta,'r-',label='ss')
+                    plt.plot(np.degrees(p.ps_mp_pts[:,1]),p.ps_mp_pts[:,2]+theta,'b-',label='ps')
+                    theta += dtheta
                 plt.legend()
                 plt.xlabel('Theta')
                 plt.ylabel('R')
                 plt.axis('equal')
                 plt.title(f'Theta-r Profile-{i}')
                 plt.savefig(f'{prefix} theta-r {i:02d}.png',dpi=150)
-                
-                plt.figure(num=i*4+3,clear=True)    # x-r view
+            
+            for i in range(len(profiles_debug)):
+                p = profiles_debug[i]
+                plt.figure(num=i*4+3,clear=True)        # x-r view
                 xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-                plt.plot(xrth[:,0],xrth[:,1], color='black', linestyle='dashed',linewidth=2,label='camber')
-                plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,2],'r-',label='ss')
-                plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,2],'b-',label='ps')
-                plt.plot(self.hub_pts_cyl[0,:,0],self.hub_pts_cyl[0,:,1],'k',label='hub',alpha=0.2)
-                plt.plot(self.shroud_pts_cyl[0,:,0],self.shroud_pts_cyl[0,:,1],'k',label='shroud',alpha=0.2)
+                plt.plot(xrth[:,0],xrth[:,1]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+                plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,2]+theta,'r-',label='ss')
+                plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,2]+theta,'b-',label='ps')
+                plt.plot(self.hub_pts_cyl[0,:,0],self.hub_pts_cyl[0,:,1]+theta,'k',label='hub',alpha=0.2)
+                plt.plot(self.shroud_pts_cyl[0,:,0],self.shroud_pts_cyl[0,:,1]+theta,'k',label='shroud',alpha=0.2)
+                
                 plt.legend()
                 plt.xlabel('x')
                 plt.ylabel('r')
                 plt.title(f'x-r Profile-{i}')
                 plt.axis('equal')
                 plt.savefig(f'{prefix} x-r {i:02d}.png',dpi=150)
+                
         plot_data(self.profiles_debug,'profile')
         if self.splitter_debug is not None:
             plot_data(self.splitter_debug,'splitter')
