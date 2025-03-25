@@ -477,15 +477,15 @@ class Centrif:
         dmp_dt,dth_dt = camber.get_point_dt(camber_start)
         mp,th = camber.get_point(np.linspace(0,1,1000))
         camber_len = np.cumsum(np.sqrt(np.diff(mp)**2 + np.diff(th)**2))
-        imin = np.argmin(np.abs(camber_len- (camber_len[-1]-te_radius)))
+        imin = np.argmin(np.abs(camber_len- (camber_len[-1]-te_radius*4)))
         t_end = t_camber[imin]
         
         angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
-        PS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle+90))   # mp
-        PS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle+90))   # theta
+        PS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle-90))   # mp
+        PS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle-90))   # theta
         
-        SS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle-90))   # mp
-        SS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle-90))   # theta
+        SS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle+90))   # mp
+        SS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle+90))   # theta
         
         tss = np.linspace(camber_start,t_end,len(profile.ss_thickness)+2)
         # tss = camber_start + exp_ratio(1.3,len(profile.ss_thickness)+2,1-camber_start)
@@ -508,11 +508,11 @@ class Centrif:
                 angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
                 if profile.trailing_edge_properties.TE_Cut and j == PS.shape[0]-2-TE_cut_strength:
                     PS[j:j+TE_cut_strength+1,0] = mp_start
-                    PS[j:j+TE_cut_strength+1,1] = np.linspace(th_start + profile.ps_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
+                    PS[j:j+TE_cut_strength+1,1] = np.linspace(th_start - profile.ps_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
                     break
                 else:
-                    PS[j,0] = mp_start + profile.ps_thickness[j-3] * np.cos(np.radians(angle+90))
-                    PS[j,1] = th_start + profile.ps_thickness[j-3] * np.sin(np.radians(angle+90))
+                    PS[j,0] = mp_start + profile.ps_thickness[j-3] * np.cos(np.radians(angle-90))
+                    PS[j,1] = th_start + profile.ps_thickness[j-3] * np.sin(np.radians(angle-90))
             
             for j in range(2,SS.shape[0]):  
                 mp_start,th_start = camber(SS[j,2])
@@ -521,21 +521,18 @@ class Centrif:
                 angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
                 if profile.trailing_edge_properties.TE_Cut and j == SS.shape[0]-2-TE_cut_strength:
                     SS[j:j+TE_cut_strength+1,0] = mp_start
-                    SS[j:j+TE_cut_strength+1,1] = np.linspace(th_start - profile.ss_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
+                    SS[j:j+TE_cut_strength+1,1] = np.linspace(th_start + profile.ss_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
                     break
                 else:
-                    SS[j,0] = mp_start + profile.ss_thickness[j-3] * np.cos(np.radians(angle-90))
-                    SS[j,1] = th_start + profile.ss_thickness[j-3] * np.sin(np.radians(angle-90))
+                    SS[j,0] = mp_start + profile.ss_thickness[j-3] * np.cos(np.radians(angle+90))
+                    SS[j,1] = th_start + profile.ss_thickness[j-3] * np.sin(np.radians(angle+90))
         
-            
-        # Add TE 
-
+        # Add TE
         _, _, ss_arc, ps_arc = centrif_create_te(SS=SS[:,:2],PS=PS[:,:2],camber=camber,radius=te_radius,n_te_pts=30)
         ps_nurbs_ctrl_pts = np.vstack([PS[:,:2], np.vstack([ps_arc.x[2:], ps_arc.y[2:]]).transpose()])
         ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[2:], ss_arc.y[2:]]).transpose()])
         ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
         ss_mp_pts[:,:2] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,npts_chord)
-        
             
         m = 1/(self.t_hub.max()-self.t_hub.min())
         # Inversely solve for t_camber for each mp value
@@ -555,7 +552,7 @@ class Centrif:
             xrth = self.__get_rx_slice__(profile.percent_span,[ps_mp_pts[j,4]])[0]
             ps_mp_pts[j,2] = xrth[1] # r
             ps_mp_pts[j,3] = xrth[0] # x
-
+            
         ss_mp_pts[:,5] = profile.percent_span # percent span location of each profile
         ps_mp_pts[:,5] = profile.percent_span  
 
@@ -858,7 +855,7 @@ class Centrif:
             total_blades (int, optional): total blades, used to calculate dtheta. Defaults to 1.
         """
         def plot_data(profiles_debug:CentrifProfileDebug,prefix:str):
-            dtheta = 360/total_blades
+            dtheta = np.radians(360/total_blades)
             for i in range(len(profiles_debug)):
                 theta = 0; p = profiles_debug[i]
                 plt.figure(num=i*4,clear=True)          # mp view
@@ -1066,9 +1063,8 @@ class Centrif:
                 
         return s_c_b2b,s_c_b2s
     
- 
 
-def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1, n_te_pts:int=30):
+def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1, n_te_pts:int=15):
     """Add a trailing edge that's rounded
 
     Args:
@@ -1080,21 +1076,21 @@ def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1
     xn,yn = camber.get_point(1) # End of camber line
     dx_dt,dy_dt = camber.get_point_dt(1)
     r = np.sqrt((PS[-1,0] - SS[-1,0])**2 + (PS[-1,1] - SS[-1,1])**2)
-    dx1=(PS[-1,0] - PS[-2,0])*0.05
-    dy1=(PS[-1,1] - PS[-2,1])*0.05
+    dx1=(PS[-1,0] - PS[-2,0])*0.02
+    dy1=(PS[-1,1] - PS[-2,1])*0.02
     x = [PS[-1,0],PS[-1,0]+dx1,xn-dy_dt*radius,xn] 
     y = [PS[-1,1],PS[-1,1]+dy1,yn+dx_dt*radius,yn]
     
     x = [float(p) for p in x];y = [float(p) for p in y]
-    ps_arc = bezier(x, y)
+    ss_arc = bezier(x, y)
     
-    dx1=(SS[-1,0] - SS[-2,0])*0.05
-    dy1=(SS[-1,1] - SS[-2,1])*0.05
+    dx1=(SS[-1,0] - SS[-2,0])*0.02
+    dy1=(SS[-1,1] - SS[-2,1])*0.02
     x = [SS[-1,0],SS[-1,0]+dx1,xn+dy_dt*radius,xn]
     y = [SS[-1,1],SS[-1,1]+dy1,yn-dx_dt*radius,yn]
     
     x = [float(p) for p in x]; y = [float(p) for p in y]
-    ss_arc = bezier(x,y)
+    ps_arc = bezier(x,y)
     
     ps_te_pts = ps_arc.get_point(np.linspace(0,1,n_te_pts))
     ss_te_pts = ss_arc.get_point(np.linspace(0,1,n_te_pts))
