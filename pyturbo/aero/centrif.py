@@ -57,12 +57,14 @@ class CentrifProfile:
     
     ss_thickness:List[float]
     ps_thickness:List[float]
-    
+
     wrap_angle:float                        # angle of wrap/theta
     wrap_displacements:List[float]          # percent of wrap_angle
     wrap_displacement_locs:List[float]      # percent chord
     
     trailing_edge_properties:TrailingEdgeProperties
+    thickness_start:float=0.02
+    thickness_end:float=0.95
     
 @dataclass
 class CentrifProfileDebug:
@@ -349,21 +351,21 @@ class Centrif:
             y = np.hstack([camber_bezier_mp_th[0:2,1], camber_bezier_mp_th[-2:,1]])
             camber_bezier = bezier(x, y)
 
-        if np.any(np.abs(profile.wrap_displacements)>0): # If there are displacements factor it in
-            # # Distance formula in cylindrical coordinates https://math.stackexchange.com/questions/3612484/how-do-you-calculate-distance-between-two-cylindrical-coordinates
-            # camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.wrap_angle)) + (xr1[0]-xr0[0])**2)
-            j = 2
-            dl = profile.TE_Metal_Angle_Loc - profile.LE_Metal_Angle_Loc
-            for loc,displacement in zip(profile.wrap_displacement_locs, profile.wrap_displacements):
-                l = profile.LE_Metal_Angle_Loc + loc*dl
-                nx,ny = camber_bezier.get_point_dt(l)
-                x1,y1 = camber_bezier.get_point(l)
-                x2 = x1
-                y2 = -displacement*dth_wrap + dth_wrap
-                camber_bezier_mp_th[j,0] = x2
-                camber_bezier_mp_th[j,1] = y2
-                j+=1
-            camber_bezier = bezier(camber_bezier_mp_th[:,0],camber_bezier_mp_th[:,1])
+        # if np.any(np.abs(profile.wrap_displacements)>0): # If there are displacements factor it in
+        # # Distance formula in cylindrical coordinates https://math.stackexchange.com/questions/3612484/how-do-you-calculate-distance-between-two-cylindrical-coordinates
+        # camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.wrap_angle)) + (xr1[0]-xr0[0])**2)
+        j = 2
+        dl = profile.TE_Metal_Angle_Loc - profile.LE_Metal_Angle_Loc
+        for loc,displacement in zip(profile.wrap_displacement_locs, profile.wrap_displacements):
+            l = profile.LE_Metal_Angle_Loc + loc*dl
+            nx,ny = camber_bezier.get_point_dt(l)
+            x1,y1 = camber_bezier.get_point(l)
+            x2 = x1
+            y2 = -displacement*dth_wrap
+            camber_bezier_mp_th[j,0] = x2
+            camber_bezier_mp_th[j,1] = y2
+            j+=1
+        camber_bezier = bezier(camber_bezier_mp_th[:,0],camber_bezier_mp_th[:,1])
         return camber_bezier,dth_wrap
 
     def apply_camber_shifts(self,le_theta_shifts:List[float]=[],te_theta_shifts:List[float]=[]):
@@ -473,12 +475,14 @@ class Centrif:
         PS[0,1] = th_start
 
         # Add LE Thickness
-        t_camber = np.linspace(0,1,1000)
         dmp_dt,dth_dt = camber.get_point_dt(camber_start)
         mp,th = camber.get_point(np.linspace(0,1,1000))
-        camber_len = np.cumsum(np.sqrt(np.diff(mp)**2 + np.diff(th)**2))
-        imin = np.argmin(np.abs(camber_len- (camber_len[-1]-te_radius*4)))
-        t_end = t_camber[imin]
+        mp_len = mp[-1]
+        
+        profile.LE_Thickness *= mp_len
+        profile.ss_thickness = [th*mp_len for th in profile.ss_thickness]  # Scale it as a percentage of the max mprime
+        profile.ps_thickness = [th*mp_len for th in profile.ps_thickness]
+        profile.trailing_edge_properties.TE_Radius *= mp_len
         
         angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
         PS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle-90))   # mp
@@ -487,9 +491,9 @@ class Centrif:
         SS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle+90))   # mp
         SS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle+90))   # theta
         
-        tss = np.linspace(camber_start,t_end,len(profile.ss_thickness)+2)
+        tss = np.hstack([[camber_start], np.linspace(profile.thickness_start,profile.thickness_end,len(profile.ss_thickness)+1)])
         # tss = camber_start + exp_ratio(1.3,len(profile.ss_thickness)+2,1-camber_start)
-        tps = np.linspace(camber_start,t_end,len(profile.ps_thickness)+2)
+        tps = np.hstack([[camber_start], np.linspace(profile.thickness_start,profile.thickness_end,len(profile.ps_thickness)+1)])
         # tps = camber_start + exp_ratio(1.3,len(profile.ps_thickness)+2,1-camber_start)
 
         if profile.trailing_edge_properties.TE_Cut:
@@ -529,8 +533,8 @@ class Centrif:
         
         # Add TE
         _, _, ss_arc, ps_arc = centrif_create_te(SS=SS[:,:2],PS=PS[:,:2],camber=camber,radius=te_radius,n_te_pts=30)
-        ps_nurbs_ctrl_pts = np.vstack([PS[:,:2], np.vstack([ps_arc.x[2:], ps_arc.y[2:]]).transpose()])
-        ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[2:], ss_arc.y[2:]]).transpose()])
+        ps_nurbs_ctrl_pts = np.vstack([PS[:,:2], np.vstack([ps_arc.x[1:], ps_arc.y[1:]]).transpose()])
+        ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[1:], ss_arc.y[1:]]).transpose()])
         ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
         ss_mp_pts[:,:2] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,npts_chord)
             
@@ -859,7 +863,7 @@ class Centrif:
             for i in range(len(profiles_debug)):
                 theta = 0; p = profiles_debug[i]
                 plt.figure(num=i*4,clear=True)          # mp view
-                for n in range(nblades):
+                for _ in range(nblades):
                     plt.plot(p.camber_mp_th[:,0],p.camber_mp_th[:,3]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
                     plt.plot(p.SS[:,0],p.SS[:,1],'ro', label='suction') 
                     plt.plot(p.PS[:,0],p.PS[:,1],'bo',label='pressure')
@@ -875,37 +879,37 @@ class Centrif:
                 plt.axis('equal')
                 plt.savefig(f'{prefix} mp-theta {i:02d}.png',dpi=150)
                 
-            for i in range(len(profiles_debug)):
-                theta = 0; p = profiles_debug[i]
-                plt.figure(num=i*4+1,clear=True)        # x-theta view
-                for n in range(nblades):
-                    xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-                    plt.plot(xrth[:,0],xrth[:,2]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
-                    plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,1]+theta,'r-',label='ss')
-                    plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,1]+theta,'b-',label='ps')
-                    theta += dtheta
-                plt.legend()
-                plt.xlabel('X')
-                plt.ylabel('Theta')
-                plt.title(f'X-Theta Profile-{i}')
-                plt.axis('equal')
-                plt.savefig(f'{prefix} x-theta {i:02d}.png',dpi=150)
+            # for i in range(len(profiles_debug)):
+            #     theta = 0; p = profiles_debug[i]
+            #     plt.figure(num=i*4+1,clear=True)        # x-theta view
+            #     for n in range(nblades):
+            #         xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+            #         plt.plot(xrth[:,0],xrth[:,2]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+            #         plt.plot(p.ss_mp_pts[:,3],p.ss_mp_pts[:,1]+theta,'r-',label='ss')
+            #         plt.plot(p.ps_mp_pts[:,3],p.ps_mp_pts[:,1]+theta,'b-',label='ps')
+            #         theta += dtheta
+            #     plt.legend()
+            #     plt.xlabel('X')
+            #     plt.ylabel('Theta')
+            #     plt.title(f'X-Theta Profile-{i}')
+            #     plt.axis('equal')
+            #     plt.savefig(f'{prefix} x-theta {i:02d}.png',dpi=150)
                 
-            for i in range(len(profiles_debug)):
-                theta = 0; p = profiles_debug[i]
-                plt.figure(num=i*4+2,clear=True)        # theta-r view
-                for n in range(nblades):
-                    xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
-                    plt.plot(np.degrees(xrth[:,2]),xrth[:,1]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
-                    plt.plot(np.degrees(p.ss_mp_pts[:,1]),p.ss_mp_pts[:,2]+theta,'r-',label='ss')
-                    plt.plot(np.degrees(p.ps_mp_pts[:,1]),p.ps_mp_pts[:,2]+theta,'b-',label='ps')
-                    theta += dtheta
-                plt.legend()
-                plt.xlabel('Theta')
-                plt.ylabel('R')
-                plt.axis('equal')
-                plt.title(f'Theta-r Profile-{i}')
-                plt.savefig(f'{prefix} theta-r {i:02d}.png',dpi=150)
+            # for i in range(len(profiles_debug)):
+            #     theta = 0; p = profiles_debug[i]
+            #     plt.figure(num=i*4+2,clear=True)        # theta-r view
+            #     for n in range(nblades):
+            #         xrth = self.get_camber_points(i,self.t_hub,self.t_camber)
+            #         plt.plot(np.degrees(xrth[:,2]),xrth[:,1]+theta, color='black', linestyle='dashed',linewidth=2,label='camber')
+            #         plt.plot(np.degrees(p.ss_mp_pts[:,1]),p.ss_mp_pts[:,2]+theta,'r-',label='ss')
+            #         plt.plot(np.degrees(p.ps_mp_pts[:,1]),p.ps_mp_pts[:,2]+theta,'b-',label='ps')
+            #         theta += dtheta
+            #     plt.legend()
+            #     plt.xlabel('Theta')
+            #     plt.ylabel('R')
+            #     plt.axis('equal')
+            #     plt.title(f'Theta-r Profile-{i}')
+            #     plt.savefig(f'{prefix} theta-r {i:02d}.png',dpi=150)
             
             for i in range(len(profiles_debug)):
                 p = profiles_debug[i]
@@ -1078,19 +1082,23 @@ def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1
     r = np.sqrt((PS[-1,0] - SS[-1,0])**2 + (PS[-1,1] - SS[-1,1])**2)
     dx1=(PS[-1,0] - PS[-2,0])*0.02
     dy1=(PS[-1,1] - PS[-2,1])*0.02
-    x = [PS[-1,0],PS[-1,0]+dx1,xn-dy_dt*radius,xn] 
-    y = [PS[-1,1],PS[-1,1]+dy1,yn+dx_dt*radius,yn]
+    # x = [PS[-1,0],PS[-1,0]+dx1,xn+dy_dt*radius,xn] 
+    # y = [PS[-1,1],PS[-1,1]+dy1,yn-dx_dt*radius,yn]
+    x = [PS[-1,0],xn+dy_dt*radius,xn] 
+    y = [PS[-1,1],yn-dx_dt*radius,yn]
     
     x = [float(p) for p in x];y = [float(p) for p in y]
-    ss_arc = bezier(x, y)
+    ps_arc = bezier(x, y)
     
     dx1=(SS[-1,0] - SS[-2,0])*0.02
     dy1=(SS[-1,1] - SS[-2,1])*0.02
-    x = [SS[-1,0],SS[-1,0]+dx1,xn+dy_dt*radius,xn]
-    y = [SS[-1,1],SS[-1,1]+dy1,yn-dx_dt*radius,yn]
+    # x = [SS[-1,0],SS[-1,0]+dx1,xn-dy_dt*radius,xn]
+    # y = [SS[-1,1],SS[-1,1]+dy1,yn+dx_dt*radius,yn]
+    x = [SS[-1,0],xn-dy_dt*radius,xn]
+    y = [SS[-1,1],yn+dx_dt*radius,yn]
     
     x = [float(p) for p in x]; y = [float(p) for p in y]
-    ps_arc = bezier(x,y)
+    ss_arc = bezier(x,y)
     
     ps_te_pts = ps_arc.get_point(np.linspace(0,1,n_te_pts))
     ss_te_pts = ss_arc.get_point(np.linspace(0,1,n_te_pts))
