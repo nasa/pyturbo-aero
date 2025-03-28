@@ -63,7 +63,7 @@ class CentrifProfile:
     wrap_displacement_locs:List[float]      # percent chord
     
     trailing_edge_properties:TrailingEdgeProperties
-    thickness_start:float=0.02
+    thickness_start:float=0.01
     thickness_end:float=0.95
     
 @dataclass
@@ -543,16 +543,22 @@ class Centrif:
         for j in range(npts_chord):
             mp = ss_mp_pts[j,0] + mp_offset
             res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
+            if j == (npts_chord-1):
+                res.x = self.blade_position[1]
+            elif j == 0:
+                res.x = self.blade_position[0]
             ss_mp_pts[j,4] = res.x # new t_camber for mp value 
-            thub = 1/m * res.x + self.t_hub.min()
             xrth = self.__get_rx_slice__(profile.percent_span,[ss_mp_pts[j,4]])[0]
             ss_mp_pts[j,2] = xrth[1] # r
             ss_mp_pts[j,3] = xrth[0] # x
 
             mp = ps_mp_pts[j,0] + mp_offset
             res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
+            if j == (npts_chord-1):
+                res.x = self.blade_position[1]
+            elif j == 0:
+                res.x = self.blade_position[0]
             ps_mp_pts[j,4] = res.x
-            thub = 1/m * res.x + self.t_hub.min()   # Converting t-camber to thub
             xrth = self.__get_rx_slice__(profile.percent_span,[ps_mp_pts[j,4]])[0]
             ps_mp_pts[j,2] = xrth[1] # r
             ps_mp_pts[j,3] = xrth[0] # x
