@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from typing import List, Optional, Tuple, Union
-from pyturbo.helper import convert_to_ndarray, line2D, bezier, csapi, ray2D, ray2D_intersection, arc, ellispe
+from pyturbo.helper import convert_to_ndarray, line2D, bezier, csapi, ray2D, ray2D_intersection, arc, ellispe, xr_to_mprime
 import numpy.typing as npt 
 import numpy as np 
 from scipy.interpolate import PchipInterpolator
@@ -111,6 +111,7 @@ class Centrif:
     func_rhub:PchipInterpolator
     func_xshroud:PchipInterpolator
     func_rshroud:PchipInterpolator
+    hub_arc_len:float 
     
     camber_mp_th:List[bezier]
     le_theta_shifts:List[float] = []
@@ -154,7 +155,6 @@ class Centrif:
         self.use_bezier_thickness = use_bezier_thickness
         self.camber_mp_th = list()
         self.patterns.append(PatternPairCentrif(chord_scaling=1,rotation_ajustment=0)) # adds a default pattern, this is no modification
-
 
     def set_blade_position(self,t_start:float,t_end:float):
         """Sets the starting location of blade along the hub. 
@@ -242,6 +242,7 @@ class Centrif:
     
     def __get_camber_xr_point__(self,t_span:float,t_hub:float) -> npt.NDArray:
         # Returns the x,r point. Doesn't require vertical line test 
+        t_hub = t_hub * self.hub_arc_len
         shroud_pts_cyl = np.hstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)])
         hub_pts_cyl = np.hstack([self.func_xhub(t_hub),self.func_rhub(t_hub)])    
         l = line2D(hub_pts_cyl,shroud_pts_cyl)
@@ -260,7 +261,7 @@ class Centrif:
         """
         # Returns xr for the camber line. Doesn't require vertical line test 
         # t_hub is the percent along the hub 
-       
+        t_hub = convert_to_ndarray(t_hub)*self.hub_arc_len
         shroud_pts_cyl = np.vstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)]).transpose()
         hub_pts_cyl = np.vstack([self.func_xhub(t_hub),self.func_rhub(t_hub)]).transpose()
         n = len(t_hub)
@@ -312,11 +313,7 @@ class Centrif:
         """
         profile_loc = profile.percent_span
         xr = self.__get_rx_slice__(profile_loc,np.linspace(self.blade_position[0],self.blade_position[1],self.npts_chord))
-        dx = np.diff(xr[:,0])
-        dr = np.diff(xr[:,1])
-        # mprime
-        mp = [2/(xr[i,1]+xr[i-1,1])*np.sqrt(dr[i-1]**2 + dx[i-1]**2) for i in range(1,len(xr[:,1]))]
-        mp = np.hstack([[0],np.cumsum(mp)])        
+        mp = xr_to_mprime(xr)[0]
         camb_len = mp[-1]
 
         camber_bezier_mp_th = np.zeros(shape=(4+len(profile.wrap_displacements),2)) # Bezier Control points in the mp,theta plane
@@ -327,7 +324,6 @@ class Centrif:
         if theta_wrap:
             dth_wrap = theta_wrap
         dth_TE = dth_wrap - mp[-1]*(1-profile.TE_Metal_Angle_Loc)*np.tan(np.radians(profile.TE_Metal_Angle))
-        
         
         # r1 = starting radius, r2 = ending radius             
         # wrap_displacement_locs: percent chord
@@ -442,19 +438,12 @@ class Centrif:
 
         # mp-full from slice start to end. Slice is between hub and shroud. 
         xr_full = self.__get_rx_slice__(profile.percent_span,np.linspace(0,1,self.npts_chord*4))
-        dx = np.diff(xr_full[:,0])
-        dr = np.diff(xr_full[:,1])
-
-        dist_mp_full = [2/(xr_full[i,1]+xr_full[i-1,1])*np.sqrt(dr[i-1]**2 + dx[i-1]**2) for i in range(1,len(xr_full[:,1]))]
-        dist_mp_full = np.hstack([[0],np.cumsum(dist_mp_full)])
+        dist_mp_full = xr_to_mprime(xr_full)[0]
         func_mp_full = PchipInterpolator(np.linspace(0,1,self.npts_chord*4),dist_mp_full)
         
         xr = self.__get_rx_slice__(profile.percent_span,np.linspace(0,self.blade_position[0],self.npts_chord))
-        dx = np.diff(xr[:,0])
-        dr = np.diff(xr[:,1])
-        # mprime
-        mp = [2/(xr[i,1]+xr[i-1,1])*np.sqrt(dr[i-1]**2 + dx[i-1]**2) for i in range(1,len(xr[:,1]))]
-        mp_offset = np.cumsum(mp)[-1]
+        mp = xr_to_mprime(xr)[0]
+        mp_offset = mp[-1]
         
         # Apply Thickness in theta
         npoint_ss = len(profile.ss_thickness)+3 # LE Start, LE Thickness, SS_Thickness, TE_Radius
@@ -532,7 +521,7 @@ class Centrif:
                     SS[j,1] = th_start + profile.ss_thickness[j-3] * np.sin(np.radians(angle+90))
         
         # Add TE
-        _, _, ss_arc, ps_arc = centrif_create_te(SS=SS[:,:2],PS=PS[:,:2],camber=camber,radius=te_radius,n_te_pts=30)
+        ss_arc_pts, ps_arc_pts, ss_arc, ps_arc = centrif_create_te(SS=SS[:,:2],PS=PS[:,:2],camber=camber,radius=te_radius,n_te_pts=30)
         ps_nurbs_ctrl_pts = np.vstack([PS[:,:2], np.vstack([ps_arc.x[1:], ps_arc.y[1:]]).transpose()])
         ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[1:], ss_arc.y[1:]]).transpose()])
         ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
@@ -542,27 +531,26 @@ class Centrif:
         # Inversely solve for t_camber for each mp value
         for j in range(npts_chord):
             mp = ss_mp_pts[j,0] + mp_offset
-            res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
-            if j == (npts_chord-1):
-                res.x = self.blade_position[1]
-            elif j == 0:
-                res.x = self.blade_position[0]
+            res = minimize_scalar(solve_t,bounds=[0,1],args=(mp,func_mp_full),tol=1e-12)
             ss_mp_pts[j,4] = res.x # new t_camber for mp value 
-            xrth = self.__get_rx_slice__(profile.percent_span,[ss_mp_pts[j,4]])[0]
+            xrth = self.__get_rx_slice__(profile.percent_span,[res.x])[0]
             ss_mp_pts[j,2] = xrth[1] # r
             ss_mp_pts[j,3] = xrth[0] # x
 
             mp = ps_mp_pts[j,0] + mp_offset
-            res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
-            if j == (npts_chord-1):
-                res.x = self.blade_position[1]
-            elif j == 0:
-                res.x = self.blade_position[0]
+            res = minimize_scalar(solve_t,bounds=[0,1],args=(mp,func_mp_full),tol=1e-12)
             ps_mp_pts[j,4] = res.x
-            xrth = self.__get_rx_slice__(profile.percent_span,[ps_mp_pts[j,4]])[0]
+            xrth = self.__get_rx_slice__(profile.percent_span,[res.x])[0]
             ps_mp_pts[j,2] = xrth[1] # r
             ps_mp_pts[j,3] = xrth[0] # x
-            
+        # # At leading edge 
+        # mean_vals = 0.5*(ss_mp_pts[0,1:4] + ps_mp_pts[0,1:4]) # th,r,x
+        # ss_mp_pts[0,1:4] = mean_vals; ps_mp_pts[0,1:4] = mean_vals
+    
+        # # At trailing edge 
+        # mean_vals = 0.5*(ss_mp_pts[-1,1:4] + ps_mp_pts[-1,1:4]) # th,r,x
+        # ss_mp_pts[-1,1:4] = mean_vals; ps_mp_pts[-1,1:4] = mean_vals
+        
         ss_mp_pts[:,5] = profile.percent_span # percent span location of each profile
         ps_mp_pts[:,5] = profile.percent_span  
 
@@ -584,11 +572,13 @@ class Centrif:
         Args:
             hub_rotation_resolution (int, optional): Resolution in number of hub rotations. Defaults to 20.
         """
-        t = np.linspace(0,1,self.hub.shape[0])
-        self.func_xhub = PchipInterpolator(t,self.hub[:,0])
-        self.func_rhub = PchipInterpolator(t,self.hub[:,1])
-        self.func_xshroud = PchipInterpolator(t,self.shroud[:,0])
-        self.func_rshroud = PchipInterpolator(t,self.shroud[:,1])
+        hub_arc_len = xr_to_mprime(self.hub)[1]
+        self.hub_arc_len = hub_arc_len[-1]
+        
+        self.func_xhub = PchipInterpolator(hub_arc_len,self.hub[:,0])
+        self.func_rhub = PchipInterpolator(hub_arc_len,self.hub[:,1])
+        self.func_xshroud = PchipInterpolator(hub_arc_len,self.shroud[:,0])
+        self.func_rshroud = PchipInterpolator(hub_arc_len,self.shroud[:,1])
         
         self.hub_pts_cyl = np.zeros(shape=(hub_rotation_resolution,hub_axial_npts,3))       # x,r,th
         self.shroud_pts_cyl = np.zeros(shape=(hub_rotation_resolution,hub_axial_npts,3))
@@ -598,10 +588,11 @@ class Centrif:
         self.hub_pts = np.zeros((hub_rotation_resolution,hub_axial_npts,3))
         self.shroud_pts = np.zeros((hub_rotation_resolution,hub_axial_npts,3))
         
-        xhub = self.func_xhub(np.linspace(0,1,hub_axial_npts))
-        rhub = self.func_rhub(np.linspace(0,1,hub_axial_npts))
-        xshroud = self.func_xshroud(np.linspace(0,1,hub_axial_npts))
-        rshroud = self.func_rshroud(np.linspace(0,1,hub_axial_npts))
+        thub = np.linspace(0,1,hub_axial_npts) * self.hub_arc_len
+        xhub = self.func_xhub(thub)
+        rhub = self.func_rhub(thub)
+        xshroud = self.func_xshroud(thub)
+        rshroud = self.func_rshroud(thub)
         for i in range(len(rotations)):
             theta = np.radians(rotations[i])
             
@@ -615,11 +606,11 @@ class Centrif:
 
             self.hub_pts[i,:,0] = xhub
             self.hub_pts[i,:,1] = rhub*np.sin(theta)    # y
-            self.hub_pts[i,:,2] = rhub*np.cos(theta) # z
+            self.hub_pts[i,:,2] = rhub*np.cos(theta)    # z
 
             self.shroud_pts[i,:,0] = xshroud
-            self.shroud_pts[i,:,1] = rshroud*np.sin(theta)     # y
-            self.shroud_pts[i,:,2] = rshroud*np.cos(theta)  # z 
+            self.shroud_pts[i,:,1] = rshroud*np.sin(theta)      # y
+            self.shroud_pts[i,:,2] = rshroud*np.cos(theta)      # z 
   
     def __create_fullwheel__(self,nblades:int,nsplitters:int=0):
         """Create fullwheel by copying the blades 
@@ -856,6 +847,31 @@ class Centrif:
         ax.view_init(68,-174)
         plt.axis('equal')
         # plt.show()
+    
+    def plot_profile_debug_3D(self,nblades:int=1,total_blades:int=1):
+        fig = plt.figure(num=2,clear=True,dpi=150)
+        ax = fig.add_subplot(111, projection='3d')
+        dtheta = np.radians(360/total_blades)
+
+        for _ in range(nblades):
+            theta = 0 
+            for p in self.profiles_debug:
+                th = p.ss_mp_pts[:,1] + theta
+                r = p.ss_mp_pts[:,2]
+                x = p.ss_mp_pts[:,3]; rth = r*th
+                ax.plot3D(x,rth,r,'r',label='suction') # x,rth,r
+                th = p.ps_mp_pts[:,1] + theta
+                r = p.ps_mp_pts[:,2]
+                x = p.ps_mp_pts[:,3]; rth = r*th
+                ax.plot3D(x,rth,r,'b',label='pressure') # x,rth,r
+            theta += dtheta
+        ax.set_xlabel('x-axial')
+        ax.set_ylabel('rth')
+        ax.set_zlabel('r')
+        plt.title('3D Plot - Cartesian')
+        ax.view_init(azim=90, elev=45)
+        plt.axis('equal')
+        plt.show()
         
     def plot_mp_profile(self,nblades:int=1,total_blades:int=1):
         """Plot the control profiles in the rx-theta plane
@@ -943,9 +959,10 @@ class Centrif:
         """
         p = self.mainblade
         plt.figure(num=100,clear=True)    # x-r view
-        for i in range(p.ps_cyl_pts.shape[0]):
-            plt.plot(p.ss_cyl_pts[i,:,0],p.ss_cyl_pts[i,:,1],'r-',label='ss')
-            plt.plot(p.ss_cyl_pts[i,:,0],p.ss_cyl_pts[i,:,1],'b-',label='ps')
+        # for i in range(p.ps_cyl_pts.shape[0]):
+        i=1
+        plt.plot(p.ss_cyl_pts[i,:,0],p.ss_cyl_pts[i,:,1],'r-',label='ss')
+        plt.plot(p.ss_cyl_pts[i,:,0],p.ss_cyl_pts[i,:,1],'b-',label='ps')
         plt.plot(self.hub_pts_cyl[0,:,0],self.hub_pts_cyl[0,:,1],'k',label='hub',alpha=0.2)
         plt.plot(self.shroud_pts_cyl[0,:,0],self.shroud_pts_cyl[0,:,1],'k',label='shroud',alpha=0.2)
         plt.legend()
