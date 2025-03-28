@@ -441,13 +441,13 @@ class Centrif:
         te_radius = profile.trailing_edge_properties.TE_Radius
 
         # mp-full from slice start to end. Slice is between hub and shroud. 
-        xr_full = self.__get_rx_slice__(profile.percent_span,np.linspace(0,1,self.npts_chord*2))
+        xr_full = self.__get_rx_slice__(profile.percent_span,np.linspace(0,1,self.npts_chord*4))
         dx = np.diff(xr_full[:,0])
         dr = np.diff(xr_full[:,1])
 
         dist_mp_full = [2/(xr_full[i,1]+xr_full[i-1,1])*np.sqrt(dr[i-1]**2 + dx[i-1]**2) for i in range(1,len(xr_full[:,1]))]
         dist_mp_full = np.hstack([[0],np.cumsum(dist_mp_full)])
-        func_mp_full = PchipInterpolator(np.linspace(0,1,self.npts_chord*2),dist_mp_full)
+        func_mp_full = PchipInterpolator(np.linspace(0,1,self.npts_chord*4),dist_mp_full)
         
         xr = self.__get_rx_slice__(profile.percent_span,np.linspace(0,self.blade_position[0],self.npts_chord))
         dx = np.diff(xr[:,0])
@@ -542,7 +542,7 @@ class Centrif:
         # Inversely solve for t_camber for each mp value
         for j in range(npts_chord):
             mp = ss_mp_pts[j,0] + mp_offset
-            res = minimize_scalar(solve_t,bounds=[0,1],args=(mp,func_mp_full))
+            res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
             ss_mp_pts[j,4] = res.x # new t_camber for mp value 
             thub = 1/m * res.x + self.t_hub.min()
             xrth = self.__get_rx_slice__(profile.percent_span,[ss_mp_pts[j,4]])[0]
@@ -550,7 +550,7 @@ class Centrif:
             ss_mp_pts[j,3] = xrth[0] # x
 
             mp = ps_mp_pts[j,0] + mp_offset
-            res = minimize_scalar(solve_t,bounds=[0,1],args=(mp,func_mp_full))
+            res = minimize_scalar(solve_t,bounds=[0,1.01],args=(mp,func_mp_full))
             ps_mp_pts[j,4] = res.x
             thub = 1/m * res.x + self.t_hub.min()   # Converting t-camber to thub
             xrth = self.__get_rx_slice__(profile.percent_span,[ps_mp_pts[j,4]])[0]
