@@ -242,7 +242,6 @@ class Centrif:
     
     def __get_camber_xr_point__(self,t_span:float,t_hub:float) -> npt.NDArray:
         # Returns the x,r point. Doesn't require vertical line test 
-        t_hub = t_hub * self.hub_arc_len
         shroud_pts_cyl = np.hstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)])
         hub_pts_cyl = np.hstack([self.func_xhub(t_hub),self.func_rhub(t_hub)])    
         l = line2D(hub_pts_cyl,shroud_pts_cyl)
@@ -261,7 +260,7 @@ class Centrif:
         """
         # Returns xr for the camber line. Doesn't require vertical line test 
         # t_hub is the percent along the hub 
-        t_hub = convert_to_ndarray(t_hub)*self.hub_arc_len
+        t_hub = convert_to_ndarray(t_hub)
         shroud_pts_cyl = np.vstack([self.func_xshroud(t_hub),self.func_rshroud(t_hub)]).transpose()
         hub_pts_cyl = np.vstack([self.func_xhub(t_hub),self.func_rhub(t_hub)]).transpose()
         n = len(t_hub)
@@ -575,10 +574,10 @@ class Centrif:
         hub_arc_len = xr_to_mprime(self.hub)[1]
         self.hub_arc_len = hub_arc_len[-1]
         
-        self.func_xhub = PchipInterpolator(hub_arc_len,self.hub[:,0])
-        self.func_rhub = PchipInterpolator(hub_arc_len,self.hub[:,1])
-        self.func_xshroud = PchipInterpolator(hub_arc_len,self.shroud[:,0])
-        self.func_rshroud = PchipInterpolator(hub_arc_len,self.shroud[:,1])
+        self.func_xhub = PchipInterpolator(hub_arc_len/hub_arc_len[-1],self.hub[:,0])
+        self.func_rhub = PchipInterpolator(hub_arc_len/hub_arc_len[-1],self.hub[:,1])
+        self.func_xshroud = PchipInterpolator(hub_arc_len/hub_arc_len[-1],self.shroud[:,0])
+        self.func_rshroud = PchipInterpolator(hub_arc_len/hub_arc_len[-1],self.shroud[:,1])
         
         self.hub_pts_cyl = np.zeros(shape=(hub_rotation_resolution,hub_axial_npts,3))       # x,r,th
         self.shroud_pts_cyl = np.zeros(shape=(hub_rotation_resolution,hub_axial_npts,3))
@@ -588,7 +587,7 @@ class Centrif:
         self.hub_pts = np.zeros((hub_rotation_resolution,hub_axial_npts,3))
         self.shroud_pts = np.zeros((hub_rotation_resolution,hub_axial_npts,3))
         
-        thub = np.linspace(0,1,hub_axial_npts) * self.hub_arc_len
+        thub = np.linspace(0,1,hub_axial_npts)
         xhub = self.func_xhub(thub)
         rhub = self.func_rhub(thub)
         xshroud = self.func_xshroud(thub)
