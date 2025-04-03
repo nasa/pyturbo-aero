@@ -22,7 +22,8 @@ class TrailingEdgeProperties:
     TE_Cut:bool = False                     # Defaults to no cut TE
     TE_cut_strength:int = 2                 # Number of control points to flatten TE
     # Circular Trailing Edge
-    TE_Radius:float = 0.005                 # In theta
+    TE_Radius:float = 0.005                 # In theta radians
+    npts:int=30                             # number of trailing edge points 
 
 @dataclass 
 class WavyBladeProperties:
@@ -65,6 +66,7 @@ class CentrifProfile:
     trailing_edge_properties:TrailingEdgeProperties
     thickness_start:float=0.01
     thickness_end:float=0.95
+    use_bezier_thickness:bool = False       # False: use nurbs. True: use bezier curve
     
 @dataclass
 class CentrifProfileDebug:
@@ -127,7 +129,6 @@ class Centrif:
     
     hub_pts_cyl:npt.NDArray
     shroud_pts_cyl:npt.NDArray
-    use_bezier_thickness:bool
     use_mid_wrap_angle:bool
     use_ray_camber:bool
     
@@ -135,14 +136,12 @@ class Centrif:
 
     def __init__(self,blade_position:Tuple[float,float]=(0.1,0.9),
                  use_mid_wrap_angle:bool=True,
-                 use_bezier_thickness:bool=False,
                  use_ray_camber:bool=False):
         """Initializes a centrif
 
         Args:
             blade_position (Tuple[float,float]): start and end position of the centrif blade 
             use_mid_wrap_angle (bool): If true, wrap angle from mid is applied to rest of profiles. Defaults to True
-            use_bezier_thickness (bool): use bezier thickness to define the blade shape instead of a NURB spline
             use_ray_camber (bool): use ray intersection to construct the bezier curve defining camber line 
         """
         self.profiles = list()
@@ -152,7 +151,6 @@ class Centrif:
         
         self.use_ray_camber = use_ray_camber
         self.use_mid_wrap_angle = use_mid_wrap_angle
-        self.use_bezier_thickness = use_bezier_thickness
         self.camber_mp_th = list()
         self.patterns.append(PatternPairCentrif(chord_scaling=1,rotation_ajustment=0)) # adds a default pattern, this is no modification
 
@@ -433,7 +431,8 @@ class Centrif:
         def solve_t(t,val:float,func:PchipInterpolator):
             return np.abs(val-func(t))
         
-        te_radius = profile.trailing_edge_properties.TE_Radius
+        te_props = profile.trailing_edge_properties
+        te_radius = te_props.TE_Radius
 
         # mp-full from slice start to end. Slice is between hub and shroud. 
         xr_full = self.__get_rx_slice__(profile.percent_span,np.linspace(0,1,self.npts_chord*4))
@@ -447,9 +446,9 @@ class Centrif:
         # Apply Thickness in theta
         npoint_ss = len(profile.ss_thickness)+3 # LE Start, LE Thickness, SS_Thickness, TE_Radius
         npoint_ps = len(profile.ps_thickness)+3 # LE Start, LE Thickness, PS_Thickness, TE_Radius
-        if profile.trailing_edge_properties.TE_Cut:
+        if te_props.TE_Cut:
             # Add extra point to make straight
-            TE_cut_strength = profile.trailing_edge_properties.TE_cut_strength
+            TE_cut_strength = te_props.TE_cut_strength
             SS = np.zeros((npoint_ss+TE_cut_strength,3))
             PS = np.zeros((npoint_ps+TE_cut_strength,3))  # mp, theta 
         else:
@@ -473,18 +472,18 @@ class Centrif:
         profile.trailing_edge_properties.TE_Radius *= mp_len
         
         angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
-        PS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle-90))   # mp
-        PS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle-90))   # theta
+        PS[1,0] = mp_start + np.round(profile.LE_Thickness * np.cos(np.radians(angle-90)),decimals=4)   # mp
+        PS[1,1] = th_start + np.round(profile.LE_Thickness * np.sin(np.radians(angle-90)),decimals=4)   # theta
         
-        SS[1,0] = mp_start + profile.LE_Thickness * np.cos(np.radians(angle+90))   # mp
-        SS[1,1] = th_start + profile.LE_Thickness * np.sin(np.radians(angle+90))   # theta
+        SS[1,0] = mp_start + np.round(profile.LE_Thickness * np.cos(np.radians(angle+90)),decimals=4)   # mp
+        SS[1,1] = th_start + np.round(profile.LE_Thickness * np.sin(np.radians(angle+90)),decimals=4)  # theta
         
         tss = np.hstack([[camber_start], np.linspace(profile.thickness_start,profile.thickness_end,len(profile.ss_thickness)+1)])
         # tss = camber_start + exp_ratio(1.3,len(profile.ss_thickness)+2,1-camber_start)
         tps = np.hstack([[camber_start], np.linspace(profile.thickness_start,profile.thickness_end,len(profile.ps_thickness)+1)])
         # tps = camber_start + exp_ratio(1.3,len(profile.ps_thickness)+2,1-camber_start)
 
-        if profile.trailing_edge_properties.TE_Cut:
+        if te_props.TE_Cut:
             SS[:,2] = np.hstack([[camber_start],tss,np.ones((TE_cut_strength+1,))])
             PS[:,2] = np.hstack([[camber_start],tps,np.ones((TE_cut_strength+1,))])
         else:   
@@ -498,7 +497,7 @@ class Centrif:
                 dmp_dt,dth_dt = camber.get_point_dt(PS[j,2])
                 # dmp_dt = dfunc_mp(PS[j,2])
                 angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
-                if profile.trailing_edge_properties.TE_Cut and j == PS.shape[0]-2-TE_cut_strength:
+                if te_props.TE_Cut and j == PS.shape[0]-2-TE_cut_strength:
                     PS[j:j+TE_cut_strength+1,0] = mp_start
                     PS[j:j+TE_cut_strength+1,1] = np.linspace(th_start - profile.ps_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
                     break
@@ -511,7 +510,7 @@ class Centrif:
                 dmp_dt,dth_dt = camber.get_point_dt(SS[j,2])
                 # dmp_dt = dfunc_mp(SS[j,2])
                 angle = np.degrees(np.arctan2(dth_dt,dmp_dt))
-                if profile.trailing_edge_properties.TE_Cut and j == SS.shape[0]-2-TE_cut_strength:
+                if te_props.TE_Cut and j == SS.shape[0]-2-TE_cut_strength:
                     SS[j:j+TE_cut_strength+1,0] = mp_start
                     SS[j:j+TE_cut_strength+1,1] = np.linspace(th_start + profile.ss_thickness[j-2],th_start,TE_cut_strength+2).flatten()[:-1]
                     break
@@ -520,11 +519,27 @@ class Centrif:
                     SS[j,1] = th_start + profile.ss_thickness[j-3] * np.sin(np.radians(angle+90))
         
         # Add TE
-        ss_arc_pts, ps_arc_pts, ss_arc, ps_arc = centrif_create_te(SS=SS[:,:2],PS=PS[:,:2],camber=camber,radius=te_radius,n_te_pts=30)
-        ps_nurbs_ctrl_pts = np.vstack([PS[:,:2], np.vstack([ps_arc.x[1:], ps_arc.y[1:]]).transpose()])
-        ss_nurbs_ctrl_pts = np.vstack([SS[:,:2], np.vstack([ss_arc.x[1:], ss_arc.y[1:]]).transpose()])
-        ps_mp_pts[:,:2] = self.__NURBS_interpolate__(ps_nurbs_ctrl_pts,npts_chord)
-        ss_mp_pts[:,:2] = self.__NURBS_interpolate__(ss_nurbs_ctrl_pts,npts_chord)
+        npts_te = 30
+        
+        if profile.use_bezier_thickness:            
+            ps_bezier = bezier(PS[:,0],PS[:,1]); ss_bezier = bezier(SS[:,0],SS[:,1])
+            ps_pts = np.vstack(ps_bezier.get_point(np.linspace(0,1,npts_chord-npts_te+1))).transpose()
+            ss_pts = np.vstack(ss_bezier.get_point(np.linspace(0,1,npts_chord-npts_te+1))).transpose()
+            ps_mp_pts[:(npts_chord-npts_te),:2] = ps_pts[:-1,:]
+            ss_mp_pts[:(npts_chord-npts_te),:2] = ss_pts[:-1,:]
+            ss_arc_pts, ps_arc_pts, ss_arc, ps_arc = centrif_create_te(SS=ss_pts,PS=ps_pts,camber=camber,radius=te_radius,n_te_pts=te_props.npts)
+
+            ps_mp_pts[(npts_chord-npts_te):,:2] = ps_arc_pts
+            ss_mp_pts[(npts_chord-npts_te):,:2] = ss_arc_pts
+        else:
+            ps_pts = self.__NURBS_interpolate__(PS[:,:2],npts_chord-npts_te+1)
+            ss_pts = self.__NURBS_interpolate__(SS[:,:2],npts_chord-npts_te+1)
+            ps_mp_pts[:(npts_chord-npts_te),:2] = ps_pts[:-1,:]
+            ss_mp_pts[:(npts_chord-npts_te),:2] = ss_pts[:-1,:]
+            ss_arc_pts, ps_arc_pts, ss_arc, ps_arc = centrif_create_te(SS=ss_pts,PS=ps_pts,camber=camber,radius=te_radius,n_te_pts=te_props.npts)
+
+            ps_mp_pts[(npts_chord-npts_te):,:2] = ps_arc_pts
+            ss_mp_pts[(npts_chord-npts_te):,:2] = ss_arc_pts
             
         m = 1/(self.t_hub.max()-self.t_hub.min())
         # Inversely solve for t_camber for each mp value
@@ -1106,8 +1121,8 @@ def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1
     dy1=(PS[-1,1] - PS[-2,1])*0.02
     # x = [PS[-1,0],PS[-1,0]+dx1,xn+dy_dt*radius,xn] 
     # y = [PS[-1,1],PS[-1,1]+dy1,yn-dx_dt*radius,yn]
-    x = [PS[-1,0],xn+dy_dt*radius,xn] 
-    y = [PS[-1,1],yn-dx_dt*radius,yn]
+    x = [PS[-2,0],PS[-1,0],xn+dy_dt*radius,xn] 
+    y = [PS[-2,1],PS[-1,1],yn-dx_dt*radius,yn]
     
     x = [float(p) for p in x];y = [float(p) for p in y]
     ps_arc = bezier(x, y)
@@ -1116,8 +1131,8 @@ def centrif_create_te(SS:List[float],PS:List[float],camber:bezier,radius:float=1
     dy1=(SS[-1,1] - SS[-2,1])*0.02
     # x = [SS[-1,0],SS[-1,0]+dx1,xn-dy_dt*radius,xn]
     # y = [SS[-1,1],SS[-1,1]+dy1,yn+dx_dt*radius,yn]
-    x = [SS[-1,0],xn-dy_dt*radius,xn]
-    y = [SS[-1,1],yn+dx_dt*radius,yn]
+    x = [SS[-2,0],SS[-1,0],xn-dy_dt*radius,xn]
+    y = [SS[-2,1],SS[-1,1],yn+dx_dt*radius,yn]
     
     x = [float(p) for p in x]; y = [float(p) for p in y]
     ss_arc = bezier(x,y)
