@@ -312,8 +312,8 @@ class Centrif:
         xr = self.__get_rx_slice__(profile_loc,np.linspace(self.blade_position[0],self.blade_position[1],self.npts_chord))
         mp = xr_to_mprime(xr)[0]
         camb_len = mp[-1]
-
-        camber_bezier_mp_th = np.zeros(shape=(4+len(profile.wrap_displacements),2)) # Bezier Control points in the mp,theta plane
+        n_wrap_displacements = np.count_nonzero(profile.wrap_displacement_locs)
+        camber_bezier_mp_th = np.zeros(shape=(4+n_wrap_displacements,2)) # Bezier Control points in the mp,theta plane
 
         # LE Metal Angle dth
         dth_LE = mp[-1]*profile.LE_Metal_Angle_Loc * np.tan(np.radians(profile.LE_Metal_Angle))
@@ -344,20 +344,21 @@ class Centrif:
             y = np.hstack([camber_bezier_mp_th[0:2,1], camber_bezier_mp_th[-2:,1]])
             camber_bezier = bezier(x, y)
 
-        # if np.any(np.abs(profile.wrap_displacements)>0): # If there are displacements factor it in
-        # # Distance formula in cylindrical coordinates https://math.stackexchange.com/questions/3612484/how-do-you-calculate-distance-between-two-cylindrical-coordinates
-        # camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.wrap_angle)) + (xr1[0]-xr0[0])**2)
-        j = 2
-        dl = profile.TE_Metal_Angle_Loc - profile.LE_Metal_Angle_Loc
-        for loc,displacement in zip(profile.wrap_displacement_locs, profile.wrap_displacements):
-            l = profile.LE_Metal_Angle_Loc + loc*dl
-            nx,ny = camber_bezier.get_point_dt(l)
-            x1,y1 = camber_bezier.get_point(l)
-            x2 = x1
-            y2 = -displacement*dth_wrap
-            camber_bezier_mp_th[j,0] = x2
-            camber_bezier_mp_th[j,1] = y2
-            j+=1
+        if n_wrap_displacements>0: 
+            # If there are displacements factor it in
+            # # Distance formula in cylindrical coordinates https://math.stackexchange.com/questions/3612484/how-do-you-calculate-distance-between-two-cylindrical-coordinates
+            # camb_len = np.sqrt(xr0[1]**2+xr1[1]**2 -2*xr0[1]*xr1[1]*np.cos(np.radians(profile.wrap_angle)) + (xr1[0]-xr0[0])**2)
+            j = 2
+            dl = profile.TE_Metal_Angle_Loc - profile.LE_Metal_Angle_Loc
+            for loc,displacement in zip(profile.wrap_displacement_locs, profile.wrap_displacements):
+                l = profile.LE_Metal_Angle_Loc + loc*dl
+                nx,ny = camber_bezier.get_point_dt(l)
+                x1,y1 = camber_bezier.get_point(l)
+                x2 = x1
+                y2 = -displacement*dth_wrap
+                camber_bezier_mp_th[j,0] = x2
+                camber_bezier_mp_th[j,1] = y2
+                j+=1
         camber_bezier = bezier(camber_bezier_mp_th[:,0],camber_bezier_mp_th[:,1])
         return camber_bezier,dth_wrap
 
