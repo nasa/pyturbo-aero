@@ -27,11 +27,13 @@ class arc():
     def get_point(self,t):
         t = convert_to_ndarray(t)
         alpha = (self.alpha_stop-self.alpha_start)*t + self.alpha_start
-        x,y = np.zeros(len(t)),np.zeros(len(t))
+        # x,y = np.zeros(len(t)),np.zeros(len(t))
 
-        for i in range(len(alpha)):
-            x[i] = self.x + self.radius*cos(radians(alpha[i]))
-            y[i] = self.y + self.radius*sin(radians(alpha[i]))
+        x = self.x + self.radius*np.cos(np.radians(alpha))
+        y = self.y + self.radius*np.sin(np.radians(alpha))
+        # for i in range(len(alpha)):
+        #     x[i] = self.x + self.radius*cos(radians(alpha[i]))
+        #     y[i] = self.y + self.radius*sin(radians(alpha[i]))
 
         # Check sorting
         if (self.sortY):
