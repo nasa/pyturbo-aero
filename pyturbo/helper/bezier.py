@@ -58,46 +58,21 @@ class bezier:
         
         return sum(d)[0] # Linear approximation of curve length
 
-    def __equal_space__(self,t:npt.NDArray,x:npt.NDArray,y:npt.NDArray):
-        """
-            Equally space points along a bezier curve using arc length
-            Inputs 
-        """
-        arcL = arclen(x,y)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            f2 = lambda x,y: abs(f(x)-f(y)-target_len)
-            for i in range(0,t.size-2):
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
-                t[i+1] = temp.x
-                t_start = t[i+1]
+    
 
-            x,y = self.get_point(t,equal_space=False)
-            arcL = arclen(x,y)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y
-
-    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
-        return self.get_point(t,equal_space)
+    def __call__(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
+        return self.get_point(t,equally_space_pts)
     
     @staticmethod
     def __B__(n:int,i:int,t:float):
         return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
     
-    def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
         """Get a point or points along a bezier curve
 
         Args:
             t (Union[float,npt.NDArray]): scalar, list, or numpy array 
-            equal_space (bool, optional): True = space points equally. Defaults to False.
+            equally_space_pts (bool, optional): True = space points equally. Defaults to False.
 
         Returns:
             Tuple: containing x and y points
@@ -108,8 +83,8 @@ class bezier:
             x += self.__B__(self.n-1,i,t)*self.x[i]
             y += self.__B__(self.n-1,i,t)*self.y[i]
         
-        if (equal_space and len(x)>2):
-            x,y = self.__equal_space__(t,x,y)
+        if (equally_space_pts and len(x)>2):
+            x,y = equal_space(x,y)
             return x,y
         return x,y
     
@@ -331,12 +306,12 @@ class pw_bezier2D:
         self.dist=dist
         self.dmax = dmax
 
-    def get_point(self,t:Union[List[float],float,np.ndarray],equal_space:bool=False):
+    def get_point(self,t:Union[List[float],float,np.ndarray],equally_space_pts:bool=False):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
         Args:
             t (Union[List[float],float,np.ndarray]): percentage(s) along a bezier curve. You can specify a float, List[float], or a numpy array
-            equal_space (bool, optional): Equally space points using arc length. Defaults to False.
+            equally_space_pts (bool, optional): Equally space points using arc length. Defaults to False.
 
         Returns:
             (Tuple): containing
@@ -367,45 +342,10 @@ class pw_bezier2D:
             y = sp_intp.interp1d(t,y)(np.linspace(0,1,lenT))
             return x,y
 
-        if (equal_space and len(x)>2):
-            x,y = self.__equal_space__(t,x,y)
+        if (equally_space_pts and len(x)>2):
+            _,x,y = equal_space(x,y)
         return x,y
 
-    def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray):
-        """Equally space points along a bezier curve using arc length
-            
-        Args:
-            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)
-            x (np.ndarray): x-coordinate as numpy array
-            y (np.ndarray): y-coordinates as numpy array
-
-        Returns:
-            (Tuple): containing
-                - *x* (np.ndarray): new values of x that are equally spaced 
-                - *y* (np.ndarray): new values of y that are equally spaced 
-
-        """
-        arcL = arclen(x,y)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            for i in range(0,t.size-2):
-                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
-                t[i+1] = temp.x
-                t_start = t[i+1]
-
-            x,y = self.get_point(t,equal_space=False)
-            arcL = arclen(x,y)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y
     
     def get_dt(self,t):
         t = convert_to_ndarray(t)
@@ -436,3 +376,54 @@ class pw_bezier2D:
         for i in range(0,len(self.bezierArray)):
             self.bezierArray[i].plot2D()
 
+
+def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=[]) -> npt.NDArray:
+    """Equally space points based on arc length
+
+    Args:
+        x (npt.NDArray): x values
+        y (npt.NDArray): y values
+        z (npt.NDArray): z values. Defaults to []
+        
+    Returns:
+        npt.NDArray: containing t,x,y or t,x,y,z points 
+    
+    """
+    t = np.linspace(0,1,len(x))
+    x_t = sp_intp.PchipInterpolator(t,x)
+    y_t = sp_intp.PchipInterpolator(t,y)
+    if len(z) == len(x):
+        z_t = sp_intp.PchipInterpolator(t,y)
+        arcL = arclen3(x,y,z)
+    else:
+        arcL = arclen(x,y)
+    mean_old = np.mean(arcL)
+    mean_err = 1
+    
+    while (mean_err>1.0E-3):
+        target_len = np.sum(arcL)/len(t) # we want equal length
+        csum = np.cumsum(arcL)
+        f = sp_intp.PchipInterpolator(t,csum) # Arc length as a function of t 
+        t_start = np.min(t)   
+        t_end = np.max(t)
+        f2 = lambda x,y: abs(f(x)-f(y)-target_len)
+        for i in range(0,t.size-2):
+            temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
+            t[i+1] = temp.x
+            t_start = t[i+1]
+
+        x = x_t(t)
+        y = y_t(t)
+        if len(z) == len(x):
+            z = z_t(t)
+            arcL = arclen3(x,y,z)
+        else:
+            arcL = arclen(x,y)
+        mean_new = np.mean(arcL)
+        mean_err = abs(mean_old-mean_new)/abs(mean_new)
+        mean_old = mean_new
+    
+    if len(z) == len(x):
+        return np.vstack([t,x,y,z])
+    else:
+        return np.vstack([t,x,y])
