@@ -17,9 +17,9 @@ import numpy.typing as npt
 
 class bezier:
     n:int           # Number of control points
-    c:np.ndarray    # bezier coefficients
-    x:np.ndarray    # x-control points
-    y:np.ndarray    # y-control points
+    c:npt.NDArray    # bezier coefficients
+    x:npt.NDArray    # x-control points
+    y:npt.NDArray    # y-control points
 
 
     def __init__(self, x:List[float],y:List[float]):
@@ -39,10 +39,10 @@ class bezier:
         Returns:
             bezier: flipped bezier curve
         """
-        return bezier(np.flip(self.x),np.flip(self.y))
+        return bezier(np.flip(self.x),np.flip(self.y)) # type: ignore
 
     @property
-    def get_x_y(self) -> Tuple[List[float],List[float]]:
+    def get_x_y(self) -> Tuple[npt.NDArray,npt.NDArray]:
         return self.x,self.y
     
     def get_curve_length(self) -> float:
@@ -52,11 +52,11 @@ class bezier:
             float: curve length
         """
         [x,y] = self.get_point(np.linspace(0,1,100))
-        d = np.zeros((len(x),1))
+        d = np.zeros((len(x),))
         for i in range(0,len(x)-1):
             d[i] = math.sqrt((x[i+1]-x[i])**2 + (y[i+1]-y[i])**2)
         
-        return sum(d)[0] # Linear approximation of curve length
+        return sum(d) # Linear approximation of curve length
 
     
 
@@ -64,10 +64,10 @@ class bezier:
         return self.get_point(t,equally_space_pts)
     
     @staticmethod
-    def __B__(n:int,i:int,t:float):
+    def __B__(n:int,i:int,t:Union[float,npt.NDArray]) -> Union[float,npt.NDArray]:
         return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
     
-    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
+    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False) -> Tuple[npt.NDArray,npt.NDArray]:
         """Get a point or points along a bezier curve
 
         Args:
@@ -78,17 +78,17 @@ class bezier:
             Tuple: containing x and y points
         """
         t = convert_to_ndarray(t)
-        x = 0; y = 0  
+        x = t*0; y = t*0  
         for i in range(self.n):
             x += self.__B__(self.n-1,i,t)*self.x[i]
             y += self.__B__(self.n-1,i,t)*self.y[i]
         
-        if (equally_space_pts and len(x)>2):
-            x,y = equal_space(x,y)
-            return x,y
+        if (equally_space_pts and len(x)>2): # type: ignore
+            pts = equal_space(x,y) # type: ignore
+            return pts[:,0],pts[:,1]
         return x,y
     
-    def get_point_dt(self,t:Union[npt.NDArray]):
+    def get_point_dt(self,t:Union[float,npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
 
         Args:
@@ -110,9 +110,8 @@ class bezier:
         dy*=self.n
         return dx,dy
 
-    def get_point_dt2(self,t:Union[npt.NDArray]):
+    def get_point_dt2(self,t:Union[float,npt.NDArray]):
         t = convert_to_ndarray(t)
-        
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
             dx2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
@@ -159,48 +158,11 @@ class bezier3:
         self.c = np.zeros(self.n)
         for i in range(self.n):
             self.c[i] = comb(self.n-1, i, exact=False) # use floating point
+     
+    def __call__(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
+        return self.get_point(t,equally_space_pts)
     
-    def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray,z:np.ndarray):
-        """Equally space points along a bezier curve using arc length
-            
-        Args:
-            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)
-            x (np.ndarray): x-coordinate as numpy array
-            y (np.ndarray): y-coordinates as numpy array
-            z (np.ndarray): z-coordinates as numpy array
-
-        Returns:
-            (Tuple): containing
-                - *x* (np.ndarray): new values of x that are equally spaced 
-                - *y* (np.ndarray): new values of y that are equally spaced 
-
-        """
-        arcL = arclen3(x,y,z)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            for i in range(0,t.size-2):
-                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
-                t[i+1] = temp.x
-                t_start = t[i+1]
-
-            x,y,z = self.get_point(t,equal_space=False)
-            arcL = arclen3(x,y,z)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y,z
-    
-    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
-        return self.get_point(t,equal_space)
-    
-    def get_point(self,t,equal_space = True):
+    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts = True):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
         Args:
@@ -227,55 +189,39 @@ class bezier3:
             Bx[i],By[i],Bz[i] = tempx,tempy,tempz
         self.t = t
 
-        if (equal_space and len(Bx)>2):
-            Bx,By,Bz = self.__equal_space__(t,Bx,By,Bz)
-            return Bx,By,Bz
+        if (equally_space_pts and len(Bx)>2):
+            pts = equal_space(Bx,By,Bz)
+            return pts[:,1],pts[:,2],pts[:,3]
         elif (len(Bx)==1):
-            return Bx[0], By[0],Bz[0] # if it's just one point return floats
+            return Bx[0],By[0],Bz[0] # if it's just one point return floats
         return Bx,By,Bz
     
-    def get_point_dt(self,t:Union[float,List[float],np.ndarray]):
+    def get_point_dt(self,t:Union[float,npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
 
         Args:
-            t (Union[np.ndarray]): Array or float from 0 to 1 
+            t (Union[float,npt.NDArray]): Array or float from 0 to 1 
             
         Returns:
             tuple: containing
 
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
+                **dz** (npt.NDArray): Derivative of z as a function of t 
         """
-        t = convert_to_ndarray(t)
-        
-        def B(n:int,i:int,t:float):
+
+        def B(n:int,i:int,t:Union[float,npt.NDArray]) -> Union[float,npt.NDArray]:
             c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
             return c*t**i *(1-t)**(n-i)
         
-        dx = 0; dy = 0
+        dx = 0*t; dy = 0*t; dz = 0*t
         for i in range(self.n-1):
             dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
             dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
             dz += B(self.n-1,i,t)*self.n*(self.z[i+1]-self.z[i])
 
-        return dx,dy
-
-
-def time_this(original_function):
-    def new_function(*args,**kwargs):
-        import datetime                 
-        before = datetime.datetime.now()                     
-        x = original_function(*args,**kwargs)                
-        after = datetime.datetime.now()                      
-        print("Elapsed Time = {0}".format(after-before))
-        return x                                             
-    return new_function                                   
-
-@time_this
-def func_a(stuff):
-    import time
-    time.sleep(3)
-
+        return dx,dy,dz
+    
 class pw_bezier2D:
     def __init__(self,array:List[bezier]):
         """Initializes the piecewise bezier curve from an array of bezier curves
@@ -343,20 +289,22 @@ class pw_bezier2D:
             return x,y
 
         if (equally_space_pts and len(x)>2):
-            _,x,y = equal_space(x,y)
+            pts = equal_space(x,y)
+            x = pts[:,1]
+            y = pts[:,2]
         return x,y
 
     
-    def get_dt(self,t):
+    def get_dt(self,t:Union[List[float],npt.NDArray]):
         t = convert_to_ndarray(t)
-        t = t.sort(); js = 1; tadj = 0
+        js = 1; tadj = 0
         dx = np.zeros((len(t),1))
         dy = np.zeros((len(t),1))
         for i in range(0,len(t)):
             for j in range(js,len(self.tArray)):
                 if (t[i]<=self.tArray[j]):
                     # Scale t
-                    ts = (t(i)-tadj) * self.dmax/self.dist[j]
+                    ts = (t[i]-tadj) * self.dmax/self.dist[j]
                     dx[i],dy[i] = self.bezierArray[j].get_point_dt(ts)
                     break
                 else:
@@ -377,7 +325,7 @@ class pw_bezier2D:
             self.bezierArray[i].plot2D()
 
 
-def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=[]) -> npt.NDArray:
+def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=np.array([])) -> npt.NDArray:
     """Equally space points based on arc length
 
     Args:
@@ -415,7 +363,7 @@ def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=[]) -> npt.NDArray:
         x = x_t(t)
         y = y_t(t)
         if len(z) == len(x):
-            z = z_t(t)
+            z = z_t(t) # type: ignore
             arcL = arclen3(x,y,z)
         else:
             arcL = arclen(x,y)

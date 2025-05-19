@@ -1,11 +1,19 @@
-from math import *
+from typing import Tuple, Union
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 from .convert_to_ndarray import convert_to_ndarray
 import numpy.typing as npt 
 
-class arc():
+class arc:
+    x:float
+    y:float
+    radius:float
+    alpha_start:float
+    alpha_stop:float
+    sortY:bool
+    sortYasc:bool
+    
     def __init__(self,xc:float,yc:float,radius:float,alpha_start:float,alpha_stop:float):
         """Initialize arc
 
@@ -23,7 +31,15 @@ class arc():
         self.alpha_stop = alpha_stop
         self.sortY = False
         self.sortYasc = True 
+        
+    def flip(self):
+        """Reverses the direction of the bezier curve
 
+        Returns:
+            bezier: flipped bezier curve
+        """
+        return arc(self.x,self.y,self.radius,self.alpha_stop,self.alpha_start) # type: ignore
+    
     def get_point(self,t):
         t = convert_to_ndarray(t)
         alpha = (self.alpha_stop-self.alpha_start)*t + self.alpha_start
@@ -38,8 +54,8 @@ class arc():
         # Check sorting
         if (self.sortY):
             alpha_test = (self.alpha_start-self.alpha_stop)*t + self.alpha_stop
-            x_test = self.x + self.radius*cos(radians(alpha_test))
-            y_test = self.y + self.radius*sin(radians(alpha_test))
+            x_test = self.x + self.radius*np.cos(np.radians(alpha_test))
+            y_test = self.y + self.radius*np.sin(np.radians(alpha_test))
             if (self.sortYasc==1): # sort ascending
                 # check the start and end to see if y<y_test
                 if (y_test[-1]<y[-1]):
@@ -65,7 +81,7 @@ class arc():
         plt.axis('equal')
         plt.show()
 
-def arclen(x:npt.NDArray,y:npt.NDArray) -> float:
+def arclen(x:npt.NDArray,y:npt.NDArray) -> Union[float,npt.NDArray]:
     """Calculates the arc length
 
     Args:
@@ -86,7 +102,7 @@ def arclen(x:npt.NDArray,y:npt.NDArray) -> float:
     L = np.insert(L,0,0)
     return L
 
-def arclen3(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray) -> float:
+def arclen3(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray) -> Union[float,npt.NDArray]:
     """Computes the arc length in 3D
 
     Args:
@@ -95,7 +111,7 @@ def arclen3(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray) -> float:
         z (npt.NDArray): array of z values
 
     Returns:
-        float: arc length
+        Union[float,npt.NDArray]: arc length
     """
     x = convert_to_ndarray(x)
     y = convert_to_ndarray(y)

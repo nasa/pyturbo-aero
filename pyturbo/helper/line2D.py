@@ -5,7 +5,9 @@ import numpy as np
 from .ray import ray2D
 from .bezier import bezier
 
-class line2D():
+class line2D:
+    x:npt.NDArray
+    y:npt.NDArray
     
     def __init__(self,pt1:Tuple[float,float],pt2:Tuple[float,float]):
         """Intializes a line
@@ -32,7 +34,7 @@ class line2D():
         Returns:
             bezier: returns a bezier curve
         """
-        b = bezier(self.x,self.y)
+        b = bezier(self.x.tolist(),self.y.tolist()) # type: ignore
         return b
 
     def ray(self) -> ray2D:
@@ -321,7 +323,7 @@ class line2D():
         self.p = [self.x[0],self.y[0]]
         self.q = [self.x[1],self.y[1]]
     
-    def fillet(self,prev_line,filletR:float) -> bezier:
+    def fillet(self,prev_line,filletR:float) -> Tuple[bezier,bezier]:
         """Creates a fillet with the previous line, how the line terminates doesn't matter
 
         Args:
@@ -359,7 +361,7 @@ class line2D():
             self.shrink_end(filletR)
             prev_line.shrink_start(filletR)
             fillet = bezier([self.x[1],ix,prev_line.x[0]], [self.y[1],iy,prev_line.y[0]])
-        elif (self.q==prev_line.q):
+        else: #  (self.q==prev_line.q)
             # End of first line and end of 2nd line
             # Reverse the current line
             ix = self.x[1]
