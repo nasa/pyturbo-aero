@@ -8,6 +8,8 @@ from .bezier import bezier
 class line2D:
     x:npt.NDArray
     y:npt.NDArray
+    p:Tuple[float,float]
+    q:Tuple[float,float]
     
     def __init__(self,pt1:Tuple[float,float],pt2:Tuple[float,float]):
         """Intializes a line
@@ -21,7 +23,7 @@ class line2D:
         y = np.array([pt1[1], pt2[1]])
         self.x = x
         self.y = y
-        self.p = [x[0], y[0]]; self.q=[x[1], y[1]]
+        self.p = (x[0], y[0]); self.q=(x[1], y[1])
         self.dx = x[1]-x[0]
         self.dy = y[1]-y[0]
         self.length = np.sqrt(self.dx*self.dx+self.dy*self.dy)
@@ -88,7 +90,7 @@ class line2D:
         """
         self.x[1]=self.x[0]+len*self.dx
         self.y[1]=self.y[0]+len*self.dy
-        self = line2D(self.x,self.y)
+        self = line2D((self.x[0],self.y[0]),(self.x[1],self.y[1]))
 
     
     def __eq__(self,line2):
@@ -112,7 +114,7 @@ class line2D:
         """
         self.x[1]=self.x[0]+len*self.dx/math.sqrt(self.dx**2+self.dy**2)
         self.y[1]=self.y[0]+len*self.dy/math.sqrt(self.dx**2+self.dy**2)
-        self = line2D(self.x,self.y)
+        self = line2D((self.x[0],self.y[0]),(self.x[1],self.y[1]))
     
     
     def get_point(self,t:Union[np.ndarray,float]):
@@ -161,7 +163,7 @@ class line2D:
         """
         self.x = (new_line.x+self.x)/2
         self.y = (new_line.y+self.y)/2
-        self.p = [self.x[0],self.y[0]]; self.q=[self.x[1],self.y[1]]
+        self.p = (self.x[0],self.y[0]); self.q=(self.x[1],self.y[1])
         self.dx = self.x[1]-self.x[0]; self.dy = self.y[1]-self.y[0]
 
         self.length = math.sqrt((self.x[1]-self.x[0])*(self.x[1]-self.x[0]) + (self.y[1]-self.y[0])*(self.y[1]-self.y[0]))
@@ -189,7 +191,7 @@ class line2D:
         plt.show()
 
 
-    def intersect_check(self,line2):
+    def intersect_check(self,line2) -> bool:
         """Checks for intersection with another line
 
         Args:
@@ -198,7 +200,6 @@ class line2D:
         Returns:
             bool: True - intersects, False - no intersection
         """
-        bIntersect = False
         p1 = self.p; q1 = self.q
         p2 = line2.p; q2 = line2.q
         # Find the four orientations needed for general and special cases
@@ -228,6 +229,8 @@ class line2D:
         if (o4 == 0 and self.__onSegment(p2, q1, q2)):
             return True
 
+        return False
+
     def flip(self):
         """
             reverses the direction of the line
@@ -243,7 +246,7 @@ class line2D:
         Returns:
             (bool): True if intersect
         """
-        return self.intersect_check(line2)
+        return self.intersect_check(line2) # type: ignore
     
     def mag(self) -> float:
         """returns the magnitude
@@ -306,8 +309,8 @@ class line2D:
         self.dx = self.x[1]-self.x[0]
         self.dy = self.y[1]-self.y[0]
         self.length = math.sqrt((self.dx)*(self.dx) + (self.dy)*(self.dy))
-        self.p = [self.x[0],self.y[0]]
-        self.q = [self.x[1],self.y[1]]
+        self.p = (self.x[0],self.y[0])
+        self.q = (self.x[1],self.y[1])
 
     def shrink_end(self,shrink_len:float):        
         """Calculates new end point by shrinking hte line 
@@ -320,8 +323,8 @@ class line2D:
         self.dx = self.x[1]-self.x[0]
         self.dy = self.y[1]-self.y[0]
         self.length = math.sqrt((self.dx)*(self.dx) + (self.dy)*(self.dy))
-        self.p = [self.x[0],self.y[0]]
-        self.q = [self.x[1],self.y[1]]
+        self.p = (self.x[0],self.y[0])
+        self.q = (self.x[1],self.y[1])
     
     def fillet(self,prev_line,filletR:float) -> Tuple[bezier,bezier]:
         """Creates a fillet with the previous line, how the line terminates doesn't matter
@@ -353,6 +356,7 @@ class line2D:
             self.shrink_start(filletR)
             prev_line.shrink_end(filletR)
             fillet = bezier([self.x[0],ix,prev_line.x[1]], [self.y[0],iy,prev_line.y[1]])
+            fillet = fillet.flip()
             return prev_line,fillet
         elif (self.q==prev_line.p):
             # End of first line and beginning of 2nd line
