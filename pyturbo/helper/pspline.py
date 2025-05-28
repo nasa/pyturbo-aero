@@ -84,18 +84,15 @@ class pspline:
         if (len(pz)==0):
             self.ndim = 2 # there's only x and y
             self.pxy = np.stack((self.px,self.py),axis=1)
+            self.pxy = np.unique(self.pxy, axis=0)
+            self.chordlen = np.sqrt(np.sum(np.array((np.power(np.diff(self.pxy[:,0]),2), np.power(np.diff(self.pxy[:,1]),2)),dtype=float),axis=0))
         else:
             self.pz = convert_to_ndarray(pz)
             self.pxy = np.stack((self.px,self.py,self.pz),axis=1)
-
-        self.pxy = np.unique(self.pxy, axis=0)
-
-        self.chordlen = np.sqrt( 
-            np.sum( 
-                np.array((np.power(np.diff(self.px),2), np.power(np.diff(self.py),2)),dtype=float)
-                ,axis=0))
+            self.pxy = np.unique(self.pxy, axis=0)
+            self.chordlen = np.sqrt(np.sum(np.array((np.power(np.diff(self.pxy[:,0]),2), np.power(np.diff(self.pxy[:,1]),2),np.power(np.diff(self.pxy[:,2]),2)),dtype=float),axis=0))
+        
         self.chordlen = self.chordlen/np.sum(self.chordlen)
-
         self.cumarclen = np.append(np.zeros(1),np.cumsum(self.chordlen))
 
         # compute parametric splines
