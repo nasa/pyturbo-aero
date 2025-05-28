@@ -67,7 +67,7 @@ class pspline:
         val = np.sqrt(val)
         return val
     
-    def __init__(self,px:List[float],py:List[float],pz:List[float]=[],method=spline_type.pchip):
+    def __init__(self,px:Union[npt.NDArray,List[float]],py:Union[npt.NDArray,List[float]],pz:List[float]=[],method=spline_type.pchip):
         """Creates a percentage spline
 
         Args:
@@ -87,6 +87,8 @@ class pspline:
         else:
             self.pz = convert_to_ndarray(pz)
             self.pxy = np.stack((self.px,self.py,self.pz),axis=1)
+
+        self.pxy = np.unique(self.pxy, axis=0)
 
         self.chordlen = np.sqrt( 
             np.sum( 
@@ -170,7 +172,7 @@ class pspline:
     def get_curve_len(self,t):
         return self.totalsplinelength*t
     
-    def get_point(self,t:Union[float,List[float]]) -> npt.NDArray:
+    def get_point(self,t:Union[float,List[float],npt.NDArray]) -> npt.NDArray:
         """Gets the points anywhere along the spline 
 
         Args:
