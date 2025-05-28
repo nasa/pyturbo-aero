@@ -58,7 +58,17 @@ def pspline_intersect(pspline1,pspline2,tmin,tmax):
         
 class pspline:
     """fits a spline on a curve and allows you to extract points with a percentage as input"""
-   
+    pxy:npt.NDArray
+    ndim:int
+    chordlen:float
+    cumarclen:npt.NDArray
+    spl:List[Union[PchipInterpolator,CubicSpline]]
+    spld:List[float]
+    polyarray:npt.NDArray
+    totalsplinelength:float
+    seglen:npt.NDArray
+    
+    
     def __segkernel__(self,y,t):
         t = convert_to_ndarray(t)
         val = np.zeros(len(t))
@@ -76,22 +86,21 @@ class pspline:
             pz (List[float], optional): Optional, list of z vlaues. Defaults to [].
             method (spline_type, optional): Type of spline to define. Defaults to spline_type.pchip.
         """
-        self.px = convert_to_ndarray(px)
-        self.py = convert_to_ndarray(py)
-        
-        self.n = len(px)
-        self.ndim = 3
+        px = convert_to_ndarray(px)
+        py = convert_to_ndarray(py)
+                
         if (len(pz)==0):
             self.ndim = 2 # there's only x and y
-            self.pxy = np.stack((self.px,self.py),axis=1)
+            self.pxy = np.stack((px,py),axis=1)
             self.pxy = np.unique(self.pxy, axis=0)
             self.chordlen = np.sqrt(np.sum(np.array((np.power(np.diff(self.pxy[:,0]),2), np.power(np.diff(self.pxy[:,1]),2)),dtype=float),axis=0))
         else:
+            self.ndim = 3
             self.pz = convert_to_ndarray(pz)
-            self.pxy = np.stack((self.px,self.py,self.pz),axis=1)
+            self.pxy = np.stack((px,py,pz),axis=1)
             self.pxy = np.unique(self.pxy, axis=0)
             self.chordlen = np.sqrt(np.sum(np.array((np.power(np.diff(self.pxy[:,0]),2), np.power(np.diff(self.pxy[:,1]),2),np.power(np.diff(self.pxy[:,2]),2)),dtype=float),axis=0))
-        
+        self.n = self.pxy.shape[0]
         self.chordlen = self.chordlen/np.sum(self.chordlen)
         self.cumarclen = np.append(np.zeros(1),np.cumsum(self.chordlen))
 
