@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from scipy.special import comb
@@ -10,6 +10,9 @@ from scipy.special import comb
 from .arc import arclen3, arclen
 from .convert_to_ndarray import convert_to_ndarray
 import numpy.typing as npt 
+from scipy.interpolate import Rbf
+from shapely.geometry import Polygon, Point
+
 
 # https://www.journaldev.com/14893/python-property-decorator
 # https://www.codementor.io/sheena/advanced-use-python-decorators-class-function-du107nxsv
@@ -63,9 +66,6 @@ class bezier:
     def __call__(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
         return self.get_point(t,equally_space_pts)
     
-    @staticmethod
-    def __B__(n:int,i:int,t:Union[float,npt.NDArray]) -> Union[float,npt.NDArray]:
-        return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
     
     def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False) -> Tuple[npt.NDArray,npt.NDArray]:
         """Get a point or points along a bezier curve
@@ -80,8 +80,8 @@ class bezier:
         t = convert_to_ndarray(t)
         x = t*0; y = t*0  
         for i in range(self.n):
-            x += self.__B__(self.n-1,i,t)*self.x[i]
-            y += self.__B__(self.n-1,i,t)*self.y[i]
+            x += bernstein_poly(self.n-1,i,t)*self.x[i]
+            y += bernstein_poly(self.n-1,i,t)*self.y[i]
         
         if (equally_space_pts and len(x)>2): # type: ignore
             pts = equal_space(x,y) # type: ignore
@@ -104,8 +104,8 @@ class bezier:
         
         dx = t*0; dy = t*0
         for i in range(self.n-1):
-            dx += self.__B__(self.n-2,i,t)*(self.x[i+1]-self.x[i])
-            dy += self.__B__(self.n-2,i,t)*(self.y[i+1]-self.y[i])
+            dx += bernstein_poly(self.n-2,i,t)*(self.x[i+1]-self.x[i])
+            dy += bernstein_poly(self.n-2,i,t)*(self.y[i+1]-self.y[i])
         dx*=self.n
         dy*=self.n
         return dx,dy
@@ -114,8 +114,8 @@ class bezier:
         t = convert_to_ndarray(t)
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
-            dx2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
-            dy2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+            dx2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
         return dx2,dy2
     
     def rotate(self,angle:float):
@@ -147,7 +147,6 @@ class bezier:
         plt.xlabel("x-label")
         plt.ylabel("y-label")
         plt.axis('scaled')
-
 
 class bezier3:
     def __init__(self,x,y,z):
@@ -357,7 +356,7 @@ def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=np.array([])) -> npt.N
         f2 = lambda x,y: abs(f(x)-f(y)-target_len)
         for i in range(0,t.size-2):
             temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
-            t[i+1] = temp.x
+            t[i+1] = temp.x # type: ignore
             t_start = t[i+1]
 
         x = x_t(t)
@@ -375,3 +374,81 @@ def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=np.array([])) -> npt.N
         return np.vstack([t,x,y,z])
     else:
         return np.vstack([t,x,y])
+    
+
+def bernstein_poly(n:int,i:int,t:Union[float,npt.NDArray]):
+    """Compute Bernstein polynomial B_i^n at t."""
+    t = np.asarray(t)
+    term1 = np.where(t == 0, float(i == 0), t ** i)
+    term2 = np.where(t == 1, float(i == n), (1 - t) ** (n - i))
+    return comb(n, i) * term1 * term2
+
+
+class BezierSurface:
+    bounds:npt.NDArray
+    perimeter_pts:npt.NDArray
+    inside_pts:npt.NDArray
+    
+    def __init__(self,perimeter_pts:npt.NDArray, inside_pts:npt.NDArray):
+        """
+        Generate a Bézier surface from a grid of control points.
+        
+        Parameters:
+            control_points: 3D NumPy array of shape (m, n, 3). Optional
+            rbf: Number of samples per dimension
+            
+        Returns:
+            X, Y, Z grids of surface points
+        """
+        self.perimeter_pts = perimeter_pts
+        self.inside_pts = inside_pts
+
+
+    def __call__(self,resolution:int=20):
+        control_points = self.__control_pts__()
+        m, n = control_points.shape
+        
+        u_vals = np.linspace(0, 1, resolution)
+        v_vals = np.linspace(0, 1, resolution)
+        surface = np.zeros((resolution, resolution, 3))
+        
+        for i, u in enumerate(u_vals):
+            for j, v in enumerate(v_vals):
+                point = np.zeros(3)
+                for r in range(m):
+                    for s in range(n):
+                        bern_u = bernstein_poly(m - 1,r, u)
+                        bern_v = bernstein_poly(n - 1,s, v)
+                        point += bern_u * bern_v * control_points[r][s]
+                surface[i][j] = point
+        
+        X = surface[:, :, 0]
+        Y = surface[:, :, 1]
+        Z = surface[:, :, 2]
+        return X, Y, Z
+    
+    def __control_pts__(self):
+        control_points = np.vstack([self.perimeter_pts,self.inside_pts])
+        _, idx = np.unique(control_points, axis=0, return_index=True)
+        control_points = control_points[np.sort(idx)]
+        return control_points
+    
+
+    def plot_bezier_surface(self,resolution: int = 50):
+        control_points = self.__control_pts__()
+
+        X, Y, Z = self(resolution)
+
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.plot_surface(X, Y, Z, cmap='viridis', color='red', edgecolor='none', alpha=0.8) # type: ignore
+        ax.scatter(*control_points.reshape(-1, 3).T, color='black', label='Control Points')
+
+        ax.set_title("Bézier Surface")
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z") # type: ignore
+        ax.legend()
+        plt.tight_layout()
+        plt.show()

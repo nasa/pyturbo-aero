@@ -96,7 +96,7 @@ class AirfoilWavy(Airfoil3D):
             cyps.append(PchipInterpolator(t,1+profile_scale)) # Y is axial
         
         # Convert to int
-        vibrissaeIndx = vibrissaeIndx.astype(np.int)
+        vibrissaeIndx = vibrissaeIndx.astype(np.integer)
 
         chord = np.zeros(nprofiles)
         centerPointX = np.zeros(nprofiles)
@@ -276,7 +276,7 @@ class AirfoilWavy(Airfoil3D):
             cyps.append(PchipInterpolator(t,1+profile_scale)) # Y is axial
         
         # Convert to int
-        vibrissaeIndx = vibrissaeIndx.astype(np.int)
+        vibrissaeIndx = vibrissaeIndx.astype(np.integer)
 
         chord = np.zeros(nprofiles)
         centerPointX = np.zeros(nprofiles)

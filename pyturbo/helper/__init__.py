@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 
 from .arc import arc, arclen, arclen3
-from .bezier import bezier,bezier3,pw_bezier2D,equal_space
+from .bezier import bezier,bezier3,pw_bezier2D,equal_space, BezierSurface
 from .bisect import bisect
 from .centroid import centroid
 from .convert_to_ndarray import convert_to_ndarray, cosd,sind, tand
