@@ -1,14 +1,14 @@
-from typing import List, Union
+from typing import List, Union, Optional
 import numpy as np
-from scipy.interpolate import PchipInterpolator
-from scipy.interpolate import CubicSpline
-from scipy.interpolate import PPoly
+from scipy.interpolate import PchipInterpolator, CubicSpline, PPoly
+from scipy.interpolate import splprep, splev
 from scipy import integrate
 import math
 import enum
 import copy
 from scipy.optimize import minimize
 import numpy.typing as npt 
+from scipy.spatial import distance, cKDTree
 
 def convert_to_ndarray(t):
     """
@@ -20,7 +20,6 @@ def convert_to_ndarray(t):
     elif (type(t) is list):
         t = np.array(t,dtype=float)
     return t
-
 
 
 class spline_type(enum.Enum):
@@ -55,7 +54,98 @@ def pspline_intersect(pspline1,pspline2,tmin,tmax):
         return res.x
     else:
         return res.x*0-1 # return -1 for no intersect
-        
+
+
+def order_points_nearest_neighbor(points: npt.NDArray) -> npt.NDArray:
+    """Order points by nearest neighbor
+
+    Args:
+        points (npt.NDArray): Array of points 
+
+    Raises:
+        ValueError: input has to be a valid numpy array (N,2) or (N,3)
+
+    Returns:
+        npt.NDArray: indices to order the array 
+    """
+    if points.ndim != 2 or points.shape[1] not in (2, 3):
+        raise ValueError("Input must be a NumPy array of shape (N, 2) or (N, 3)")
+
+    N = len(points)
+    ordered_indices = [0]  # Start from the first point
+    remaining = set(range(1, N))  # All other points
+
+    while remaining:
+        last_point = points[ordered_indices[-1]]
+        # Get distances from last point to all remaining points
+        remaining_list = list(remaining)
+        dists = np.linalg.norm(points[remaining_list] - last_point, axis=1)
+        nearest_index = remaining_list[np.argmin(dists)]
+        ordered_indices.append(nearest_index)
+        remaining.remove(nearest_index)
+
+    return ordered_indices
+
+def order_points_by_spline_arc_length(points: npt.NDArray, smoothing: float = 0.0) -> npt.NDArray:
+    """
+    Orders points by their location along the arc length of a spline.
+
+    Parameters:
+        points: (N, 2) or (N, 3) array of points.
+        smoothing: Smoothing factor for splprep. 0 means interpolation.
+
+    Returns:
+        Indices of the input points ordered by arc length along a fitted spline.
+    """
+    if points.ndim != 2 or points.shape[1] not in (2, 3):
+        raise ValueError("points must be of shape (N, 2) or (N, 3)")
+
+    # Fit spline
+    tck, u = splprep(points.T, s=smoothing)
+    
+    # Generate dense points along the spline
+    u_dense = np.linspace(0, 1, len(points) * 10)
+    spline_pts = np.stack(splev(u_dense, tck), axis=1)
+
+    # Compute cumulative arc length along the spline
+    arc_lengths = np.zeros(len(u_dense))
+    arc_lengths[1:] = np.cumsum(np.linalg.norm(np.diff(spline_pts, axis=0), axis=1))
+
+    # Find the closest point on the spline for each original point
+    tree = cKDTree(spline_pts)
+    dists, spline_indices = tree.query(points, k=1)
+
+    # Map those closest spline points to arc length
+    point_arc_lengths = arc_lengths[spline_indices]
+
+    # Order original points by their arc length
+    ordered_indices = np.argsort(point_arc_lengths)
+
+    return ordered_indices
+
+def order_points_nearest_neighbor(points: npt.NDArray) -> npt.NDArray:
+    if points.ndim != 2 or points.shape[1] not in (2, 3):
+        raise ValueError("Input must be a NumPy array of shape (N, 2) or (N, 3)")
+    
+    n = len(points)
+    visited = np.zeros(n, dtype=bool)
+    ordered = []
+
+    current_index = 0
+    ordered.append(current_index)
+    visited[current_index] = True
+
+    for _ in range(1, n):
+        dists = distance.cdist(points[current_index][None, :], points[~visited])[0]
+        next_index_unvisited = np.argmin(dists)
+        next_index = np.arange(n)[~visited][next_index_unvisited]
+        ordered.append(next_index)
+        visited[next_index] = True
+        current_index = next_index
+
+    return ordered
+
+ 
 class pspline:
     """fits a spline on a curve and allows you to extract points with a percentage as input"""
     pxy:npt.NDArray
@@ -77,13 +167,13 @@ class pspline:
         val = np.sqrt(val)
         return val
     
-    def __init__(self,px:Union[npt.NDArray,List[float]],py:Union[npt.NDArray,List[float]],pz:List[float]=[],method=spline_type.pchip):
+    def __init__(self,px:Union[npt.NDArray,List[float]],py:Union[npt.NDArray,List[float]],pz:Optional[Union[npt.NDArray,List[float]]]=[],method=spline_type.pchip):
         """Creates a percentage spline
 
         Args:
-            px (List[float]): list of x values
-            py (List[float]): list of y values 
-            pz (List[float], optional): Optional, list of z vlaues. Defaults to [].
+            px (Union[npt.NDArray,List[float]]): list of x values
+            py (Union[npt.NDArray,List[float]]): list of y values 
+            pz (Union[npt.NDArray,List[float]], optional): Optional, list of z vlaues. Defaults to [].
             method (spline_type, optional): Type of spline to define. Defaults to spline_type.pchip.
         """
         px = convert_to_ndarray(px)
@@ -270,13 +360,75 @@ class pspline:
         for L in range(self.ndim):
             pp = PPoly(self.spl[L].c, self.spl[L].x) # ppval(self.spl{L},ti)
             pt[:,L] = pp(ti)
-        pt = convert_to_ndarray(pt)
+        ind = order_points_by_spline_arc_length(pt)
+        pt = pt[ind,:]
         
         # do we need to compute first derivatives here at each point?
         dudt = np.zeros((nt,self.ndim))
         for L in range(self.ndim):
             pp = PPoly(self.spld[L].c, self.spld[L].x) # ppval(ti,self.spld{L})
             dudt[:,L] = pp(ti)
-        dudt = convert_to_ndarray(dudt)
+        dudt = dudt[ind,:]
 
         return pt,dudt
+
+
+
+
+def curvature_3d(dx, dy, dz, ddx, ddy, ddz):
+    # Compute curvature from first and second derivatives
+    cross = np.cross(np.stack((dx, dy, dz), axis=1),
+                     np.stack((ddx, ddy, ddz), axis=1))
+    num = np.linalg.norm(cross, axis=1)
+    denom = (dx**2 + dy**2 + dz**2)**1.5
+    with np.errstate(divide='ignore', invalid='ignore'):
+        kappa = np.where(denom > 0, num / denom, 0.0)
+    return kappa
+
+def resample_by_curvature(points: np.ndarray, N: int, smoothing=0.0) -> np.ndarray:
+    """
+    Resample a 3D curve to concentrate points in high-curvature regions.
+
+    Parameters:
+        points: (M, 3) array of input points (x, y, z).
+        N: Number of output points to sample.
+        smoothing: Smoothing factor for the spline (0 = interpolate).
+
+    Returns:
+        (N, 3) array of resampled points.
+    """
+    if points.shape[1] != 3:
+        raise ValueError("Input points must be of shape (M, 3)")
+    
+    # Fit a parametric spline
+    tck, u = splprep(points.T, s=smoothing)
+
+    # Sample finely along the curve
+    u_fine = np.linspace(0, 1, 1000)
+    x, y, z = splev(u_fine, tck)
+    dx, dy, dz = splev(u_fine, tck, der=1)
+    ddx, ddy, ddz = splev(u_fine, tck, der=2)
+
+    # Compute curvature at each sampled point
+    kappa = curvature_3d(dx, dy, dz, ddx, ddy, ddz)
+
+    # Normalize curvature to a probability distribution
+    density = kappa + 1e-3  # add small value to ensure flat regions get some weight
+    density /= np.sum(density)
+
+    # Create cumulative distribution function (CDF)
+    cdf = np.cumsum(density)
+    cdf /= cdf[-1]  # Normalize
+
+    # Invert the CDF to get u values for sampling
+    u_resampled = np.interp(np.linspace(0, 1, N), cdf, u_fine)
+
+    # Evaluate spline at resampled u values
+    x_new, y_new, z_new = splev(u_resampled, tck)
+    # Get the derivative 
+    # dx, dy, dz = splev(u_resampled, tck, der=1)
+    # ddx, ddy, ddz = splev(u_resampled, tck, der=2)
+
+
+
+    return np.vstack((x_new, y_new, z_new)).T
