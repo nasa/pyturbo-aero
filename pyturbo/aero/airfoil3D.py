@@ -32,8 +32,8 @@ class Airfoil3D():
     '''Bezier X,Y,Z are for the stacking line of the blade'''
     stack_bezier_ctrl_pts: npt.NDArray
 
-    te_center_x: npt.NDArray     # Center of trailing edge for each span profile
-    te_center_y: npt.NDArray
+    te_center: npt.NDArray     # Center of trailing edge for each span profile
+    
     stack_bezier: bezier3                 # 3D Bezier curve that defines the stacking
     bImportedBlade: bool
 
@@ -105,7 +105,7 @@ class Airfoil3D():
         """
         stack_bezier_ctrl_pts = np.zeros((len(self.profileArray),3))
         self.stackType = stackType
-        te_center = np.zeros((len(self.profileArray),2))
+        te_center = np.zeros((len(self.profileArray),3))
         if (len(self.profileArray) >= 2):
             # Stack the airfoils about LE
             if (stackType == StackType.leading_edge):
@@ -187,6 +187,7 @@ class Airfoil3D():
             self.stack_bezier_ctrl_pts = stack_bezier_ctrl_pts
             self.stack_bezier = bezier3(stack_bezier_ctrl_pts[:,0],stack_bezier_ctrl_pts[:,1],stack_bezier_ctrl_pts[:,2])
             self.bImportedBlade = False
+            self.te_center = te_center
 
     def add_sweep(self,sweep_y:List[float]=[],sweep_z:List[float]=[]):
         """Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied
@@ -251,7 +252,8 @@ class Airfoil3D():
         self.npts = num_points # number of points to use for suction and pressure side
         self.nte = trailing_edge_points
         self.nspan = nProfiles
-        
+
+        zz = np.linspace(0,self.span,self.nspan) # Spanwise locations of the profiles
         t = np.linspace(0,1,self.npts)
         t_te = np.linspace(0,1,self.nte)
         n_profiles = len(self.profileArray)
@@ -271,51 +273,43 @@ class Airfoil3D():
         # --- Make a spline for each profile for each point
         for j in range(n_profiles):
             spline_ps_temp[j,:,0],spline_ps_temp[j,:,1] = self.profileArray[j].psBezier.get_point(t,equally_space_pts=True)
-            
-            spline_ss_temp[j,:,0],spline_ss_temp[j,:,1] = self.profileArray[j].ssBezier.get_point(t,equally_space_pts=True)
-            
-            spline_ss_temp[j,:,2] = self.profileSpan[j]*self.span              # Span
             spline_ps_temp[j,:,2] = self.profileSpan[j]*self.span              # Span
 
+            spline_ss_temp[j,:,0],spline_ss_temp[j,:,1] = self.profileArray[j].ssBezier.get_point(t,equally_space_pts=True)
+            spline_ss_temp[j,:,2] = self.profileSpan[j]*self.span              # Span
 
         for i in range(self.npts):
             self.ps[:,i,0] = csapi(spline_ps_temp[i,:,2],spline_ps_temp[i,:,0],self.zz) # Natural spline
-            self.ps[:,i,1]= csapi(spline_ps_temp[i,:,2],self.spline_ypps[i,:],self.zz)
+            self.ps[:,i,1] = csapi(spline_ps_temp[i,:,2],spline_ps_temp[i,:,1],self.zz)
 
-            self.ss[:,i,0]= csapi(self.spline_zpp[i,:],self.spline_xpss[i,:],self.zz)
-            self.ss[:,i,1]= csapi(self.spline_zpp[i,:],self.spline_ypss[i,:],self.zz)
+            self.ss[:,i,0] = csapi(spline_ss_temp[i,:,2],spline_ss_temp[i,:,0],self.zz) # Natural spline
+            self.ss[:,i,1] = csapi(spline_ss_temp[i,:,2],spline_ss_temp[i,:,1],self.zz)
 
 
-        spline_zpp_te = np.zeros((self.nte,n_profiles))
+        self.c_te_ps = np.zeros((self.nte,n_profiles,3))
+        self.c_te_ss = np.zeros((self.nte,n_profiles,3))
         for j in range(n_profiles): # Trailing edge contains less points
             # trailing edge
-            [self.spline_te_xps[:,j],self.spline_te_yps[:,j]] = self.profileArray[j].TE_ps_arc.get_point(t_te)
-            [self.spline_te_xps[:,j],self.spline_te_yps[:,j]] = self.profileArray[j].TE_ps_arc.get_point(t_te)
-            [self.spline_te_xss[:,j],self.spline_te_yss[:,j]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
-            [self.spline_te_xss[:,j],self.spline_te_yss[:,j]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
-            spline_zpp_te[:,j] = self.profileSpan[j]*self.span
+            [self.c_te_ps[:,j,0],self.c_te_ps[:,j,1]] = self.profileArray[j].TE_ps_arc.get_point(t_te)
+            [self.c_te_ss[:,j,0],self.c_te_ss[:,j,1]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
+            self.c_te_ps[:,j,2] = self.profileSpan[j]*self.span
+            self.c_te_ss[:,j,2] = self.profileSpan[j]*self.span
 
         for i in range(self.nte):
-            # Trailing edge suction side
-            self.te_ss_x[:,i]= csapi(spline_zpp_te[i,:],self.spline_te_xss[i,:],self.zz)
-            self.te_ss_y[:,i]= csapi(spline_zpp_te[i,:],self.spline_te_yss[i,:],self.zz)
             # Trailing edge pressure side
-            self.te_ps_x[:,i]= csapi(spline_zpp_te[i,:],self.spline_te_xps[i,:],self.zz)
-            self.te_ps_y[:,i]= csapi(spline_zpp_te[i,:],self.spline_te_yps[i,:],self.zz)
+            self.te_ps[:,i,0] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,0],self.zz)
+            self.te_ps[:,i,1] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,1],self.zz)
+            # Trailing edge suction side
+            self.te_ss[:,i,0] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,0],self.zz)
+            self.te_ss[:,i,1] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,1],self.zz)
 
-        self.te_center_x = csapi(self.profileSpan*self.span,self.te_center_x,self.zz)
-        self.te_center_y = csapi(self.profileSpan*self.span,self.te_center_y,self.zz)
+        te_center = np.zeros((self.nspan,3)) # Trailing edge center for each profile
+        te_center[:,0] = csapi(self.profileSpan*self.span,self.te_center[:,0],self.zz)
+        te_center[:,1] = csapi(self.profileSpan*self.span,self.te_center[:,1],self.zz)
+        te_center[:,2] = self.zz
 
-        # Populate Control Points
-        self.control_x_ps = np.zeros((self.npts,n_profiles))
-        self.control_y_ps = np.zeros((self.npts,n_profiles))
-        self.control_x_ss = np.zeros((self.npts,n_profiles))
-        self.control_y_ss = np.zeros((self.npts,n_profiles))
-        self.c_te_x_ps = np.zeros((self.nte,n_profiles))
-        self.c_te_x_ss = np.zeros((self.nte,n_profiles))
-        self.c_te_y_ps = np.zeros((self.nte,n_profiles))
-        self.c_te_y_ss = np.zeros((self.nte,n_profiles))
-
+        # Populate Control Points, # ! left off here
+        
         for i in range(n_profiles):
             [self.control_x_ps[:,i], self.control_y_ps[:,i]] = self.profileArray[i].psBezier.get_point(t)
             [self.control_x_ss[:,i], self.control_y_ss[:,i]] = self.profileArray[i].ssBezier.get_point(t)
