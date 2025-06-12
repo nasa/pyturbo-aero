@@ -335,8 +335,8 @@ class Airfoil3D():
         for j in range(n_profiles):
             # [tmpXps[:,j], tmpYps[:,j]] = self.profileArray[j]._psBezier.get_point(t)
             # [tmpXss[:,j], tmpYss[:,j]] = self.profileArray[j]._ssBezier.get_point(t)
-            [self.spline_xpps[:,j], self.spline_ypps[:,j]] = self.profileArray[j].psBezier.get_point(t,equal_space=True)
-            [self.spline_xpss[:,j], self.spline_ypss[:,j]] = self.profileArray[j].ssBezier.get_point(t,equal_space=True)
+            self.spline_xpps[:,j], self.spline_ypps[:,j] = self.profileArray[j].psBezier.get_point(t,equally_space_pts=True)
+            self.spline_xpss[:,j], self.spline_ypss[:,j] = self.profileArray[j].ssBezier.get_point(t,equally_space_pts=True)
             self.spline_zpp[:,j] = self.profileSpan[j]*self.span              # Span
 
 
@@ -559,7 +559,7 @@ class Airfoil3D():
         ax = fig.add_subplot(111, projection='3d')
         if not only_blade:
             if (self.b3): # Plot the spline
-                [bx,by,bz] = self.b3.get_point(np.linspace(0,1,num=50),equal_space=False)
+                [bx,by,bz] = self.b3.get_point(np.linspace(0,1,num=50),equally_space_pts=False)
                 ax.plot3D(bx, by, bz, 'gray')
 
             # Plot the control profiles
@@ -572,7 +572,7 @@ class Airfoil3D():
                 ax.plot3D(self.te_center_x,self.te_center_y,self.zz,color='black')
 
                 # Plot the spine
-                [bx,by,bz] = self.b3.get_point(np.linspace(0,1,nprofiles),equal_space=False)
+                [bx,by,bz] = self.b3.get_point(np.linspace(0,1,nprofiles),equally_space_pts=False)
                 ax.plot3D(bx,by,bz,color='black')
 
         # Plot the profiles
@@ -775,7 +775,7 @@ class Airfoil3D():
         cz = zz
         a3D.b3 = bezier3(cx,cy,cz)
         t = np.linspace(0,1,nspan)
-        [x,y,z] = a3D.b3.get_point(t,equal_space=False)
+        [x,y,z] = a3D.b3.get_point(t,equally_space_pts=False)
         # populate the other varibles
         a3D.shft_xss = np.zeros((nspan,npoints))
         a3D.shft_yss = np.zeros((nspan,npoints))
@@ -870,7 +870,7 @@ class Airfoil3D():
         self.spineY = np.zeros(nprofiles)
         self.spineZ = copy.deepcopy(self.zz)
         t = np.linspace(0,1,nprofiles)
-        [bx,by,_] = self.b3.get_point(t,equal_space=False)
+        [bx,by,_] = self.b3.get_point(t,equally_space_pts=False)
 
         for i in range(0,nprofiles):
             x = bx[i]; y = by[i]
@@ -1257,7 +1257,7 @@ class Airfoil3D():
             # Fit with bezier curve
             t = np.linspace(0,1,math.floor(shell_points*smooth)*2)
             b = bezier(x,y)
-            [x,y] = b.get_point(t,equal_space=False)
+            [x,y] = b.get_point(t,equally_space_pts=False)
             d = dist(x,y,ss_x[0],ss_y[0])
             min_indx = np.where(d== np.amin(d))[0][0]
             ss_x_temp = x[0:min_indx+1]
@@ -1286,7 +1286,7 @@ class Airfoil3D():
             t = np.linspace(0,1,math.floor(shell_points*smooth)*2)
             b = bezier(x,y)
 
-            [x,y] = b.get_point(t,equal_space=False)
+            [x,y] = b.get_point(t,equally_space_pts=False)
             d = dist(x,y,ss_x[-1],ss_y[-1])
             min_indx = np.where(d== np.amin(d))[0][0]
             ss_x_temp = x[0:min_indx+1]

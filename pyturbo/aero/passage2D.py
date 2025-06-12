@@ -1,12 +1,27 @@
-from typing import List
+from typing import List, Union
 import numpy as np
 from scipy.interpolate import PchipInterpolator
 import json
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from .airfoil3D import Airfoil3D
+import numpy.typing as npt 
+from ..helper import convert_to_ndarray
 
 class Passage2D:
+    zhub: npt.NDArray
+    rhub: npt.NDArray
+    zshroud: npt.NDArray
+    rshroud: npt.NDArray
+    
+    hub_spline:PchipInterpolator
+    shroud_spline:PchipInterpolator
+    zhub_control:npt.NDArray
+    zhub_control:npt.NDArray
+    
+    airfoils: List[Airfoil3D]
+    spacing: List[float]
+    
     """Passage2D fits 3D blades inside of a channel
     """
     def __init__(self,airfoil_array:List[Airfoil3D],spacing_array:List[float]):
@@ -21,41 +36,36 @@ class Passage2D:
         self.spacing=spacing_array
 
 
-    def add_endwalls(self,zhub:List[float],rhub:List[float],zshroud:List[float],rshroud:List[float],zhub_control:List[float]=[],rhub_control:List[float]=[],zshroud_control:List[float]=[],rshroud_control:List[float]=[]):
+    def add_endwalls(self,zhub:Union[List[float],npt.NDArray],
+                     rhub:Union[List[float],npt.NDArray],
+                     zshroud:Union[List[float],npt.NDArray],
+                     rshroud:Union[List[float],npt.NDArray],
+                     zhub_control:Union[List[float],npt.NDArray]=[],
+                     rhub_control:Union[List[float],npt.NDArray]=[],
+                     zshroud_control:Union[List[float],npt.NDArray]=[],
+                     rshroud_control:Union[List[float],npt.NDArray]=[]):
         """Adds the endwalls
 
         Args:
-            zhub (List[float]): points defining the hub axial coordinate
-            rhub (List[float]): points defining the hub radial coordinate
-            zshroud (List[float]): points defining the shroud axial coordinate
-            rshroud (List[float]): points defining the shroud radial coordinate
-            zhub_control (List[float], optional): bezier axial control points for the hub. Defaults to [].
-            rhub_control (List[float], optional): bezier radial control points for the hub. Defaults to [].
-            zshroud_control (List[float], optional):  bezier axial control points for the shroud. Defaults to [].
-            rshroud_control (List[float], optional): bezier radial control points for the shroud. Defaults to [].
+            zhub (Union[List[float],npt.NDArray]): points defining the hub axial coordinate
+            rhub (Union[List[float],npt.NDArray]): points defining the hub radial coordinate
+            zshroud (Union[List[float],npt.NDArray]): points defining the shroud axial coordinate
+            rshroud (Union[List[float],npt.NDArray]): points defining the shroud radial coordinate
+            zhub_control (Union[List[float],npt.NDArray], optional): bezier axial control points for the hub. Defaults to [].
+            rhub_control (Union[List[float],npt.NDArray], optional): bezier radial control points for the hub. Defaults to [].
+            zshroud_control (Union[List[float],npt.NDArray], optional):  bezier axial control points for the shroud. Defaults to [].
+            rshroud_control (Union[List[float],npt.NDArray], optional): bezier radial control points for the shroud. Defaults to [].
         """
         self.hub_spline = PchipInterpolator(zhub,rhub)
         self.shroud_spline = PchipInterpolator(zshroud,rshroud)
-        self.zhub = zhub
-        self.rhub = rhub
-        self.zshroud = zshroud
-        self.rshroud = rshroud
-        self.zhub_control = zhub_control
-        self.rhub_control = rhub_control
-        self.zshroud_control = zshroud_control
-        self.rshroud_control = rshroud_control
-
-
-    def curve_endwalls(self,curve_zr=[]):
-        """Curves the endwalls in the merdional plane. This is used to create radial machines. Distance from shroud to hub will be maintained
-
-        Args:
-            curve_zr (List): List of points [[1,2],[3,4]]
-
-        Currently not implemented
-        """
-        pass
-
+        self.zhub = convert_to_ndarray(zhub)
+        self.rhub = convert_to_ndarray(rhub)
+        self.zshroud = convert_to_ndarray(zshroud)
+        self.rshroud = convert_to_ndarray(rshroud)
+        self.zhub_control = convert_to_ndarray(zhub_control)
+        self.rhub_control = convert_to_ndarray(rhub_control)
+        self.zshroud_control = convert_to_ndarray(zshroud_control)
+        self.rshroud_control = convert_to_ndarray(rshroud_control)
 
     def blade_fit(self,xBladeStart:float):
         """Fits the blade within the channel
@@ -130,19 +140,19 @@ class Passage2D:
 
             self.airfoils[i].shft_xss[0,:] = shft_xss[0,:]
             self.airfoils[i].shft_yss[0,:] = shft_yss[0,:]
-            self.airfoils[i].shft_zss[0,:] = shft_zss[0,:] - 0.04
+            self.airfoils[i].shft_zss[0,:] = shft_zss[0,:] - 0.001
 
             self.airfoils[i].shft_xps[0,:] = shft_xps[0,:]
             self.airfoils[i].shft_yps[0,:] = shft_yps[0,:]
-            self.airfoils[i].shft_zps[0,:] = shft_zps[0,:] - 0.04
+            self.airfoils[i].shft_zps[0,:] = shft_zps[0,:] - 0.001
 
             self.airfoils[i].shft_xss[-1,:] = shft_xss[-1,:]
             self.airfoils[i].shft_yss[-1,:] = shft_yss[-1,:]
-            self.airfoils[i].shft_zss[-1,:] = shft_zss[-1,:] + 0.04
+            self.airfoils[i].shft_zss[-1,:] = shft_zss[-1,:] + 0.001
 
             self.airfoils[i].shft_xps[-1,:] = shft_xps[-1,:]
             self.airfoils[i].shft_yps[-1,:] = shft_yps[-1,:]
-            self.airfoils[i].shft_zps[-1,:] = shft_zps[-1,:] + 0.04
+            self.airfoils[i].shft_zps[-1,:] = shft_zps[-1,:] + 0.001
     
     def plot2D_channel(self):     
         """Plot the blades within the channel

@@ -874,8 +874,8 @@ class Airfoil2D():
         """
     
         t = np.linspace(0,1,100)
-        [xs,ys] = self.ssBezier.get_point(t,equal_space=True)
-        [xp,yp] = self.psBezier.get_point(t,equal_space=True)
+        xs,ys = self.ssBezier.get_point(t,equally_space_pts=True)
+        xp,yp = self.psBezier.get_point(t,equally_space_pts=True)
 
         ds2 = np.zeros(len(xs)-1) 
         dp2 = np.zeros(len(xs)-1) 

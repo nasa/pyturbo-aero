@@ -85,7 +85,7 @@ class bezier:
         
         if (equally_space_pts and len(x)>2): # type: ignore
             pts = equal_space(x,y) # type: ignore
-            return pts[:,0],pts[:,1]
+            return pts[1],pts[2]
         return x,y
     
     def get_point_dt(self,t:Union[float,npt.NDArray]):
@@ -190,7 +190,7 @@ class bezier3:
 
         if (equally_space_pts and len(Bx)>2):
             pts = equal_space(Bx,By,Bz)
-            return pts[:,1],pts[:,2],pts[:,3]
+            return pts[1],pts[2],pts[3]
         elif (len(Bx)==1):
             return Bx[0],By[0],Bz[0] # if it's just one point return floats
         return Bx,By,Bz
@@ -289,8 +289,8 @@ class pw_bezier2D:
 
         if (equally_space_pts and len(x)>2):
             pts = equal_space(x,y)
-            x = pts[:,1]
-            y = pts[:,2]
+            x = pts[1]
+            y = pts[2]
         return x,y
 
     
