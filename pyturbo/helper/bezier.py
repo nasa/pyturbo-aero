@@ -1,4 +1,4 @@
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 import numpy as np
 import numpy.typing as npt
 from scipy.special import comb
@@ -10,6 +10,9 @@ from scipy.special import comb
 from .arc import arclen3, arclen
 from .convert_to_ndarray import convert_to_ndarray
 import numpy.typing as npt 
+from scipy.interpolate import Rbf
+from shapely.geometry import Polygon, Point
+
 
 # https://www.journaldev.com/14893/python-property-decorator
 # https://www.codementor.io/sheena/advanced-use-python-decorators-class-function-du107nxsv
@@ -17,9 +20,9 @@ import numpy.typing as npt
 
 class bezier:
     n:int           # Number of control points
-    c:np.ndarray    # bezier coefficients
-    x:np.ndarray    # x-control points
-    y:np.ndarray    # y-control points
+    c:npt.NDArray    # bezier coefficients
+    x:npt.NDArray    # x-control points
+    y:npt.NDArray    # y-control points
 
 
     def __init__(self, x:List[float],y:List[float]):
@@ -39,10 +42,10 @@ class bezier:
         Returns:
             bezier: flipped bezier curve
         """
-        return bezier(np.flip(self.x),np.flip(self.y))
+        return bezier(np.flip(self.x),np.flip(self.y)) # type: ignore
 
     @property
-    def get_x_y(self) -> Tuple[List[float],List[float]]:
+    def get_x_y(self) -> Tuple[npt.NDArray,npt.NDArray]:
         return self.x,self.y
     
     def get_curve_length(self) -> float:
@@ -52,68 +55,40 @@ class bezier:
             float: curve length
         """
         [x,y] = self.get_point(np.linspace(0,1,100))
-        d = np.zeros((len(x),1))
+        d = np.zeros((len(x),))
         for i in range(0,len(x)-1):
             d[i] = math.sqrt((x[i+1]-x[i])**2 + (y[i+1]-y[i])**2)
         
-        return sum(d)[0] # Linear approximation of curve length
+        return sum(d) # Linear approximation of curve length
 
-    def __equal_space__(self,t:npt.NDArray,x:npt.NDArray,y:npt.NDArray):
-        """
-            Equally space points along a bezier curve using arc length
-            Inputs 
-        """
-        arcL = arclen(x,y)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            f2 = lambda x,y: abs(f(x)-f(y)-target_len)
-            for i in range(0,t.size-2):
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
-                t[i+1] = temp.x
-                t_start = t[i+1]
-
-            x,y = self.get_point(t,equal_space=False)
-            arcL = arclen(x,y)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y
-
-    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
-        return self.get_point(t,equal_space)
     
-    @staticmethod
-    def __B__(n:int,i:int,t:float):
-        return comb(n, i) * ( t**i ) * (1 - t)**(n-i)
+
+    def __call__(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
+        return self.get_point(t,equally_space_pts)
     
-    def get_point(self,t:Union[float,npt.NDArray],equal_space:bool=False):
+    
+    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False) -> Tuple[npt.NDArray,npt.NDArray]:
         """Get a point or points along a bezier curve
 
         Args:
             t (Union[float,npt.NDArray]): scalar, list, or numpy array 
-            equal_space (bool, optional): True = space points equally. Defaults to False.
+            equally_space_pts (bool, optional): True = space points equally. Defaults to False.
 
         Returns:
             Tuple: containing x and y points
         """
         t = convert_to_ndarray(t)
-        x = 0; y = 0  
+        x = t*0; y = t*0  
         for i in range(self.n):
-            x += self.__B__(self.n-1,i,t)*self.x[i]
-            y += self.__B__(self.n-1,i,t)*self.y[i]
+            x += bernstein_poly(self.n-1,i,t)*self.x[i]
+            y += bernstein_poly(self.n-1,i,t)*self.y[i]
         
-        if (equal_space and len(x)>2):
-            x,y = self.__equal_space__(t,x,y)
-            return x,y
+        if (equally_space_pts and len(x)>2): # type: ignore
+            pts = equal_space(x,y) # type: ignore
+            return pts[1],pts[2]
         return x,y
     
-    def get_point_dt(self,t:Union[npt.NDArray]):
+    def get_point_dt(self,t:Union[float,npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
 
         Args:
@@ -129,19 +104,18 @@ class bezier:
         
         dx = t*0; dy = t*0
         for i in range(self.n-1):
-            dx += self.__B__(self.n-2,i,t)*(self.x[i+1]-self.x[i])
-            dy += self.__B__(self.n-2,i,t)*(self.y[i+1]-self.y[i])
+            dx += bernstein_poly(self.n-2,i,t)*(self.x[i+1]-self.x[i])
+            dy += bernstein_poly(self.n-2,i,t)*(self.y[i+1]-self.y[i])
         dx*=self.n
         dy*=self.n
         return dx,dy
 
-    def get_point_dt2(self,t:Union[npt.NDArray]):
+    def get_point_dt2(self,t:Union[float,npt.NDArray]):
         t = convert_to_ndarray(t)
-        
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
-            dx2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
-            dy2 = self.__B__(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+            dx2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
+            dy2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
         return dx2,dy2
     
     def rotate(self,angle:float):
@@ -174,7 +148,6 @@ class bezier:
         plt.ylabel("y-label")
         plt.axis('scaled')
 
-
 class bezier3:
     def __init__(self,x,y,z):
         self.n = len(x)
@@ -184,48 +157,11 @@ class bezier3:
         self.c = np.zeros(self.n)
         for i in range(self.n):
             self.c[i] = comb(self.n-1, i, exact=False) # use floating point
+     
+    def __call__(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False):
+        return self.get_point(t,equally_space_pts)
     
-    def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray,z:np.ndarray):
-        """Equally space points along a bezier curve using arc length
-            
-        Args:
-            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)
-            x (np.ndarray): x-coordinate as numpy array
-            y (np.ndarray): y-coordinates as numpy array
-            z (np.ndarray): z-coordinates as numpy array
-
-        Returns:
-            (Tuple): containing
-                - *x* (np.ndarray): new values of x that are equally spaced 
-                - *y* (np.ndarray): new values of y that are equally spaced 
-
-        """
-        arcL = arclen3(x,y,z)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            for i in range(0,t.size-2):
-                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
-                t[i+1] = temp.x
-                t_start = t[i+1]
-
-            x,y,z = self.get_point(t,equal_space=False)
-            arcL = arclen3(x,y,z)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y,z
-    
-    def __call__(self,t:Union[float,npt.NDArray],equal_space:bool=False):
-        return self.get_point(t,equal_space)
-    
-    def get_point(self,t,equal_space = True):
+    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts = True):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
         Args:
@@ -252,55 +188,39 @@ class bezier3:
             Bx[i],By[i],Bz[i] = tempx,tempy,tempz
         self.t = t
 
-        if (equal_space and len(Bx)>2):
-            Bx,By,Bz = self.__equal_space__(t,Bx,By,Bz)
-            return Bx,By,Bz
+        if (equally_space_pts and len(Bx)>2):
+            pts = equal_space(Bx,By,Bz)
+            return pts[1],pts[2],pts[3]
         elif (len(Bx)==1):
-            return Bx[0], By[0],Bz[0] # if it's just one point return floats
+            return Bx[0],By[0],Bz[0] # if it's just one point return floats
         return Bx,By,Bz
     
-    def get_point_dt(self,t:Union[float,List[float],np.ndarray]):
+    def get_point_dt(self,t:Union[float,npt.NDArray]):
         """Gets the derivative dx,dy as a function of t 
 
         Args:
-            t (Union[np.ndarray]): Array or float from 0 to 1 
+            t (Union[float,npt.NDArray]): Array or float from 0 to 1 
             
         Returns:
             tuple: containing
 
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
+                **dz** (npt.NDArray): Derivative of z as a function of t 
         """
-        t = convert_to_ndarray(t)
-        
-        def B(n:int,i:int,t:float):
+
+        def B(n:int,i:int,t:Union[float,npt.NDArray]) -> Union[float,npt.NDArray]:
             c = math.factorial(n)/(math.factorial(i)*math.factorial(n-i))
             return c*t**i *(1-t)**(n-i)
         
-        dx = 0; dy = 0
+        dx = 0*t; dy = 0*t; dz = 0*t
         for i in range(self.n-1):
             dx += B(self.n-1,i,t)*self.n*(self.x[i+1]-self.x[i])
             dy += B(self.n-1,i,t)*self.n*(self.y[i+1]-self.y[i])
             dz += B(self.n-1,i,t)*self.n*(self.z[i+1]-self.z[i])
 
-        return dx,dy
-
-
-def time_this(original_function):
-    def new_function(*args,**kwargs):
-        import datetime                 
-        before = datetime.datetime.now()                     
-        x = original_function(*args,**kwargs)                
-        after = datetime.datetime.now()                      
-        print("Elapsed Time = {0}".format(after-before))
-        return x                                             
-    return new_function                                   
-
-@time_this
-def func_a(stuff):
-    import time
-    time.sleep(3)
-
+        return dx,dy,dz
+    
 class pw_bezier2D:
     def __init__(self,array:List[bezier]):
         """Initializes the piecewise bezier curve from an array of bezier curves
@@ -331,12 +251,12 @@ class pw_bezier2D:
         self.dist=dist
         self.dmax = dmax
 
-    def get_point(self,t:Union[List[float],float,np.ndarray],equal_space:bool=False):
+    def get_point(self,t:Union[List[float],float,np.ndarray],equally_space_pts:bool=False):
         """Gets the point(s) at a certain percentage along the piecewise bezier curve
 
         Args:
             t (Union[List[float],float,np.ndarray]): percentage(s) along a bezier curve. You can specify a float, List[float], or a numpy array
-            equal_space (bool, optional): Equally space points using arc length. Defaults to False.
+            equally_space_pts (bool, optional): Equally space points using arc length. Defaults to False.
 
         Returns:
             (Tuple): containing
@@ -367,56 +287,23 @@ class pw_bezier2D:
             y = sp_intp.interp1d(t,y)(np.linspace(0,1,lenT))
             return x,y
 
-        if (equal_space and len(x)>2):
-            x,y = self.__equal_space__(t,x,y)
+        if (equally_space_pts and len(x)>2):
+            pts = equal_space(x,y)
+            x = pts[1]
+            y = pts[2]
         return x,y
 
-    def __equal_space__(self,t:np.ndarray,x:np.ndarray,y:np.ndarray):
-        """Equally space points along a bezier curve using arc length
-            
-        Args:
-            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)
-            x (np.ndarray): x-coordinate as numpy array
-            y (np.ndarray): y-coordinates as numpy array
-
-        Returns:
-            (Tuple): containing
-                - *x* (np.ndarray): new values of x that are equally spaced 
-                - *y* (np.ndarray): new values of y that are equally spaced 
-
-        """
-        arcL = arclen(x,y)
-        mean_old = np.mean(arcL)
-        mean_err = 1
-        while (mean_err>1.0E-3):
-            target_len = np.sum(arcL)/len(t) # we want equal length
-            csum = np.cumsum(arcL)
-            f = sp_intp.PchipInterpolator(t,csum)
-            t_start = np.min(t)   
-            t_end = np.max(t)
-            for i in range(0,t.size-2):
-                f2 = lambda x: abs(f(x)-f(t_start)-target_len)
-                temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6)
-                t[i+1] = temp.x
-                t_start = t[i+1]
-
-            x,y = self.get_point(t,equal_space=False)
-            arcL = arclen(x,y)
-            mean_new = np.mean(arcL)
-            mean_err = abs(mean_old-mean_new)/abs(mean_new)
-            mean_old = mean_new
-        return x,y
     
-    def get_dt(self,t):
+    def get_dt(self,t:Union[List[float],npt.NDArray]):
         t = convert_to_ndarray(t)
-        t = t.sort(); js = 1; tadj = 0
+        js = 1; tadj = 0
         dx = np.zeros((len(t),1))
         dy = np.zeros((len(t),1))
         for i in range(0,len(t)):
             for j in range(js,len(self.tArray)):
                 if (t[i]<=self.tArray[j]):
                     # Scale t
-                    ts = (t(i)-tadj) * self.dmax/self.dist[j]
+                    ts = (t[i]-tadj) * self.dmax/self.dist[j]
                     dx[i],dy[i] = self.bezierArray[j].get_point_dt(ts)
                     break
                 else:
@@ -436,3 +323,132 @@ class pw_bezier2D:
         for i in range(0,len(self.bezierArray)):
             self.bezierArray[i].plot2D()
 
+
+def equal_space(x:npt.NDArray,y:npt.NDArray,z:npt.NDArray=np.array([])) -> npt.NDArray:
+    """Equally space points based on arc length
+
+    Args:
+        x (npt.NDArray): x values
+        y (npt.NDArray): y values
+        z (npt.NDArray): z values. Defaults to []
+        
+    Returns:
+        npt.NDArray: containing t,x,y or t,x,y,z points 
+    
+    """
+    t = np.linspace(0,1,len(x))
+    x_t = sp_intp.PchipInterpolator(t,x)
+    y_t = sp_intp.PchipInterpolator(t,y)
+    if len(z) == len(x):
+        z_t = sp_intp.PchipInterpolator(t,y)
+        arcL = arclen3(x,y,z)
+    else:
+        arcL = arclen(x,y)
+    mean_old = np.mean(arcL)
+    mean_err = 1
+    
+    while (mean_err>1.0E-3):
+        target_len = np.sum(arcL)/len(t) # we want equal length
+        csum = np.cumsum(arcL)
+        f = sp_intp.PchipInterpolator(t,csum) # Arc length as a function of t 
+        t_start = np.min(t)   
+        t_end = np.max(t)
+        f2 = lambda x,y: abs(f(x)-f(y)-target_len)
+        for i in range(0,t.size-2):
+            temp = minimize_scalar(f2,bounds=(t_start,t_end),method="bounded",tol=1e-6,args=(t_start))
+            t[i+1] = temp.x # type: ignore
+            t_start = t[i+1]
+
+        x = x_t(t)
+        y = y_t(t)
+        if len(z) == len(x):
+            z = z_t(t) # type: ignore
+            arcL = arclen3(x,y,z)
+        else:
+            arcL = arclen(x,y)
+        mean_new = np.mean(arcL)
+        mean_err = abs(mean_old-mean_new)/abs(mean_new)
+        mean_old = mean_new
+    
+    if len(z) == len(x):
+        return np.vstack([t,x,y,z])
+    else:
+        return np.vstack([t,x,y])
+    
+
+def bernstein_poly(n:int,i:int,t:Union[float,npt.NDArray]):
+    """Compute Bernstein polynomial B_i^n at t."""
+    t = np.asarray(t)
+    term1 = np.where(t == 0, float(i == 0), t ** i)
+    term2 = np.where(t == 1, float(i == n), (1 - t) ** (n - i))
+    return comb(n, i) * term1 * term2
+
+
+class BezierSurface:
+    bounds:npt.NDArray
+    perimeter_pts:npt.NDArray
+    inside_pts:npt.NDArray
+    
+    def __init__(self,perimeter_pts:npt.NDArray, inside_pts:npt.NDArray):
+        """
+        Generate a Bézier surface from a grid of control points.
+        
+        Parameters:
+            control_points: 3D NumPy array of shape (m, n, 3). Optional
+            rbf: Number of samples per dimension
+            
+        Returns:
+            X, Y, Z grids of surface points
+        """
+        self.perimeter_pts = perimeter_pts
+        self.inside_pts = inside_pts
+
+
+    def __call__(self,resolution:int=20):
+        control_points = self.__control_pts__()
+        m, n = control_points.shape
+        
+        u_vals = np.linspace(0, 1, resolution)
+        v_vals = np.linspace(0, 1, resolution)
+        surface = np.zeros((resolution, resolution, 3))
+        
+        for i, u in enumerate(u_vals):
+            for j, v in enumerate(v_vals):
+                point = np.zeros(3)
+                for r in range(m):
+                    for s in range(n):
+                        bern_u = bernstein_poly(m - 1,r, u)
+                        bern_v = bernstein_poly(n - 1,s, v)
+                        point += bern_u * bern_v * control_points[r][s]
+                surface[i][j] = point
+        
+        X = surface[:, :, 0]
+        Y = surface[:, :, 1]
+        Z = surface[:, :, 2]
+        return X, Y, Z
+    
+    def __control_pts__(self):
+        control_points = np.vstack([self.perimeter_pts,self.inside_pts])
+        _, idx = np.unique(control_points, axis=0, return_index=True)
+        control_points = control_points[np.sort(idx)]
+        return control_points
+    
+
+    def plot_bezier_surface(self,resolution: int = 50):
+        control_points = self.__control_pts__()
+
+        X, Y, Z = self(resolution)
+
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.plot_surface(X, Y, Z, cmap='viridis', color='red', edgecolor='none', alpha=0.8) # type: ignore
+        ax.scatter(*control_points.reshape(-1, 3).T, color='black', label='Control Points')
+
+        ax.set_title("Bézier Surface")
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_zlabel("Z") # type: ignore
+        ax.legend()
+        plt.tight_layout()
+        plt.show()

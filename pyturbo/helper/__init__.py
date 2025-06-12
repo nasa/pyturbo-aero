@@ -4,7 +4,7 @@
 from __future__ import absolute_import
 
 from .arc import arc, arclen, arclen3
-from .bezier import bezier,bezier3,pw_bezier2D
+from .bezier import bezier,bezier3,pw_bezier2D,equal_space, BezierSurface
 from .bisect import bisect
 from .centroid import centroid
 from .convert_to_ndarray import convert_to_ndarray, cosd,sind, tand
@@ -15,7 +15,7 @@ from .ellispe import ellispe
 from .exp_ratio import exp_ratio
 from .line2D import line2D
 from .min_max_check import check_replace_max, check_replace_min, create_cubic_bounding_box
-from .pspline import pspline, pspline_intersect, spline_type
+from .pspline import pspline, pspline_intersect, spline_type, order_points_by_spline_arc_length,order_points_nearest_neighbor,resample_by_curvature
 from .ray import ray2D, ray2D_intersection,ray3D
 from .rotate_array_values import rotate_array_vals
 from .stacking import StackType
