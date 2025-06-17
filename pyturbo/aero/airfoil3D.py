@@ -6,7 +6,7 @@ from typing import List, Tuple
 from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi, resample_by_curvature
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
 from .airfoil2D import Airfoil2D
-from ..helper import StackType
+from ..helper import StackType, combine_and_sort
 from scipy.optimize import minimize_scalar
 import enum
 import copy
@@ -14,7 +14,7 @@ import os
 import glob
 from scipy.interpolate import PchipInterpolator
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D  # Needed for 3D plotting
 from tqdm import trange
 from stl import mesh
 
@@ -99,7 +99,7 @@ class Airfoil3D():
         self.IsSplineFittedShell = False
 
     def stack(self, stackType=StackType.centroid):
-        """Defines how the airfoil profiles are stacked
+        """Each airfoil profile is stacked on top of each other based on the leading edge, trailing edge, or centroid
 
         Args:
             stackType (StackType, optional): Options are centroid, Leading Edge, Trailing Edge. Defaults to StackType.centroid.
@@ -114,7 +114,7 @@ class Airfoil3D():
                 [hx, hy] = hub.camberBezier.get_point(0)
                 stack_bezier_ctrl_pts[0,0] = hx[0]
                 stack_bezier_ctrl_pts[0,1] = hy[0]
-                stack_bezier_ctrl_pts[0,3] = 0
+                stack_bezier_ctrl_pts[0,2] = 0
 
                 [hx_te, hy_te] = hub.camberBezier.get_point(1)
                 te_center[0] = hx_te[0]
@@ -190,6 +190,8 @@ class Airfoil3D():
             self.bImportedBlade = False
             self.te_center = te_center
 
+    
+    
     def add_sweep(self,sweep_y:List[float]=[],sweep_z:List[float]=[]):
         """Sweep bends the blade towards the leading edge or trailing edge. Blades are first stacked and then sweep can be applied
 
@@ -203,14 +205,12 @@ class Airfoil3D():
         # add sweep where z exists
         self.sweepZ *= self.span
         
-        fx_z = PchipInterpolator(self.stack_bezier_ctrl_pts[:,2],self.stack_bezier_ctrl_pts[:,0])
-        x_sweep = fx_z(self.sweepZ)
+        x_sweep = self.sweepZ*0
         
-        b = np.vstack([x_sweep,self.sweepY,self.sweepZ])
-        combined = np.vstack((self.stack_bezier_ctrl_pts, b))
-        
-        self.stack_bezier_ctrl_pts = np.unique(combined, axis=0)  # New set of points
-        self.stack_bezier_ctrl_pts = np.sort(self.stack_bezier_ctrl_pts,axis=2)
+        b = np.vstack([x_sweep,self.sweepY,self.sweepZ]).transpose()
+
+        results = combine_and_sort(self.stack_bezier_ctrl_pts,b)
+        self.stack_bezier_ctrl_pts = results  # New set of points
         
         # Imported blade doesn't have 2D airfoil profiles defined, just points
         if (self.bImportedBlade): 
@@ -228,14 +228,12 @@ class Airfoil3D():
 
         self.leanZ *= self.span
         
-        fx_y = PchipInterpolator(self.stack_bezier_ctrl_pts[:,2],self.stack_bezier_ctrl_pts[:,1])
-        y_lean = fx_y(self.sweepZ)
-
-        b = np.vstack([self.leanX,y_lean,self.leanZ])
-        combined = np.vstack((self.stack_bezier_ctrl_pts, b))
+        y_lean = self.sweepZ*0
         
-        self.stack_bezier_ctrl_pts = np.unique(combined, axis=0)  # New set of points
-        self.stack_bezier_ctrl_pts = np.sort(self.stack_bezier_ctrl_pts,axis=2)
+        b = np.vstack([self.leanX,y_lean,self.leanZ]).transpose()
+        results = combine_and_sort(self.stack_bezier_ctrl_pts,b)
+        
+        self.stack_bezier_ctrl_pts = results
 
         if (self.bImportedBlade):
             self.profiles_shift()     
@@ -254,7 +252,7 @@ class Airfoil3D():
         self.nte = trailing_edge_points
         self.nspan = nProfiles
 
-        zz = np.linspace(0,self.span,self.nspan) # Spanwise locations of the profiles
+        self.zz = np.linspace(0,self.span,self.nspan) # Spanwise locations of the profiles
         t = np.linspace(0,1,self.npts)
         t_te = np.linspace(0,1,self.nte)
         n_profiles = len(self.profileArray)
@@ -278,13 +276,13 @@ class Airfoil3D():
             spline_ss_temp[j,:,2] = self.profileSpan[j]*self.span              # Span
 
         for i in range(self.npts):
-            self.ps[:,i,0] = csapi(spline_ps_temp[i,:,2],spline_ps_temp[i,:,0],self.zz) # Natural spline
-            self.ps[:,i,1] = csapi(spline_ps_temp[i,:,2],spline_ps_temp[i,:,1],self.zz)
+            self.ps[:,i,0] = csapi(spline_ps_temp[:,i,2],spline_ps_temp[:,i,0],self.zz) # Natural spline
+            self.ps[:,i,1] = csapi(spline_ps_temp[:,i,2],spline_ps_temp[:,i,1],self.zz)
 
-            self.ss[:,i,0] = csapi(spline_ss_temp[i,:,2],spline_ss_temp[i,:,0],self.zz) # Natural spline
-            self.ss[:,i,1] = csapi(spline_ss_temp[i,:,2],spline_ss_temp[i,:,1],self.zz)
+            self.ss[:,i,0] = csapi(spline_ss_temp[:,i,2],spline_ss_temp[:,i,0],self.zz) # Natural spline
+            self.ss[:,i,1] = csapi(spline_ss_temp[:,i,2],spline_ss_temp[:,i,1],self.zz)
 
-
+       
         self.c_te_ps = np.zeros((self.nte,n_profiles,3))
         self.c_te_ss = np.zeros((self.nte,n_profiles,3))
         for j in range(n_profiles): # Trailing edge contains less points
@@ -293,7 +291,7 @@ class Airfoil3D():
             [self.c_te_ss[:,j,0],self.c_te_ss[:,j,1]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
             self.c_te_ps[:,j,2] = self.profileSpan[j]*self.span
             self.c_te_ss[:,j,2] = self.profileSpan[j]*self.span
-
+        
         for i in range(self.nte):
             # Trailing edge pressure side
             self.te_ps[:,i,0] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,0],self.zz)
@@ -309,9 +307,13 @@ class Airfoil3D():
         te_center[:,2] = self.zz
 
         # Populate Control Points
+        self.control_ps = np.zeros((num_points,nProfiles,3))
+        self.control_ss = np.zeros((num_points,nProfiles,3))
+        self.c_te_ps = np.zeros((trailing_edge_points,nProfiles,3))
+        self.c_te_ss = np.zeros((trailing_edge_points,nProfiles,3))
         for i in range(n_profiles):
-            [self.control_x_ps[:,i], self.control_y_ps[:,i]] = self.profileArray[i].psBezier.get_point(t)
-            [self.control_x_ss[:,i], self.control_y_ss[:,i]] = self.profileArray[i].ssBezier.get_point(t)
+            [self.control_ps[:,i,0], self.control_ps[:,i,1]] = self.profileArray[i].psBezier.get_point(t)
+            [self.control_ss[:,i,0], self.control_ss[:,i,1]] = self.profileArray[i].ssBezier.get_point(t)
             
             # add trailing edge
             self.c_te_ps[:,i,0],self.c_te_ps[:,i,1] = self.profileArray[i].TE_ps_arc.get_point(t_te)
@@ -511,7 +513,6 @@ class Airfoil3D():
         """
         self.stack_bezier = bezier3(self.stack_bezier_ctrl_pts[:,0],self.stack_bezier_ctrl_pts[:,1],self.stack_bezier_ctrl_pts[:,2])
         
-             
         # Combine suction and pressure side with trailing edge
         self.ps = np.hstack([self.ps,self.te_ps])
         self.ss = np.hstack([self.ss,self.te_ss])
@@ -545,14 +546,15 @@ class Airfoil3D():
                 sy = 0
 
             # Pressure profiles
-            self.shft_ps[i,:,0] = self.ps[i,:,0] + x - sx
-            self.shft_ps[i,:,1] = self.ps[i,:,1] + y - sy
+            self.spine[i,0] += -sx
+            self.spine[i,1] += - sy
+            self.shft_ps[i,:,0] = self.ps[i,:,0] - sx
+            self.shft_ps[i,:,1] = self.ps[i,:,1] - sy
             # Suction profiles
-            self.shft_ss[i,:,0] = self.ss[i,:,0] + x - sx
-            self.shft_ss[i,:,1] = self.ss[i,:,1] + y - sy
+            self.shft_ss[i,:,0] = self.ss[i,:,0] - sx
+            self.shft_ss[i,:,1] = self.ss[i,:,1] - sy
 
-            self.spine[i,0] = x - sx
-            self.spine[i,1] = y - sy
+            
 
             # if self is an imported blade then te_center wont be defined.
             if not self.bImportedBlade: 
@@ -563,6 +565,11 @@ class Airfoil3D():
             self.shft_ps[i,:,2] = self.zz[i]
             self.shft_ss[i,:,2] = self.zz[i]  
 
+        plt.figure(num=10,clear=True,dpi=150)
+        plt.plot(self.shft_ss[0,:,0],self.shft_ss[0,:,1])
+        plt.plot(self.shft_ps[0,:,0],self.shft_ps[0,:,1])
+        plt.show()
+        
         # Equal Space points
         t2 = np.linspace(0,1,npoints)
         for i in trange(nprofiles,desc='Equal Spacing'):
@@ -626,7 +633,7 @@ class Airfoil3D():
             if (bIntersect):
                 if (t==0 and (ray.x == camber_line.p[0] and ray.y == camber_line.p[1])): # if ray starting point is the same as line, don't count it
                     bIntersect = False
-                elif (t<0): # if ray time vector is negative then it doesn't intersect
+                elif (t<0): # type: ignore # if ray time vector is negative then it doesn't intersect
                     bIntersect = False
                 else:
                     break
@@ -639,11 +646,11 @@ class Airfoil3D():
         bIntersect = False
         for p in range(0,len(ss_x)-1): # check if ray intersects with
             ss_line = line2D((ss_x[p], ss_y[p]),(ss_x[p+1], ss_y[p+1]))
-            [t,u,bIntersect] = ss_line.intersect_ray(ray)
+            [t,bIntersect] = ss_line.intersect_ray(ray)
             if (bIntersect):
                 if (t==0 and (ray.x == ss_line.p[0]) and ray.y == ss_line.p[1]): # if ray starting point is the same as line, don't count it
                     bIntersect = False
-                elif (u<0): # if ray time vector is negative then it doesn't intersect
+                elif (t<0): # type: ignore # if ray time vector is negative then it doesn't intersect
                     bIntersect = False
                 else:
                     break
@@ -656,11 +663,11 @@ class Airfoil3D():
         bIntersect = False
         for p in range(0,len(ps_x)-1): # check if ray intersects with
             ps_line = line2D((ps_x[p],ps_y[p]),(ps_x[p+1], ps_y[p+1]))
-            [t,u,bIntersect] = ps_line.intersect_ray(ray)
+            [t,bIntersect] = ps_line.intersect_ray(ray)
             if (bIntersect):
                 if (t==0 and (ray.x == ps_line.p[0] and ray.y == ps_line.p[1])): # if ray starting point is the same as line, don't count it
                     bIntersect = False
-                elif (u<0): # if ray time vector is negative then it doesn't intersect
+                elif (t[0]<0): # type: ignore # if ray time vector is negative then it doesn't intersect
                     bIntersect = False
                 else:
                     break
@@ -811,7 +818,7 @@ class Airfoil3D():
             - **zps** (numpy.ndarray): pressure side z coordinate
 
         """
-        [_,npts] = self.xss.shape
+        npts = self.ss.shape[1]
 
         if (not self.IsSplineFitted):
             self.spanwise_spline_fit()
@@ -1039,9 +1046,9 @@ class Airfoil3D():
         self.control_y_ss = self.control_y_ss - yc
         self.control_z_ss = self.control_z_ss - zc
 
-        self.b3.x = self.b3.x - xc
-        self.b3.y = self.b3.y - yc
-        self.b3.z = self.b3.z - zc
+        self.stack_bezier.x = self.stack_bezier.x - xc
+        self.stack_bezier.y = self.stack_bezier.y - yc
+        self.stack_bezier.z = self.stack_bezier.z - zc
 
         self.te_center_x = self.te_center_x - xc
         self.te_center_y = self.te_center_y - yc
@@ -1095,9 +1102,9 @@ class Airfoil3D():
         Args:
             filename (str, optional): Name of the STL file . Defaults to "blade.stl".
         """
-        x = np.concatenate([self.shft_xss, np.flip(self.shft_xps[:,1:-1],axis=1)],axis=1)
-        y = np.concatenate([self.shft_yss, np.flip(self.shft_yps[:,1:-1],axis=1)],axis=1)
-        z = np.concatenate([self.shft_zss, np.flip(self.shft_zps[:,1:-1],axis=1)],axis=1)
+        x = np.concatenate([self.shft_ss[:,:,0], np.flip(self.shft_ps[:,1:-1,0],axis=1)],axis=1)
+        y = np.concatenate([self.shft_ss[:,:,1], np.flip(self.shft_ps[:,1:-1,1],axis=1)],axis=1)
+        z = np.concatenate([self.shft_ss[:,:,2], np.flip(self.shft_ps[:,1:-1,2],axis=1)],axis=1)
 
         # Create triangles
         nspan = x.shape[0] # number of spans
@@ -1171,10 +1178,10 @@ class Airfoil3D():
         blade = mesh.Mesh(np.zeros(faces.shape[0], dtype=mesh.Mesh.dtype))
         for i, f in enumerate(faces):
             for j in range(3):
-                blade.vectors[i][j] = vertices[f[j],:]
+                blade.vectors[i][j] = vertices[f[j],:] # type: ignore
 
 
-        blade.save(filename)
+        blade.save(filename) # type: ignore
         
         
 def import_geometry(folder:str,npoints:int=100,nspan:int=2,axial_chord:float=1,span:List[float]=[0,1],ss_ps_split:int=0) -> Airfoil3D:
@@ -1304,8 +1311,8 @@ def import_geometry(folder:str,npoints:int=100,nspan:int=2,axial_chord:float=1,s
     a3D.control_ss = ss
     a3D.control_ps = ps 
     
-    a3D.ss = copy.deepcopy(a3D.shft_xss)
-    a3D.ps = copy.deepcopy(a3D.shft_xps)
+    a3D.ss = copy.deepcopy(a3D.shft_ss)
+    a3D.ps = copy.deepcopy(a3D.shft_ps)
     a3D.bImportedBlade = True
     a3D.stackType=StackType.centroid # Centroid
     a3D.span = max(z)-min(z)

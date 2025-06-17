@@ -25,7 +25,7 @@ class bezier:
     y:npt.NDArray    # y-control points
 
 
-    def __init__(self, x:List[float],y:List[float]):
+    def __init__(self, x:Union[List[float],npt.NDArray],y:Union[List[float],npt.NDArray]):
         """Initializes a 2D bezier curve
 
         Args:
@@ -222,6 +222,13 @@ class bezier3:
         return dx,dy,dz
     
 class pw_bezier2D:
+    
+    bezierArray: List[bezier]
+    tArray: npt.NDArray
+    dist: npt.NDArray
+    dmax: float
+    
+    
     def __init__(self,array:List[bezier]):
         """Initializes the piecewise bezier curve from an array of bezier curves
 

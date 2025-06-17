@@ -1,7 +1,8 @@
 import numpy as np
 
-"""
-        Bisection method, solves for 0 given a function, lower bound, upper bound
+
+def bisect(func,lb:float,ub:float,tol:float=1E-5,verbose:bool=True,**kwargs):
+    """Bisection method, solves for 0 given a function, lower bound, upper bound
         inputs:
             func - function handle
             lb - lower bound
@@ -13,30 +14,13 @@ import numpy as np
             flag = 1 (good,passed) -1 (max iterations reached)
 
     """
-
-def bisect(func,lb:float,ub:float,tol:float,verbose:bool=True,**kwargs):
-    """_summary_
-
-    Args:
-        func (function): function handle
-        lb (float): Lower bound
-        ub (float): Upper bound
-        tol (float): Tolerance
-        verbose (bool, optional): display steps. Defaults to True.
-
-    Returns:
-        Tuple containing:
-
-            **x** (float): minimum value
-            **flag** (int): 1 = success, -1 failed due to max iterations reached
-
-    """
     max_iter=120
     points = np.zeros(max_iter)
     errors = np.zeros(max_iter)+1
     
     flag = 1
     c = lb
+    iter = 0
     while iter<max_iter:
         c = (lb+ub)/2
         fc =func(c,**kwargs)
@@ -60,6 +44,6 @@ def bisect(func,lb:float,ub:float,tol:float,verbose:bool=True,**kwargs):
         
     if (iter>=max_iter):
         flag = -1
-        i = errors.index(min(errors)) 
+        i = errors.index(min(errors))  # type: ignore
         c = points[i]
     return c,flag

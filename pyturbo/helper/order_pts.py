@@ -3,6 +3,37 @@ import numpy.typing as npt
 from scipy.interpolate import splprep, splev
 from scipy.spatial import cKDTree # type: ignore
 
+def combine_and_sort(array_one:npt.NDArray,array_two:npt.NDArray):
+    """Combine and sort on column 2 
+
+    Args:
+        array_one (npt.NDArray): First Array
+        array_two (npt.NDArray): Second Array
+
+    Returns:
+        _type_: _description_
+    """
+    # Step 1: Combine the arrays
+    combined = np.vstack((array_one, array_two))
+
+    # Step 2: Round Z for safe grouping (if Z might have small float errors)
+    z_vals = np.round(combined[:, 2], decimals=8)
+
+    # Step 3: Group by unique Z and sum X, Y
+    unique_z = np.unique(z_vals)
+    result = []
+
+    for z in unique_z:
+        mask = z_vals == z
+        xy_sum = combined[mask][:, :2].sum(axis=0)
+        result.append([xy_sum[0], xy_sum[1], z])
+
+    result = np.array(result)
+
+    # Step 4: Sort by Z
+    sorted_result = result[np.argsort(result[:, 2])]
+    return sorted_result
+
 def order_points_nearest_neighbor(points: npt.NDArray) -> npt.NDArray:
     """Order points by nearest neighbor
 

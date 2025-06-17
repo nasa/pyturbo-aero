@@ -1,7 +1,7 @@
 import numpy as np
+import numpy.typing as npt 
 
-
-def exp_ratio(ratio:float,npoints:int,maxvalue:float=1,flip_direction:bool=False):
+def exp_ratio(ratio:float,npoints:int,maxvalue:float=1,flip_direction:bool=False) -> npt.NDArray:
     """_summary_
 
     Args:
