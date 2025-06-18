@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import copy
 import numpy.typing as npt
 
-class Airfoil2D():
+class Airfoil2D:
     """Design a 2D Airfoil using bezier curves 
     """
     '''Initial values'''
@@ -31,6 +31,7 @@ class Airfoil2D():
     psBezierX:List[float]
     psBezierY:List[float]
 
+        
     def __init__(self,alpha1:float,alpha2:float,axial_chord:float,stagger:float):
         """Constructor for Airfoil2D 
 
@@ -103,12 +104,12 @@ class Airfoil2D():
         # Add Thickness to the suction side 
         if (not counter_rotation):
             theta_ss = 180-self.alpha1
-            ssBezierX.append(self.ssBezierX[0]+cos(radians(theta_ss))*self.le_thickness)
-            ssBezierY.append(self.ssBezierY[0]+sin(radians(theta_ss))*self.le_thickness)
+            ssBezierX.append(ssBezierX[0]+cos(radians(theta_ss))*self.le_thickness)
+            ssBezierY.append(ssBezierY[0]+sin(radians(theta_ss))*self.le_thickness)
         else:
             theta_ps = -self.alpha1
-            psBezierX.append(self.psBezierX[0]+cos(radians(theta_ps))*self.le_thickness)
-            psBezierY.append(self.psBezierY[0]+sin(radians(theta_ps))*self.le_thickness)
+            psBezierX.append(psBezierX[0]+cos(radians(theta_ps))*self.le_thickness)
+            psBezierY.append(psBezierY[0]+sin(radians(theta_ps))*self.le_thickness)
 
         self.ssBezierX = ssBezierX; self.ssBezierY = ssBezierY
         self.psBezierX = psBezierX; self.psBezierY = psBezierY
@@ -606,49 +607,36 @@ class Airfoil2D():
         self.s_c = s_c
         # Compute where throat starts in terms of ts (suction side)
         s,ss,ps,ts,airfoil = channel_get(self,self.s_c)
-        
-        # Limit suction side to ts
-        t = exp_ratio(self.ss_exp_ratio,len(self.SS_thickness)+3,ts)[1:]
-        indx = 2
-        b = self.camberBezier    
-        i=1                    
-        for i in range(len(t)):
-            ## Compute the angle perpendicular
-            [x, y] = b.get_point(t[i])
-            if (t[i] ==0):
-                theta = 180-self.alpha1
-            elif (t[i]==1):
-                theta = self.alpha2-180
-            else:
-                [dx, dy] = b.get_point_dt(t[i])
-                theta = atan(radians(-dx/dy))
-            
-            ## Compute the bezier thickness
-            if (i>=len(t)-1):
-                self.ssBezierX[indx] = 0
-                self.ssBezierY[indx] = 0
-            else:
-                t_ray = self.SS_thickness[i]*self.chord
-                xn = x-cos(radians(theta))*t_ray
-                yn = y-sin(radians(theta))*t_ray
-                self.ssBezierX[indx] = xn
-                self.ssBezierY[indx] = yn   
-            indx=indx+1
-        
-        
+       
         # Find the point at ts (suction side)            
-        x1 = self.ssBezierX[i]
-        y1 = self.ssBezierY[i]
-        [x2, y2] = self.TE_ss_arc.get_point(0)       
+        x1,y1 = self.ssBezier.get_point(ts)
+        [x2, y2] = self.TE_ss_arc.get_point(0)
+        
+        ssBezierX_new = [p for p,q in zip(self.ssBezierX,self.ssBezierY) if q>y1]
+        ssBezierY_new = [p for p in self.ssBezierY if p>y1]
+        ssBezierX_new.append(x1) # type: ignore
+        ssBezierY_new.append(y1) # type: ignore
+        ssBezierX_new = [float(p) for p in ssBezierX_new]
+        ssBezierY_new = [float(p) for p in ssBezierY_new]
+        
         # Create a line from self point to the end of the ss bezier
         # curve
-        bl = bezier([x1, float(x2)],[y1, float(y2)])            
+        bl = bezier([float(x1), float(x2)],[float(y1), float(y2)])            
         # Append points on the line at equal distance spacing to
         # ssBezierX,ssBezierY -> define new ssBezier
         [x, y] = bl.get_point(np.linspace(0,1,n))
-        self.ssBezierX = np.append(self.ssBezierX[0:-3],x).tolist()
-        self.ssBezierY = np.append(self.ssBezierY[0:-3],y).tolist()
+        bezier_pts = np.vstack([np.hstack([ssBezierX_new,x[1:]]),
+                                np.hstack([ssBezierY_new,y[1:]]).tolist()]).transpose()
+        
+        _, unique_indices = np.unique(bezier_pts[:,1], return_index=True)
+        unique_indices = np.unique(np.concatenate(([0, 1], unique_indices)))
+        bezier_pts = bezier_pts[unique_indices,:]
+        bezier_pts = bezier_pts[np.argsort(-bezier_pts[:,1]),:]
+        
+        self.ssBezierX = bezier_pts[:,0].tolist()
+        self.ssBezierY = bezier_pts[:,1].tolist()
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
+        
         
     def plot_camber(self):
         """Plots the camber of the airfoil
@@ -886,20 +874,20 @@ def channel_get(airfoil:Airfoil2D,s_c:float):
         numpy.ndarray: y coordinate of the pressure side
         airfoil2D: the adjacent airfoil
     """
-    airfoil = copy.deepcopy(airfoil)
-    airfoil.add_pitch(s_c*airfoil.chord)
+    airfoil2 = copy.deepcopy(airfoil)
+    airfoil2.add_pitch(s_c*airfoil2.chord)
     # Generate a bunch of points on the Pressure side (Turbine2) 
     t_ss = np.linspace(0,1,100)
     t_ps = np.linspace(0,1,100)
 
 
     if (airfoil._counter_rotation):
-        [x2,y2] = airfoil.psBezier.get_point(t_ps)
+        [x2,y2] = airfoil2.psBezier.get_point(t_ps)
         [x1,y1] = airfoil.ssBezier.get_point(t_ss) # Pressure side to suction side
     else:
         [x1,y1] = airfoil.psBezier.get_point(t_ps)
-        [x2,y2] = airfoil.ssBezier.get_point(t_ss) # Pressure side to suction side
-    
+        [x2,y2] = airfoil2.ssBezier.get_point(t_ss) # Pressure side to suction side
+        
     s = np.zeros(len(t_ss)) 
     ss = np.zeros((len(t_ss),2))
     ps = np.zeros((len(t_ss),2))

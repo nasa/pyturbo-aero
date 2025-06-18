@@ -18,7 +18,7 @@ from mpl_toolkits.mplot3d import Axes3D  # Needed for 3D plotting
 from tqdm import trange
 from stl import mesh
 
-class Airfoil3D():
+class Airfoil3D:
     '''
         Properties
     '''
@@ -426,28 +426,28 @@ class Airfoil3D():
         if not only_blade:
             if (self.stack_bezier): # Plot the spline
                 [bx,by,bz] = self.stack_bezier.get_point(np.linspace(0,1,num=50),equally_space_pts=False)
-                ax.plot3D(bx, by, bz, 'gray')
+                ax.plot3D(bx, by, bz, 'gray') # type: ignore
 
             # Plot the control profiles
             if (not self.bImportedBlade):
                 [_,nprofiles] = self.control_x_ps.shape
                 for p in range(nprofiles):
-                    ax.plot3D(self.control_x_ps[:,p], self.control_y_ps[:,p], self.control_z_ps[:,p],color='green')
-                    ax.plot3D(self.control_x_ss[:,p], self.control_y_ss[:,p], self.control_z_ss[:,p],color='green')
+                    ax.plot3D(self.control_x_ps[:,p], self.control_y_ps[:,p], self.control_z_ps[:,p],color='green') # type: ignore
+                    ax.plot3D(self.control_x_ss[:,p], self.control_y_ss[:,p], self.control_z_ss[:,p],color='green') # type: ignore
                 # Plot trailing edge center
-                ax.plot3D(self.te_center_x,self.te_center_y,self.zz,color='black')
+                ax.plot3D(self.te_center_x,self.te_center_y,self.zz,color='black') # type: ignore
 
                 # Plot the spine
                 [bx,by,bz] = self.stack_bezier.get_point(np.linspace(0,1,nprofiles),equally_space_pts=False)
-                ax.plot3D(bx,by,bz,color='black')
+                ax.plot3D(bx,by,bz,color='black') # type: ignore
 
         # Plot the profiles
         [nprofiles,_] = self.shft_xss.shape
         xmax=0.0; ymax=0.0; zmax=0.0
         xmin=0.0; ymin=0.0; zmin=0.0
         for i in range(nprofiles):
-            ax.plot3D(self.shft_xss[i,:],self.shft_yss[i,:],self.shft_zss[i,:],color='red')
-            ax.plot3D(self.shft_xps[i,:],self.shft_yps[i,:],self.shft_zps[i,:],color='blue')
+            ax.plot3D(self.shft_xss[i,:],self.shft_yss[i,:],self.shft_zss[i,:],color='red') # type: ignore
+            ax.plot3D(self.shft_xps[i,:],self.shft_yps[i,:],self.shft_zps[i,:],color='blue') # type: ignore
             xmax = check_replace_max(xmax,np.max(np.append(self.shft_xps[i,:],self.shft_xss[i,:])))
             xmin = check_replace_min(xmin,np.min(np.append(self.shft_xps[i,:],self.shft_xss[i,:])))
 

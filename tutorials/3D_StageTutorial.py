@@ -17,7 +17,7 @@ stator_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_hub.match_le_thickness()
 stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_hub.flow_guidance2(10)
+stator_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_hub.plot2D()
 
 stator_mid = Airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52)
@@ -31,7 +31,7 @@ stator_mid.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_mid.match_le_thickness()
 stator_mid.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_mid.flow_guidance2(10)
+stator_mid.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_mid.plot2D()
 
 stator_tip = Airfoil2D(alpha1=0,alpha2=68,axial_chord=stator_hub_axial_chord*0.95,stagger=53)
@@ -45,7 +45,7 @@ stator_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_tip.match_le_thickness()
 stator_tip.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_tip.flow_guidance2(10)
+stator_tip.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_tip.plot2D()
 
 stator3D = Airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip], profile_loc=[0.0,0.5,1.0], height = 0.04)
@@ -68,7 +68,7 @@ rotor_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_hub.match_le_thickness()
 rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_hub.flow_guidance2(10)
+rotor_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # rotor_hub.plot2D()
 
 rotor_mid = Airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35)
@@ -82,7 +82,7 @@ rotor_mid.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_mid.match_le_thickness()
 rotor_mid.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_mid.flow_guidance2(10)
+rotor_mid.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # rotor_mid.plot2D()
 
 rotor_tip = Airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=32)
@@ -96,7 +96,7 @@ rotor_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_tip.match_le_thickness()
 rotor_tip.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_tip.flow_guidance2(10)
+rotor_tip.add_ss_flow_guidance_2(s_c=0.7,n=10)
 rotor_tip.plot2D()
 
 #%% Rotor 3D
