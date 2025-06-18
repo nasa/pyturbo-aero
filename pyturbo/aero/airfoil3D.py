@@ -3,7 +3,7 @@ import numpy as np
 import numpy.typing as npt
 import math
 from typing import List, Tuple
-from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi, resample_by_curvature
+from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi, resample_curve
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
 from .airfoil2D import Airfoil2D
 from ..helper import StackType, combine_and_sort
@@ -159,7 +159,6 @@ class Airfoil3D:
                         1)
                     te_center[i,0] = hx_te[0]
                     te_center[i,1] = hy_te[0]
-
             elif (stackType == StackType.centroid):
                 [hx, hy] = self.profileArray[0].get_centroid()
                 stack_bezier_ctrl_pts[0,0] = hx
@@ -305,7 +304,7 @@ class Airfoil3D:
         te_center[:,0] = csapi(self.profileSpan*self.span,self.te_center[:,0],self.zz)
         te_center[:,1] = csapi(self.profileSpan*self.span,self.te_center[:,1],self.zz)
         te_center[:,2] = self.zz
-
+        self.te_center = te_center
         # Populate Control Points
         self.control_ps = np.zeros((num_points,nProfiles,3))
         self.control_ss = np.zeros((num_points,nProfiles,3))
@@ -367,16 +366,16 @@ class Airfoil3D:
             mx_zps = max(self.shft_ps[:,i,2])
             h_ss = mx_zss-mn_zss # height suction side
             h_ps = mx_zps-mn_zps
+            
             zss = np.linspace(mn_zss+h_ss*zStartPercent,mn_zss+h_ss*zEndPercent,self.npts)
-
             zps = np.linspace(mn_zps+h_ps*zStartPercent,mn_zps+h_ps*zEndPercent,self.npts)
 
-            self.shft_ss[:,i,1]= csapi(self.shft_ss[:,i,2],self.shft_yss[:,i,1],zss)
-            self.shft_ss[:,i,0]= csapi(self.shft_ss[:,i,2],self.shft_xss[:,i,0],zss)
-            self.shft_ps[:,i,1]= csapi(self.shft_ps[:,i,2],self.shft_yps[:,i,1],zps)
-            self.shft_ps[:,i,0]= csapi(self.shft_ps[:,i,2],self.shft_xps[:,i,0],zps)
-            self.shft_zps[:,i] = zps
-            self.shft_zss[:,i] = zss
+            self.shft_ss[:,i,1]= csapi(self.shft_ss[:,i,2],self.shft_ss[:,i,1],zss)
+            self.shft_ss[:,i,0]= csapi(self.shft_ss[:,i,2],self.shft_ss[:,i,0],zss)
+            self.shft_ps[:,i,1]= csapi(self.shft_ps[:,i,2],self.shft_ps[:,i,1],zps)
+            self.shft_ps[:,i,0]= csapi(self.shft_ps[:,i,2],self.shft_ps[:,i,0],zps)
+            self.shft_ps[:,i,2] = zps
+            self.shft_ss[:,i,2] = zss
 
         # self.cylindrical()
 
@@ -430,32 +429,32 @@ class Airfoil3D:
 
             # Plot the control profiles
             if (not self.bImportedBlade):
-                [_,nprofiles] = self.control_x_ps.shape
+                nprofiles = self.control_ps.shape[0]
                 for p in range(nprofiles):
-                    ax.plot3D(self.control_x_ps[:,p], self.control_y_ps[:,p], self.control_z_ps[:,p],color='green') # type: ignore
-                    ax.plot3D(self.control_x_ss[:,p], self.control_y_ss[:,p], self.control_z_ss[:,p],color='green') # type: ignore
+                    ax.plot3D(self.control_ps[:,p,0], self.control_ps[:,p,1], self.control_ps[:,p,2],color='green') # type: ignore
+                    ax.plot3D(self.control_ss[:,p,0], self.control_ss[:,p,1], self.control_ss[:,p,2],color='green') # type: ignore
                 # Plot trailing edge center
-                ax.plot3D(self.te_center_x,self.te_center_y,self.zz,color='black') # type: ignore
+                ax.plot3D(self.te_center[:,0],self.te_center[:,1],self.te_center[:,2],color='black') # type: ignore
 
                 # Plot the spine
                 [bx,by,bz] = self.stack_bezier.get_point(np.linspace(0,1,nprofiles),equally_space_pts=False)
                 ax.plot3D(bx,by,bz,color='black') # type: ignore
 
         # Plot the profiles
-        [nprofiles,_] = self.shft_xss.shape
+        nprofiles = self.shft_ss.shape[0]
         xmax=0.0; ymax=0.0; zmax=0.0
         xmin=0.0; ymin=0.0; zmin=0.0
         for i in range(nprofiles):
-            ax.plot3D(self.shft_xss[i,:],self.shft_yss[i,:],self.shft_zss[i,:],color='red') # type: ignore
-            ax.plot3D(self.shft_xps[i,:],self.shft_yps[i,:],self.shft_zps[i,:],color='blue') # type: ignore
-            xmax = check_replace_max(xmax,np.max(np.append(self.shft_xps[i,:],self.shft_xss[i,:])))
-            xmin = check_replace_min(xmin,np.min(np.append(self.shft_xps[i,:],self.shft_xss[i,:])))
+            ax.plot3D(self.shft_ss[i,:,0],self.shft_ss[i,:,1],self.shft_ss[i,:,2],color='red') # type: ignore
+            ax.plot3D(self.shft_ps[i,:,0],self.shft_ps[i,:,1],self.shft_ps[i,:2],color='blue') # type: ignore
+            xmax = check_replace_max(xmax,np.max(np.append(self.shft_ps[i,:,0],self.shft_ss[i,:,0])))
+            xmin = check_replace_min(xmin,np.min(np.append(self.shft_ps[i,:,0],self.shft_ss[i,:,0])))
 
-            ymax = check_replace_max(ymax,np.max(np.append(self.shft_yps[i,:],self.shft_yss[i,:])))
-            ymin = check_replace_min(ymin,np.min(np.append(self.shft_yps[i,:],self.shft_yss[i,:])))
+            ymax = check_replace_max(ymax,np.max(np.append(self.shft_ps[i,:,1],self.shft_ss[i,:,1])))
+            ymin = check_replace_min(ymin,np.min(np.append(self.shft_ps[i,:,1],self.shft_ss[i,:,1])))
 
-            zmax = check_replace_max(zmax,np.max(np.append(self.shft_zps[i,:],self.shft_zss[i,:])))
-            zmin = check_replace_min(zmin,np.min(np.append(self.shft_zps[i,:],self.shft_zss[i,:])))
+            zmax = check_replace_max(zmax,np.max(np.append(self.shft_ps[i,:,2],self.shft_ss[i,:,2])))
+            zmin = check_replace_min(zmin,np.min(np.append(self.shft_ps[i,:,2],self.shft_ss[i,:,2])))
 
 
         Xb,Yb,Zb = create_cubic_bounding_box(xmax,xmin,ymax,ymin,zmax,zmin)
@@ -480,8 +479,8 @@ class Airfoil3D:
     def get_chord(self):
         """Returns the chord, axial chord for all the profiles
         """
-        chord = np.sqrt((self.shft_xps[:,-1] - self.shft_xps[:,0])**2 + (self.shft_yps[:,-1] - self.shft_yps[:,0])**2)
-        axial_chord = abs(self.shft_xps[:,-1] - self.shft_xps[:,0])
+        chord = np.sqrt((self.shft_ps[:,-1,0] - self.shft_ps[:,0,0])**2 + (self.shft_ps[:,-1,1] - self.shft_ps[:,0,1])**2)
+        axial_chord = abs(self.shft_ps[:,-1,0] - self.shft_ps[:,0,0])
         # max_chord = max(chord)
         # avg_chord = np.mean(chord)
 
@@ -502,7 +501,7 @@ class Airfoil3D:
             - **s_c** (numpy.ndarray): pitch to chord distribution
         """
         chord,_ = self.get_chord()
-        r = self.shft_zps[:,-1]
+        r = self.shft_ps[:,-1,2]
         s = 2*math.pi*r/nBlades
         s_c = s/chord
         return s, s_c
@@ -554,8 +553,6 @@ class Airfoil3D:
             self.shft_ss[i,:,0] = self.ss[i,:,0] - sx
             self.shft_ss[i,:,1] = self.ss[i,:,1] - sy
 
-            
-
             # if self is an imported blade then te_center wont be defined.
             if not self.bImportedBlade: 
                 # Shift the trailing edge center
@@ -565,28 +562,21 @@ class Airfoil3D:
             self.shft_ps[i,:,2] = self.zz[i]
             self.shft_ss[i,:,2] = self.zz[i]  
 
-        plt.figure(num=10,clear=True,dpi=150)
-        plt.plot(self.shft_ss[0,:,0],self.shft_ss[0,:,1])
-        plt.plot(self.shft_ps[0,:,0],self.shft_ps[0,:,1])
-        plt.show()
+        # plt.figure(num=10,clear=True,dpi=150)
+        # plt.plot(self.shft_ss[0,:,0],self.shft_ss[0,:,1])
+        # plt.plot(self.shft_ps[0,:,0],self.shft_ps[0,:,1])
+        # plt.show()
         
         # Equal Space points
-        t2 = np.linspace(0,1,npoints)
-        for i in trange(nprofiles,desc='Equal Spacing'):
-            p = pspline(self.shft_xps[i,:],self.shft_yps[i,:])
-            xy,_ = p.get_point(t2)
-            self.shft_ps[i,:,0] = xy[:,0]
-            self.shft_ps[i,:,1] = xy[:,1]
-
-            p = pspline(self.shft_ss[i,:,0],self.shft_ss[i,:,1])
-            xy,_ = p.get_point(t2)
-            self.shft_ss[i,:,0] = xy[:,0]
-            self.shft_ss[i,:,1] = xy[:,1]
-            # fig,ax = plt.subplots()
-            # ax.plot(self.shft_xps[i,:],self.shft_yps[i,:],'.')
-            # ax.plot(self.shft_xss[i,:],self.shft_yss[i,:],'.')
-            # ax.set_aspect('equal')
-            # plt.show()
+        for i in trange(nprofiles,desc='Equal Spacing suction and pressure side'):
+            self.shft_ss = resample_curve(self.shft_ss,npoints)
+            self.shft_ps = resample_curve(self.shft_ps,npoints)
+            
+            fig,ax = plt.subplots()
+            ax.plot(self.shft_ps[i,:,0],self.shft_ps[i,:,1],'.')
+            ax.plot(self.shft_ss[i,:,0],self.shft_ss[i,:,1],'.')
+            ax.set_aspect('equal')
+            plt.show()
 
 
         # Shift Control Profiles
@@ -740,7 +730,7 @@ class Airfoil3D:
             Fits the blade with splines that run along the profiles
             Helps with the wavy design
         """
-        [nprofiles,npts] = self.shft_xps.shape
+        [nprofiles,npts] = self.shft_ps.shape
         self.spline_xps = []
         self.spline_yps = []
         self.spline_zps = []
@@ -750,13 +740,13 @@ class Airfoil3D:
         self.spline_zss = []
         t = np.linspace(0,1,nprofiles)
         for p in range(npts):
-            self.spline_xps.append(PchipInterpolator(t,self.shft_xps[:,p])) # Percent, x
-            self.spline_yps.append(PchipInterpolator(t,self.shft_yps[:,p]))
-            self.spline_zps.append(PchipInterpolator(t,self.shft_zps[:,p]))
+            self.spline_xps.append(PchipInterpolator(t,self.shft_ps[:,p,0])) # Percent, x
+            self.spline_yps.append(PchipInterpolator(t,self.shft_ps[:,p,1]))
+            self.spline_zps.append(PchipInterpolator(t,self.shft_ps[:,p,2]))
 
-            self.spline_xss.append(PchipInterpolator(t,self.shft_xss[:,p]))
-            self.spline_yss.append(PchipInterpolator(t,self.shft_yss[:,p]))
-            self.spline_zss.append(PchipInterpolator(t,self.shft_zss[:,p]))
+            self.spline_xss.append(PchipInterpolator(t,self.shft_ss[:,p,0]))
+            self.spline_yss.append(PchipInterpolator(t,self.shft_ss[:,p,1]))
+            self.spline_zss.append(PchipInterpolator(t,self.shft_ss[:,p,2]))
         self.IsSplineFitted = True
 
     def spanwise_spline_fit_shell(self,shell_thickness:float,smooth:float=0.1):
@@ -772,7 +762,7 @@ class Airfoil3D:
 
         shell_xps = []
         shell_yps = []
-        [nprofiles,_] = self.shft_xps.shape
+        nprofiles = self.shft_ps.shape[0]
         t = np.linspace(0,1,nprofiles)
         for profile in range(nprofiles):
             percent_profile = profile/nprofiles
@@ -794,11 +784,11 @@ class Airfoil3D:
         for p in range(npts):
             self.shell_xss.append(PchipInterpolator(t,shell_xss[:,p])) # Percent, x
             self.shell_yss.append(PchipInterpolator(t,shell_yss[:,p]))
-            self.shell_zss.append(PchipInterpolator(t,self.shft_zps[:,p]))
+            self.shell_zss.append(PchipInterpolator(t,self.shft_ps[:,p,0]))
 
             self.shell_xps.append(PchipInterpolator(t,shell_xps[:,p]))
             self.shell_yps.append(PchipInterpolator(t,shell_yps[:,p]))
-            self.shell_zps.append(PchipInterpolator(t,self.shft_zss[:,p]))
+            self.shell_zps.append(PchipInterpolator(t,self.shft_ss[:,p,2]))
         self.IsSplineFittedShell = True
 
     def get_cross_section(self,percent_span:float):
@@ -1000,58 +990,47 @@ class Airfoil3D:
         # Rotate each profile
         R = np.array([[cosd(angle), -sind(angle)],[sind(angle),cosd(angle)]])
 
-        nprofiles,_=self.shft_xss.shape
+        nprofiles = self.shft_ss.shape[0]
         for i in range(nprofiles):
-            dx = self.shft_xss[i,:] - cx
-            dy = self.shft_yss[i,:] - cy
-            self.shft_xss[i,:] = (dx*cosd(angle) - dy*sind(angle)) + cx
-            self.shft_yss[i,:] = (dx*sind(angle) + dy*cosd(angle)) + cy
+            dx = self.shft_ss[i,:,0] - cx
+            dy = self.shft_ss[i,:,1] - cy
+            self.shft_ss[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
+            self.shft_ss[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
-            dx = self.shft_xps[i,:] - cx
-            dy = self.shft_yps[i,:] - cy
-            self.shft_xps[i,:] = (dx*cosd(angle) - dy*sind(angle)) + cx
-            self.shft_yps[i,:] = (dx*sind(angle) + dy*cosd(angle)) + cy
+            dx = self.shft_ps[i,:,0] - cx
+            dy = self.shft_ps[i,:,1] - cy
+            self.shft_ps[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
+            self.shft_ps[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
-        for i in range(self.control_x_ps.shape[1]):
-            dx = self.control_x_ps[i,:] - cx
-            dy = self.control_y_ps[i,:] - cy
-            self.control_x_ps[i,:] = (dx*cosd(angle) - dy*sind(angle)) + cx
-            self.control_y_ps[i,:] = (dx*sind(angle) + dy*cosd(angle)) + cy
+        for i in range(self.control_ps.shape[0]):
+            dx = self.control_ps[i,:,0] - cx
+            dy = self.control_ps[i,:,1] - cy
+            self.control_ps[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
+            self.control_ps[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
-            dx = self.control_x_ss[i,:] - cx
-            dy = self.control_y_ss[i,:] - cy
-            self.control_x_ss[i,:] = (dx*cosd(angle) - dy*sind(angle)) + cx
-            self.control_y_ss[i,:] = (dx*sind(angle) + dy*cosd(angle)) + cy
+            dx = self.control_ss[i,:,0] - cx
+            dy = self.control_ss[i,:,1] - cy
+            self.control_ss[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
+            self.control_ss[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
     def center_le(self):
         """centers the blade by placing leading edge at 0,0
         """
-        xc = self.shft_xss[0,0]
-        yc = self.shft_yss[0,0]
-        zc = self.shft_zss[0,0]
+        xc = self.shft_ss[0,0]
+        yc = self.shft_ss[0,0]
+        zc = self.shft_ss[0,0]
 
-        self.shft_xss = self.shft_xss-xc
-        self.shft_yss = self.shft_yss-yc
-        self.shft_zss = self.shft_zss-zc
+        self.shft_ss -= np.array([xc, yc, zc])
+        self.shft_ps -= np.array([xc, yc, zc])
 
-        self.shft_xps = self.shft_xps-xc
-        self.shft_yps = self.shft_yps-yc
-        self.shft_zps = self.shft_zps-zc
-
-        self.control_x_ps = self.control_x_ps - xc
-        self.control_y_ps = self.control_y_ps - yc
-        self.control_z_ps = self.control_z_ps - zc
-
-        self.control_x_ss = self.control_x_ss - xc
-        self.control_y_ss = self.control_y_ss - yc
-        self.control_z_ss = self.control_z_ss - zc
-
+        self.control_ps -= np.array([xc, yc, zc])
+        self.control_ss -= np.array([xc, yc, zc])
+        
         self.stack_bezier.x = self.stack_bezier.x - xc
         self.stack_bezier.y = self.stack_bezier.y - yc
         self.stack_bezier.z = self.stack_bezier.z - zc
 
-        self.te_center_x = self.te_center_x - xc
-        self.te_center_y = self.te_center_y - yc
+        self.te_center -= np.array([xc, yc, zc])
         self.zz = self.zz - xc
 
     def plot_shell_2D(self,percent_span:float,shell_thickness:float):

@@ -1,7 +1,7 @@
 
 from scipy.interpolate import splprep, splev
 import numpy as np 
-
+import numpy.typing as npt
 
 def curvature_3d(dx, dy, dz, ddx, ddy, ddz):
     # Compute curvature from first and second derivatives
@@ -13,7 +13,7 @@ def curvature_3d(dx, dy, dz, ddx, ddy, ddz):
         kappa = np.where(denom > 0, num / denom, 0.0)
     return kappa
 
-def resample_curve(curve, M):
+def resample_curve(curve:npt.NDArray, M:int=100):
     tck, _ = splprep(curve.T, s=0, per=0)
     u_new = np.linspace(0, 1, M)
     return np.stack(splev(u_new, tck), axis=1) # type: ignore
