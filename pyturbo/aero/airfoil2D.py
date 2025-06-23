@@ -642,12 +642,14 @@ class Airfoil2D:
         x1,y1 = self.ssBezier.get_point(ts)
         [x2, y2] = self.TE_ss_arc.get_point(0)
         
-        ssBezierX_new = [p for p,q in zip(self.ssBezierX,self.ssBezierY) if q>y1]
-        ssBezierY_new = [p for p in self.ssBezierY if p>y1]
-        ssBezierX_new.append(x1) # type: ignore
-        ssBezierY_new.append(y1) # type: ignore
-        ssBezierX_new = [float(p) for p in ssBezierX_new]
-        ssBezierY_new = [float(p) for p in ssBezierY_new]
+        ssBezier_new = list() 
+        for p,q in zip(self.ssBezierX,self.ssBezierY):
+            if q>y1:
+                ssBezier_new.append((float(p),float(q)))
+                
+        # ssBezierY_new = [p for p in self.ssBezierY if p>y1]
+        ssBezier_new.append((float(x1),float(y1))) # type: ignore
+        ssBezier_new = np.array(ssBezier_new)
         
         # Create a line from self point to the end of the ss bezier
         # curve
@@ -655,13 +657,8 @@ class Airfoil2D:
         # Append points on the line at equal distance spacing to
         # ssBezierX,ssBezierY -> define new ssBezier
         [x, y] = bl.get_point(np.linspace(0,1,n))
-        bezier_pts = np.vstack([np.hstack([ssBezierX_new,x[1:]]),
-                                np.hstack([ssBezierY_new,y[1:]]).tolist()]).transpose()
-        
-        _, unique_indices = np.unique(bezier_pts[:,1], return_index=True)
-        unique_indices = np.unique(np.concatenate(([0, 1], unique_indices)))
-        bezier_pts = bezier_pts[unique_indices,:]
-        bezier_pts = bezier_pts[np.argsort(-bezier_pts[:,1]),:]
+        bezier_pts = np.vstack([np.hstack([ssBezier_new[:,0],x[1:]]),
+                                np.hstack([ssBezier_new[:,1],y[1:]]).tolist()]).transpose()
         
         self.ssBezierX = bezier_pts[:,0].tolist()
         self.ssBezierY = bezier_pts[:,1].tolist()

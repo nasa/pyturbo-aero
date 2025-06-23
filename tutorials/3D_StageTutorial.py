@@ -18,7 +18,7 @@ stator_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 stator_hub.match_le_thickness()
 stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 stator_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
-# stator_hub.plot2D()
+stator_hub.plot2D()
 
 stator_mid = Airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52)
 stator_mid.add_le_thickness(0.04)
@@ -69,7 +69,7 @@ rotor_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 rotor_hub.match_le_thickness()
 rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
-# rotor_hub.plot2D()
+rotor_hub.plot2D()
 
 rotor_mid = Airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35)
 rotor_mid.add_le_thickness(0.04)
@@ -163,13 +163,13 @@ hub_bezier1 = bezier(zhub_points1,rhub_points1)
 rhub_points2 = [rhub]
 zhub_points2 = [0]
 rhub_points2.append(rhub*rhub_expansion_coeff1[0])                      # Mid bezier control point
-zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[0])
+zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[0]) # type: ignore
 
 rhub_points2.append(rhub*rhub_expansion_coeff1[1])                      # End bezier control point
-zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[1])
+zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[1]) # type: ignore
 
 rhub_points2.append(rhub*rhub_expansion_coeff1[2])                      # End bezier point
-zhub_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
+zhub_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5) # type: ignore
 
 rhub_points2 = np.array(rhub_points2)
 zhub_points2 = np.array(zhub_points2)
@@ -215,13 +215,13 @@ shroud_bezier1 = bezier(zshroud_points1,rshroud_points1)
 rshroud_points2 = [rtip]
 zshroud_points2 = [0]
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[0])                      # Mid bezier control point
-zshroud_points2.append(stator_hub_axial_chord*0.5)
+zshroud_points2.append(stator_hub_axial_chord*0.5) # type: ignore
 
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[1])                      # End bezier control point
-zshroud_points2.append(stator_hub_axial_chord*0.5+stator_hub_axial_chord*0.5*zshroud_expansion_coeff1[0])
+zshroud_points2.append(stator_hub_axial_chord*0.5+stator_hub_axial_chord*0.5*zshroud_expansion_coeff1[0]) # type: ignore
 
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[2])                      # End bezier point
-zshroud_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
+zshroud_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5) # type: ignore
 
 rshroud_points2 = np.array(rshroud_points2)
 zshroud_points2 = np.array(zshroud_points2)
