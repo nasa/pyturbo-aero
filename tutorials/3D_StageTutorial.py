@@ -53,7 +53,7 @@ stator3D.stack(StackType.leading_edge) # stators are typically stacked with lead
 # stator3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
 # stator3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
 stator3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
-stator3D.plot3D()
+# stator3D.plot3D()
 # Rotor 
 ### Hub Profile
 rotor_axial_chord = 0.030

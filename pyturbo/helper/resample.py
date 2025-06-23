@@ -14,6 +14,9 @@ def curvature_3d(dx, dy, dz, ddx, ddy, ddz):
     return kappa
 
 def resample_curve(curve:npt.NDArray, M:int=100):
+    _, idx = np.unique(curve, axis=0, return_index=True)
+    if len(idx) < len(curve):
+        curve = curve[np.sort(idx)]
     tck, _ = splprep(curve.T, s=0, per=0)
     u_new = np.linspace(0, 1, M)
     return np.stack(splev(u_new, tck), axis=1) # type: ignore

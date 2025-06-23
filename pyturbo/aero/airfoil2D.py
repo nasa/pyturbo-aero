@@ -1,8 +1,8 @@
 import numpy as np
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 from math import cos,sin,radians,degrees,pi,atan2,sqrt,atan
 from scipy.optimize import minimize_scalar
-from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,bisect
+from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,bisect,resample_curve
 from scipy.interpolate import CubicSpline
 import matplotlib.pyplot as plt
 import copy
@@ -206,7 +206,6 @@ class Airfoil2D:
             theta = theta-90
         else:
             theta = theta+90
-        
         
         # Pressure side
         t = self.t_ps[-2]
@@ -450,6 +449,37 @@ class Airfoil2D:
         self.TE_ss_arc.x = self.TE_ss_arc.x + x
         self.TE_ss_arc.y = self.TE_ss_arc.y + y
 
+    def get_points(self,n:int=100) -> Tuple[npt.NDArray,npt.NDArray]:
+        """Get the airfoil points. This will you 100 poitns defining the suction side and pressure side
+
+        Args:
+            n (int, optional): Number of points. Defaults to 100.
+
+        Returns:
+            Tuple[npt.NDArray,npt.NDArray]: _description_
+        """
+        t = np.linspace(0,1,n)
+        t_te = np.linspace(0,1,int(n*0.2))
+        
+        x_te,y_te = self.TE_ps_arc.get_point(t_te)
+        [xPS, yPS] = self.psBezier.get_point(t)
+        ps = np.vstack((
+                np.hstack((xPS,x_te)),
+                np.hstack((yPS,y_te))
+            )).transpose()
+        
+        
+        x_te,y_te = self.TE_ss_arc.get_point(t_te)
+        [xSS, ySS] = self.ssBezier.get_point(t)
+        ss = np.vstack((
+                np.hstack((xSS,x_te)),
+                np.hstack((ySS,y_te))
+            )).transpose()
+        
+        ss = resample_curve(ss,n)
+        ps = resample_curve(ps,n)
+        return ss,ps
+        
     def get_centroid(self):
         """Returns the centroid of the airfoil
 

@@ -67,7 +67,7 @@ class bezier:
         return self.get_point(t,equally_space_pts)
     
     
-    def get_point(self,t:Union[float,npt.NDArray],equally_space_pts:bool=False) -> Tuple[npt.NDArray,npt.NDArray]:
+    def get_point(self,t:Union[float,npt.NDArray,List[float]],equally_space_pts:bool=False) -> Tuple[npt.NDArray,npt.NDArray]:
         """Get a point or points along a bezier curve
 
         Args:
