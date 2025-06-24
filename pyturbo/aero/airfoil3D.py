@@ -3,7 +3,7 @@ import numpy as np
 import numpy.typing as npt
 import math
 from typing import List, Optional, Tuple
-from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi, resample_curve
+from ..helper import convert_to_ndarray, bezier, bezier3, centroid, check_replace_max, check_replace_min, csapi, resample_by_curvature
 from ..helper import create_cubic_bounding_box, cosd, sind, uniqueXY, pspline, line2D, ray2D, pspline_intersect, dist, spline_type
 from .airfoil2D import Airfoil2D
 from ..helper import StackType, combine_and_sort
@@ -203,18 +203,14 @@ class Airfoil3D:
 
         # add sweep where z exists
         self.sweepZ *= self.span
+        self.sweepY *= self.span
         
         x_sweep = self.sweepZ*0
         
         b = np.vstack([x_sweep,self.sweepY,self.sweepZ]).transpose()
-
         results = combine_and_sort(self.stack_bezier_ctrl_pts,b)
         self.stack_bezier_ctrl_pts = results  # New set of points
         
-        # Imported blade doesn't have 2D airfoil profiles defined, just points
-        self.__stack_profiles__(self.shft_ss,self.shft_ps,self.te_center)
-        if (not self.bImportedBlade):
-            self.__stack_profiles__(self.control_ss,self.control_ss)
 
     def add_lean(self,leanX:List[float],leanZ:List[float]):
         """Leans the blade towards the suction or pressure side. This applies points that are fitted by a bezier curve. Profiles are adjusted to follow this curve simulating lean.
@@ -227,17 +223,13 @@ class Airfoil3D:
         self.leanZ = convert_to_ndarray(leanZ)
 
         self.leanZ *= self.span
+        self.leanX *= self.span
         
-        y_lean = self.sweepZ*0
+        y_lean = self.leanX*0
         
         b = np.vstack([self.leanX,y_lean,self.leanZ]).transpose()
         results = combine_and_sort(self.stack_bezier_ctrl_pts,b)
-        
         self.stack_bezier_ctrl_pts = results
-        
-        self.__stack_profiles__(self.shft_ss,self.shft_ps,self.te_center)
-        if (not self.bImportedBlade):
-            self.__stack_profiles__(self.control_ss,self.control_ss)
         
     def build(self,nProfiles:int,num_points:int,trailing_edge_points:int):
         """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. 
@@ -338,8 +330,8 @@ class Airfoil3D:
 
         # Equal Space points
         for i in trange(nProfiles,desc='Equal Spacing suction and pressure side'):
-            self.shft_ss[i,:,:] = resample_curve(self.shft_ss[i,:,:],self.shft_ss.shape[1])
-            self.shft_ps[i,:,:] = resample_curve(self.shft_ps[i,:,:],self.shft_ps.shape[1])
+            self.shft_ss[i,:,:] = resample_by_curvature(self.shft_ss[i,:,:],self.shft_ss.shape[1])
+            self.shft_ps[i,:,:] = resample_by_curvature(self.shft_ps[i,:,:],self.shft_ps.shape[1])
          
         for i in range(len(self.profileSpan)):
             self.control_ps[i,:,2] = self.profileSpan[i]*self.span
@@ -532,6 +524,7 @@ class Airfoil3D:
         # Get centroid before combining with TE
         cx = np.zeros(nprofiles); cy = np.zeros(nprofiles)
         for i in range(nprofiles):
+            x = bx[i]; y = by[i]
             # Get the centroid of each profile
             [cx[i], cy[i]] = centroid(np.concatenate((ps[i,:,0],ss[i,:,0])),np.concatenate((ps[i,:,1],ss[i,:,1])))
 
@@ -547,13 +540,13 @@ class Airfoil3D:
                 sy = 0
 
             # Pressure profiles
-            spine[i,0] += - sx
-            spine[i,1] += - sy
-            ps[i,:,0] = ps[i,:,0] - sx
-            ps[i,:,1] = ps[i,:,1] - sy
+            spine[i,0] += x - sx
+            spine[i,1] += y - sy
+            ps[i,:,0] = ps[i,:,0] + x - sx
+            ps[i,:,1] = ps[i,:,1] + y - sy
             # Suction profiles
-            ss[i,:,0] = ss[i,:,0] - sx
-            ss[i,:,1] = ss[i,:,1] - sy
+            ss[i,:,0] = ss[i,:,0] + x - sx
+            ss[i,:,1] = ss[i,:,1] + y - sy
             if te_center is not None:
                 # Shift the trailing edge center
                 te_center[i,0] = te_center[i,0] + x - sx   

@@ -18,7 +18,7 @@ stator_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 stator_hub.match_le_thickness()
 stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
 stator_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
-stator_hub.plot2D()
+# stator_hub.plot2D()
 
 stator_mid = Airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52)
 stator_mid.add_le_thickness(0.04)
@@ -50,10 +50,10 @@ stator_tip.add_ss_flow_guidance_2(s_c=0.75,n=10)
 
 stator3D = Airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip], profile_loc=[0.0,0.5,1.0], height = 0.04)
 stator3D.stack(StackType.leading_edge) # stators are typically stacked with leading edge; stators with centroid or trailing edge
-# stator3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
-# stator3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
+stator3D.add_sweep(sweep_y=[0,-0.05,0.01], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
+stator3D.add_lean(leanX=[0,0.1,0.05], leanZ=[0,0.5,1])
 stator3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
-# stator3D.plot3D()
+stator3D.plot3D()
 # Rotor 
 ### Hub Profile
 rotor_axial_chord = 0.030
@@ -69,7 +69,7 @@ rotor_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 rotor_hub.match_le_thickness()
 rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
-rotor_hub.plot2D()
+# rotor_hub.plot2D()
 
 rotor_mid = Airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35)
 rotor_mid.add_le_thickness(0.04)
@@ -97,14 +97,14 @@ rotor_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 rotor_tip.match_le_thickness()
 rotor_tip.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
 rotor_tip.add_ss_flow_guidance_2(s_c=0.7,n=10)
-rotor_tip.plot2D()
+# rotor_tip.plot2D()
 
 #%% Rotor 3D
 rotor3D = Airfoil3D(profileArray=[rotor_hub,rotor_mid,rotor_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
 rotor3D.stack(StackType.trailing_edge) # stators are typically stacked with leading edge; stators with centroid or trailing edge
 rotor3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
 rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
-rotor3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
+rotor3D.build(nProfiles=20,num_points=60,trailing_edge_points=20)
 rotor3D.plot3D()
 
 def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):

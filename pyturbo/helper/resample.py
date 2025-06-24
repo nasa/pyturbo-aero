@@ -13,6 +13,8 @@ def curvature_3d(dx, dy, dz, ddx, ddy, ddz):
         kappa = np.where(denom > 0, num / denom, 0.0)
     return kappa
 
+
+
 def resample_curve(curve:npt.NDArray, M:int=100):
     _, idx = np.unique(curve, axis=0, return_index=True)
     if len(idx) < len(curve):
@@ -35,6 +37,10 @@ def resample_by_curvature(points: np.ndarray, N: int, smoothing=0.0) -> np.ndarr
     """
     if points.shape[1] != 3:
         raise ValueError("Input points must be of shape (M, 3)")
+    
+    _, idx = np.unique(points, axis=0, return_index=True)
+    if len(idx) < len(points):
+        points = points[np.sort(idx)]
     
     # Fit a parametric spline
     tck, u = splprep(points.T, s=smoothing)
