@@ -357,8 +357,10 @@ class Airfoil3D:
     def flip_x(self):
         """Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z
         """
-        self.shft_ps[:,:,0] = -1*self.shft_ps[:,:,0]
-        self.shft_ss[:,:,0] = -1*self.shft_ss[:,:,0]
+        self.shft_ps[:,:,0] *= -1
+        self.shft_ss[:,:,0] *= -1
+        self.control_ps[:,:,0] *= -1 
+        self.control_ss[:,:,0] *= -1 
 
     def flip_y(self):
         """Mirrors the blade by multiplying y direction by -1. This is assuming axial chord is in the y direction and span is in z
@@ -470,7 +472,9 @@ class Airfoil3D:
         # Comment or uncomment following both lines to test the fake bounding box:
         for xb, yb, zb in zip(Xb, Yb, Zb):
             ax.plot([xb], [yb], [zb], 'w')
-
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        ax.set_zlabel("z") # type: ignore
         plt.show()
 
     def nblades(self,pitchChord:float,rhub:float):
@@ -970,15 +974,17 @@ class Airfoil3D:
             self.shft_ps[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
         for i in range(self.control_ps.shape[0]):
+            dx = self.control_ss[i,:,0] - cx
+            dy = self.control_ss[i,:,1] - cy
+            self.control_ss[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
+            self.control_ss[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
+            
             dx = self.control_ps[i,:,0] - cx
             dy = self.control_ps[i,:,1] - cy
             self.control_ps[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
             self.control_ps[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
 
-            dx = self.control_ss[i,:,0] - cx
-            dy = self.control_ss[i,:,1] - cy
-            self.control_ss[i,:,0] = (dx*cosd(angle) - dy*sind(angle)) + cx
-            self.control_ss[i,:,1] = (dx*sind(angle) + dy*cosd(angle)) + cy
+
 
     def center_le(self):
         """centers the blade by placing leading edge at 0,0
@@ -1160,7 +1166,7 @@ class Airfoil3D:
         fhub_z_x = PchipInterpolator(hub[:,0],hub[:,1])
         fshroud_z_x = PchipInterpolator(shroud[:,0],shroud[:,1])
         
-        for j in range(self.npts):
+        for j in range(self.shft_ps.shape[1]):
             zhub = float(fhub_z_x(self.shft_ss[0,j,0]))
             zshroud = float(fshroud_z_x(self.shft_ss[-1,j,0]))
             self.shft_ss[:,j,2] = rescale_z(self.shft_ss[:,j,2],zhub,zshroud)

@@ -1,7 +1,7 @@
 from typing import List, Optional, Union
 import numpy as np
 from scipy.interpolate import PchipInterpolator
-import json
+import copy 
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 from .airfoil3D import Airfoil3D
@@ -73,25 +73,19 @@ class Passage2D:
         Args:
             xBladeStart (float): axial location of where the leading edge of the first blade starts within the channel
         """
+        [a.center_le() for a in self.airfoils] # type: ignore
         
-        # Shift the blades within the channel
-        ## Take the blade starting location, should be (0,0)
-        x_start = self.airfoils[0].shft_ss[0,0,0] # when rotated the y becomes the x
-        # z_endwall_start = self.zhub[0]
-        dx = x_start + xBladeStart
-        self.airfoils[0].shift(-dx,0)
-
+        self.airfoils[0].shift(xBladeStart,0)
+        dx = 0
         # Space out the airfoils from each other
         for i in range(1,len(self.airfoils)):
             x_end = self.airfoils[i-1].shft_ss[0,-1,0]
-            x_start = self.airfoils[i].shft_ss[0,0,0]
-            dx = x_start -x_end - self.spacing[i-1]
-            self.airfoils[i].shift(-dx,0)
-
+            dx += x_end + self.spacing[i-1]
+            self.airfoils[i].shift(dx,0)
 
         # Scale the blade between the endwalls
         for i in range(len(self.airfoils)):
-            self.airfoils[i].scale_z(np.vstack([self.zhub,self.rhub*0.999]),np.vstack([self.zshroud,self.rshroud*1.001]))
+            self.airfoils[i].scale_z(np.vstack([self.zhub,self.rhub*0.999]).transpose(),np.vstack([self.zshroud,self.rshroud*1.001]).transpose())
     
     def plot2D_channel(self):     
         """Plot the blades within the channel

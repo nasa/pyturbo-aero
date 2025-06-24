@@ -102,8 +102,8 @@ rotor_tip.add_ss_flow_guidance_2(s_c=0.7,n=10)
 #%% Rotor 3D
 rotor3D = Airfoil3D(profileArray=[rotor_hub,rotor_mid,rotor_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
 rotor3D.stack(StackType.trailing_edge) # stators are typically stacked with leading edge; stators with centroid or trailing edge
-rotor3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
-rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
+# rotor3D.add_sweep(sweep_y=[0,-0.02,0.02], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
+# rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
 rotor3D.build(nProfiles=20,num_points=60,trailing_edge_points=20)
 # rotor3D.plot3D()
 
@@ -149,7 +149,7 @@ def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
 rtip = 0.25 # meters
 hub_tip_ratio = 0.8
 rhub = rtip*hub_tip_ratio
-stator_rotor_gap = 0.010
+stator_rotor_gap = 0.025
 
 rhub_expansion_coeff1 = [1.0,0.98,0.97] # Stator
 zhub_expansion_coeff1 = [0.25,0.75]
@@ -265,9 +265,12 @@ rotor_adjusted = copy.deepcopy(rotor3D)
 stator_adjusted.center_le()
 stator_adjusted.flip_x()
 stator_adjusted.rotate(cx=0,cy=0,angle=90)
+# stator_adjusted.plot3D()
 
 rotor_adjusted.center_le()
 rotor_adjusted.flip_x()
+rotor_adjusted.rotate(cx=0,cy=0,angle=90)
+
 # rotor_adjusted.rotate(cx=0,cy=0,angle=90)
 
 passage = Passage2D([stator_adjusted,rotor_adjusted],[stator_rotor_gap])
