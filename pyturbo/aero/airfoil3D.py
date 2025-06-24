@@ -354,7 +354,7 @@ class Airfoil3D:
             self.shft_ps[i,:,1] += y
             self.shft_ps[i,:,0] += x
 
-    def flip_cw(self):
+    def flip_x(self):
         """Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z
         """
         self.shft_ps[:,:,0] = -1*self.shft_ps[:,:,0]
@@ -983,9 +983,9 @@ class Airfoil3D:
     def center_le(self):
         """centers the blade by placing leading edge at 0,0
         """
-        xc = self.shft_ss[0,0]
-        yc = self.shft_ss[0,0]
-        zc = self.shft_ss[0,0]
+        xc = self.shft_ss[0,0,0]
+        yc = self.shft_ss[0,0,1]
+        zc = self.shft_ss[0,0,2]
 
         self.shft_ss -= np.array([xc, yc, zc])
         self.shft_ps -= np.array([xc, yc, zc])
@@ -998,7 +998,7 @@ class Airfoil3D:
         self.stack_bezier.z = self.stack_bezier.z - zc
 
         self.te_center -= np.array([xc, yc, zc])
-        self.zz = self.zz - xc
+        self.zz = self.zz - zc
 
     def plot_shell_2D(self,percent_span:float,shell_thickness:float):
         """Plots the 2D shell used for placement of heat pipes

@@ -53,7 +53,7 @@ stator3D.stack(StackType.leading_edge) # stators are typically stacked with lead
 stator3D.add_sweep(sweep_y=[0,-0.05,0.01], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
 stator3D.add_lean(leanX=[0,0.1,0.05], leanZ=[0,0.5,1])
 stator3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
-stator3D.plot3D()
+# stator3D.plot3D()
 # Rotor 
 ### Hub Profile
 rotor_axial_chord = 0.030
@@ -105,7 +105,7 @@ rotor3D.stack(StackType.trailing_edge) # stators are typically stacked with lead
 rotor3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
 rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
 rotor3D.build(nProfiles=20,num_points=60,trailing_edge_points=20)
-rotor3D.plot3D()
+# rotor3D.plot3D()
 
 def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
     """Creates another bezier curve that matches the slope at the end of bezier 1
@@ -263,7 +263,7 @@ stator_adjusted = copy.deepcopy(stator3D)
 rotor_adjusted = copy.deepcopy(rotor3D)
 
 stator_adjusted.center_le()
-stator_adjusted.flip_cw()
+stator_adjusted.flip_x()
 stator_adjusted.rotate(cx=0,cy=0,angle=90)
 
 rotor_adjusted.center_le()
