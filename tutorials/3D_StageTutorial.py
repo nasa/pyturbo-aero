@@ -267,7 +267,7 @@ stator_adjusted.flip_x()
 stator_adjusted.rotate(cx=0,cy=0,angle=90)
 
 rotor_adjusted.center_le()
-rotor_adjusted.flip()
+rotor_adjusted.flip_x()
 # rotor_adjusted.rotate(cx=0,cy=0,angle=90)
 
 passage = Passage2D([stator_adjusted,rotor_adjusted],[stator_rotor_gap])

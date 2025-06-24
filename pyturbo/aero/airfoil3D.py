@@ -360,7 +360,7 @@ class Airfoil3D:
         self.shft_ps[:,:,0] = -1*self.shft_ps[:,:,0]
         self.shft_ss[:,:,0] = -1*self.shft_ss[:,:,0]
 
-    def flip(self):
+    def flip_y(self):
         """Mirrors the blade by multiplying y direction by -1. This is assuming axial chord is in the y direction and span is in z
         """
         self.shft_ps[:,:,1] = -1*self.shft_ps[:,:,1]
@@ -1129,6 +1129,45 @@ class Airfoil3D:
 
         blade.save(filename) # type: ignore
         
+    def scale_z(self,hub:npt.NDArray,shroud:npt.NDArray):
+        """Scale the airfoil in the z direction
+
+        Args:
+            hub (npt.NDArray): _description_
+            shroud (npt.NDArray): _description_
+        """
+        def rescale_z(z: npt.NDArray, zmin: float, zmax: float) -> npt.NDArray:
+            """
+            Rescale the z-values of a (N,) array to a new [zmin, zmax] range.
+
+            Parameters:
+                points: (N,) array of (z) coordinates.
+                zmin: New minimum for z-axis.
+                zmax: New maximum for z-axis.
+
+            Returns:
+                (N, 3) array with rescaled z-values.
+            """
+            znew = z*0
+            z_old_min, z_old_max = z.min(), z.max()
+            
+            # Normalize and scale to new range
+            z_scaled = (z - z_old_min) / (z_old_max - z_old_min)
+            znew = z_scaled * (zmax - zmin) + zmin
+            
+            return znew
+
+        fhub_z_x = PchipInterpolator(hub[:,0],hub[:,1])
+        fshroud_z_x = PchipInterpolator(shroud[:,0],shroud[:,1])
+        
+        for j in range(self.npts):
+            zhub = float(fhub_z_x(self.shft_ss[0,j,0]))
+            zshroud = float(fshroud_z_x(self.shft_ss[-1,j,0]))
+            self.shft_ss[:,j,2] = rescale_z(self.shft_ss[:,j,2],zhub,zshroud)
+            
+            zhub = float(fhub_z_x(self.shft_ps[-1,j,0]))
+            zshroud = float(fshroud_z_x(self.shft_ps[-1,j,0]))
+            self.shft_ps[:,j,2] = rescale_z(self.shft_ps[:,j,2],zhub,zshroud)
         
 def import_geometry(folder:str,npoints:int=100,nspan:int=2,axial_chord:float=1,span:List[float]=[0,1],ss_ps_split:int=0) -> Airfoil3D:
     """imports geometry from a folder. Make sure there are 2 files inside the folder example: airfoil_0.txt and airfoil_1.txt. In this example, these two files represent the hub and tip. You can have as many as you want but 2 is the minimum. Filenames are sorted before import

@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 import numpy as np
 from scipy.interpolate import PchipInterpolator
 import json
@@ -76,83 +76,22 @@ class Passage2D:
         
         # Shift the blades within the channel
         ## Take the blade starting location, should be (0,0)
-        x_start = self.airfoils[0].shft_xss[0,0] # when rotated the y becomes the x
+        x_start = self.airfoils[0].shft_ss[0,0,0] # when rotated the y becomes the x
         # z_endwall_start = self.zhub[0]
         dx = x_start + xBladeStart
         self.airfoils[0].shift(-dx,0)
 
         # Space out the airfoils from each other
         for i in range(1,len(self.airfoils)):
-            x_end = self.airfoils[i-1].shft_xss[0,-1]
-            x_start = self.airfoils[i].shft_xss[0,0]
+            x_end = self.airfoils[i-1].shft_ss[0,-1,0]
+            x_start = self.airfoils[i].shft_ss[0,0,0]
             dx = x_start -x_end - self.spacing[i-1]
             self.airfoils[i].shift(-dx,0)
 
 
         # Scale the blade between the endwalls
         for i in range(len(self.airfoils)):
-            [_,npoints] = self.airfoils[i].shft_yss.shape            
-            zhub_ss = np.zeros(npoints)
-            zshroud_ss = np.zeros(npoints)
-            zhub_ps = np.zeros(npoints)
-            zshroud_ps = np.zeros(npoints)
-            for j in range(npoints):
-                x = self.airfoils[i].shft_xss[0,j]
-                zhub_ss[j] = self.hub_spline(x)
-
-                x = self.airfoils[i].shft_xps[0,j]
-                zhub_ps[j] = self.hub_spline(x)
-
-            for j in range(npoints):
-                x = self.airfoils[i].shft_xss[-1,j]
-                zshroud_ss[j] = self.shroud_spline(x)
-
-                x = self.airfoils[i].shft_xps[-1,j]
-                zshroud_ps[j] = self.shroud_spline(x)
-
-            self.airfoils[i].scale_zps(zhub_ps,zshroud_ps)
-            self.airfoils[i].scale_zss(zhub_ss,zshroud_ss)            
-            # Offset the blade past the hub and shroud curves by adding two additional profiles to hub and tip
-            nprofiles,npoints = self.airfoils[i].shft_xss.shape
-            shft_xss = self.airfoils[i].shft_xss
-            shft_yss = self.airfoils[i].shft_yss
-            shft_zss = self.airfoils[i].shft_zss
-
-            shft_xps = self.airfoils[i].shft_xps
-            shft_yps = self.airfoils[i].shft_yps
-            shft_zps = self.airfoils[i].shft_zps
-
-            self.airfoils[i].shft_xss = np.zeros(shape=(nprofiles+2,npoints))
-            self.airfoils[i].shft_yss = np.zeros(shape=(nprofiles+2,npoints))
-            self.airfoils[i].shft_zss = np.zeros(shape=(nprofiles+2,npoints))
-
-            self.airfoils[i].shft_xps = np.zeros(shape=(nprofiles+2,npoints))
-            self.airfoils[i].shft_yps = np.zeros(shape=(nprofiles+2,npoints))
-            self.airfoils[i].shft_zps = np.zeros(shape=(nprofiles+2,npoints))
-
-            self.airfoils[i].shft_xss[1:-1,:] = shft_xss
-            self.airfoils[i].shft_yss[1:-1,:] = shft_yss
-            self.airfoils[i].shft_zss[1:-1,:] = shft_zss
-
-            self.airfoils[i].shft_xps[1:-1,:] = shft_xps
-            self.airfoils[i].shft_yps[1:-1,:] = shft_yps
-            self.airfoils[i].shft_zps[1:-1,:] = shft_zps
-
-            self.airfoils[i].shft_xss[0,:] = shft_xss[0,:]
-            self.airfoils[i].shft_yss[0,:] = shft_yss[0,:]
-            self.airfoils[i].shft_zss[0,:] = shft_zss[0,:] - 0.001
-
-            self.airfoils[i].shft_xps[0,:] = shft_xps[0,:]
-            self.airfoils[i].shft_yps[0,:] = shft_yps[0,:]
-            self.airfoils[i].shft_zps[0,:] = shft_zps[0,:] - 0.001
-
-            self.airfoils[i].shft_xss[-1,:] = shft_xss[-1,:]
-            self.airfoils[i].shft_yss[-1,:] = shft_yss[-1,:]
-            self.airfoils[i].shft_zss[-1,:] = shft_zss[-1,:] + 0.001
-
-            self.airfoils[i].shft_xps[-1,:] = shft_xps[-1,:]
-            self.airfoils[i].shft_yps[-1,:] = shft_yps[-1,:]
-            self.airfoils[i].shft_zps[-1,:] = shft_zps[-1,:] + 0.001
+            self.airfoils[i].scale_z(np.vstack([self.zhub,self.rhub*0.999]),np.vstack([self.zshroud,self.rshroud*1.001]))
     
     def plot2D_channel(self):     
         """Plot the blades within the channel
@@ -204,13 +143,13 @@ class Passage2D:
         fig = go.Figure()
         # Plot the blades 
         for airfoil in self.airfoils:            
-            [nprofiles,_] = airfoil.shft_xss.shape
+            nprofiles = airfoil.shft_ss.shape[0]
             for i in range(nprofiles):
-                fig.add_trace(go.Scatter3d(x=airfoil.shft_xss[i,:], y=airfoil.shft_yss[i,:], z=airfoil.shft_zss[i,:],  marker=marker,line=dict(color='red',width=2)))
-                fig.add_trace(go.Scatter3d(x=airfoil.shft_xps[i,:], y=airfoil.shft_yps[i,:], z=airfoil.shft_zps[i,:],  marker=marker,line=dict(color='blue',width=2)))
+                fig.add_trace(go.Scatter3d(x=airfoil.shft_ss[i,:,0], y=airfoil.shft_ss[i,:,1], z=airfoil.shft_ss[i,:,2],  marker=marker,line=dict(color='red',width=2)))
+                fig.add_trace(go.Scatter3d(x=airfoil.shft_ps[i,:,0], y=airfoil.shft_ps[i,:,1], z=airfoil.shft_ps[i,:,2],  marker=marker,line=dict(color='blue',width=2)))
                 
-                theta_max = self.check_replace_max(theta_max,np.max(np.append(airfoil.shft_xss[i,:],airfoil.shft_xps[i,:])))
-                theta_min = self.check_replace_min(theta_min,np.min(np.append(airfoil.shft_xss[i,:],airfoil.shft_xps[i,:])))
+                theta_max = self.check_replace_max(theta_max,np.max(np.append(airfoil.shft_ss[i,:,0],airfoil.shft_ps[i,:,0])))
+                theta_min = self.check_replace_min(theta_min,np.min(np.append(airfoil.shft_ss[i,:,0],airfoil.shft_ps[i,:,0])))
 
         # Plot the channel
         zhub = np.linspace(min(self.zhub),max(self.zhub),500)
@@ -242,13 +181,13 @@ class Passage2D:
         theta_min=0.0; zmin=0.0; rmin=0.0
 
         for airfoil in self.airfoils:            
-            [nprofiles,_] = airfoil.shft_xss.shape
+            nprofiles = airfoil.shft_ss.shape[0]
             for i in range(nprofiles):
-                ax.plot3D(airfoil.shft_xss[i,:],airfoil.shft_yss[i,:],airfoil.shft_zss[i,:],color='red')
-                ax.plot3D(airfoil.shft_xps[i,:],airfoil.shft_yps[i,:],airfoil.shft_zps[i,:],color='blue')
+                ax.plot3D(airfoil.shft_ss[i,:,0],airfoil.shft_ss[i,:,1],airfoil.shft_ss[i,:,2],color='red') # type: ignore
+                ax.plot3D(airfoil.shft_ps[i,:,0],airfoil.shft_ps[i,:,1],airfoil.shft_ps[i,:,2],color='blue') # type: ignore
                 
-                theta_max = self.check_replace_max(theta_max,np.max(np.append(airfoil.shft_yss[i,:],airfoil.shft_yps[i,:])))
-                theta_min = self.check_replace_min(theta_min,np.min(np.append(airfoil.shft_yss[i,:],airfoil.shft_yps[i,:])))
+                theta_max = self.check_replace_max(theta_max,np.max(np.append(airfoil.shft_ss[i,:,1],airfoil.shft_ps[i,:,1])))
+                theta_min = self.check_replace_min(theta_min,np.min(np.append(airfoil.shft_ss[i,:,1],airfoil.shft_ps[i,:,1])))
                 # Create cubic bounding box to simulate equal aspect ratio
         
         zhub = np.linspace(min(self.zhub),max(self.zhub),500)
@@ -256,8 +195,8 @@ class Passage2D:
 
         rshroud = self.shroud_spline(zhub)
         zshroud = zhub
-        ax.plot3D(zhub, zhub*0,rhub, color='black')
-        ax.plot3D(zshroud, zshroud*0,rshroud, color='black')
+        ax.plot3D(zhub, zhub*0,rhub, color='black') # type: ignore
+        ax.plot3D(zshroud, zshroud*0,rshroud, color='black') # type: ignore
 
         rmax = self.check_replace_max(rmax,np.max(np.append(rhub,rshroud)))
         rmin = self.check_replace_min(rmin,np.min(np.append(rhub,rshroud)))
@@ -275,10 +214,10 @@ class Passage2D:
         # Comment or uncomment following both lines to test the fake bounding box:
         for thetab, zb, rb in zip(Thetab, Zb, Rb):
             ax.plot([zb],[thetab],[rb], 'w')
-        ax.view_init(azim=-90, elev=-90)
+        ax.view_init(azim=-90, elev=-90) # type: ignore
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
-        ax.set_zlabel('Z')
+        ax.set_zlabel('Z') # type: ignore
         plt.show()
 
     def plot2D(self,fig_size=None):
@@ -293,10 +232,10 @@ class Passage2D:
         zmin=0.0; rmin=0.0
 
         for airfoil in self.airfoils:            
-            [nprofiles,_] = airfoil.shft_xss.shape
+            nprofiles = airfoil.shft_ss.shape[0]
             for i in range(nprofiles):
-                ax.plot(airfoil.shft_xss[i,:],airfoil.shft_zss[i,:],color='red')
-                ax.plot(airfoil.shft_xps[i,:],airfoil.shft_zps[i,:],color='blue')
+                ax.plot(airfoil.shft_ss[i,:,0],airfoil.shft_ss[i,:,2],color='red')
+                ax.plot(airfoil.shft_ps[i,:,0],airfoil.shft_ps[i,:,2],color='blue')
         
         zhub = np.linspace(min(self.zhub),max(self.zhub),500)
         rhub = self.hub_spline(zhub)
@@ -317,7 +256,7 @@ class Passage2D:
         ax.set_aspect('equal')
         return fig
     
-    def export_json(self,nChannelPoints:int=200,xmin:float=None,xmax:float=None, scale:float=1):
+    def export_json(self,nChannelPoints:int=200,xmin:Optional[float]=None,xmax:Optional[float]=None, scale:float=1):
         """Exports the design to a json file
 
         Args:
@@ -332,7 +271,7 @@ class Passage2D:
         if not xmax:
             xmax = self.zhub[-1]
 
-        x = np.linspace(xmin,xmax,nChannelPoints)
+        x = np.linspace(xmin,xmax,nChannelPoints) # type: ignore
         rhub = self.hub_spline(x)*scale
         xhub = x*scale
         rshroud = self.shroud_spline(x)*scale
@@ -346,22 +285,14 @@ class Passage2D:
 
         for i in range(len(self.airfoils)):
             blade = self.airfoils[i]
-
-            # blade.cartesian()
-            xss = blade.shft_xss*scale
-            xps = blade.shft_xps*scale
-
-            yss = blade.shft_yss*scale
-            yps = blade.shft_yps*scale
-
-            zss = blade.shft_zss*scale
-            zps = blade.shft_zps*scale
-
+            blade.shft_ss *= scale
+            blade.shft_ps *= scale
+            
             data['blades'].append({'blade_index':i})
             sections = list()
-            for j in range(xss.shape[0]):
-                suction = {'x':xss[j,:].tolist(), 'rth':yss[j,:].tolist(),'r':zss[j,:].tolist()}
-                pressure = {'x':xps[j,:].tolist(), 'rth':yps[j,:].tolist(),'r':zps[j,:].tolist()}
+            for j in range(blade.shft_ps.shape[0]):
+                suction = {'x':blade.shft_ss[j,:,0].tolist(), 'rth':blade.shft_ss[j,:,1].tolist(),'r':blade.shft_ss[j,:,2].tolist()}
+                pressure = {'x':blade.shft_ps[j,:,0].tolist(), 'rth':blade.shft_ps[j,:,1].tolist(),'r':blade.shft_ps[j,:,2].tolist()}
                 sections.append({'suction':suction,'pressure':pressure})
 
             data['blades'][-1]['sections'] = sections
@@ -370,7 +301,7 @@ class Passage2D:
             json.dump(data,f,indent=4, sort_keys=True)
 
 
-    def export_dat(self,nChannelPoints=200,xmin:float=None,xmax:float=None, scale:float=1):
+    def export_dat(self,nChannelPoints=200,xmin:Optional[float]=None,xmax:Optional[float]=None, scale:float=1):
         """Exports the channel to a dat file, we recommend using json.
 
         Args:
@@ -386,32 +317,25 @@ class Passage2D:
             
             for i in range(len(self.airfoils)):
                 blade = self.airfoils[i]
-                # blade.cartesian()
-                xss = blade.shft_xss*scale
-                xps = blade.shft_xps*scale
-
-                yss = blade.shft_yss*scale
-                yps = blade.shft_yps*scale
-
-                zss = blade.shft_zss*scale
-                zps = blade.shft_zps*scale
+                blade.shft_ss *= scale
+                blade.shft_ps *= scale
 
                 f.write('Blade {0:d}\n'.format(i))
-                f.write('\tnpoints {0:d}\n'.format(xss.shape[1]))
-                f.write('\tnsections {0:d}\n'.format(xss.shape[0]))                
-                for j in range(xss.shape[0]):
+                f.write('\tnpoints {0:d}\n'.format(blade.shft_ss.shape[1]))
+                f.write('\tnsections {0:d}\n'.format(blade.shft_ss.shape[0]))                
+                for j in range(blade.shft_ss.shape[0]):
                     f.write('\tsection {0:d}\n'.format(j))
                     f.write('\t\txss rth_ss r xps rth_ps r\n')
-                    for k in range(xss.shape[1]):
-                        f.write('\t\t{:5.6f} {:5.6f} {:5.6f}'.format(xss[j,k],yss[j,k],zss[j,k]))
-                        f.write(' {:5.6f} {:5.6f} {:5.6f}\n'.format(xps[j,k],yps[j,k],zps[j,k]))
+                    for k in range(blade.shft_ss.shape[1]):
+                        f.write('\t\t{:5.6f} {:5.6f} {:5.6f}'.format(blade.shft_ss[j,k,0],blade.shft_ss[j,k,1],blade.shft_ss[j,k,2]))
+                        f.write(' {:5.6f} {:5.6f} {:5.6f}\n'.format(blade.shft_ps[j,k,0],blade.shft_ps[j,k,1],blade.shft_ps[j,k,2]))
                         
             if not xmin:
                 xmin = self.zhub[0]
             if not xmax:
                 xmax = self.zhub[-1]
 
-            x = np.linspace(xmin,xmax,nChannelPoints)
+            x = np.linspace(xmin,xmax,nChannelPoints) # type: ignore
             rhub = self.hub_spline(x)*scale
             xhub = x*scale
             rshroud = self.shroud_spline(x)*scale
