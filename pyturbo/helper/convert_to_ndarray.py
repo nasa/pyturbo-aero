@@ -1,7 +1,8 @@
+from typing import List, Union
 import numpy as np
 import numpy.typing as npt
 import math
-def convert_to_ndarray(t) -> npt.NDArray:
+def convert_to_ndarray(t:Union[float,npt.NDArray,List[float]]) -> npt.NDArray:
     """
         converts a scalar or list to numpy array 
     """

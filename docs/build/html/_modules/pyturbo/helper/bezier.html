@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.bezier &mdash; pyturbo-aero 1.0.12 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -110,18 +110,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.bezier</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
-<span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">sp_intp</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize_scalar</span> 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">math</span> 
-<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">comb</span>
-<span class="kn">from</span> <span class="nn">.arc</span> <span class="kn">import</span> <span class="n">arclen3</span><span class="p">,</span> <span class="n">arclen</span>
-<span class="kn">from</span> <span class="nn">.convert_to_ndarray</span> <span class="kn">import</span> <span class="n">convert_to_ndarray</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> 
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">comb</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sp_intp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize_scalar</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">comb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.arc</span><span class="w"> </span><span class="kn">import</span> <span class="n">arclen3</span><span class="p">,</span> <span class="n">arclen</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.convert_to_ndarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_to_ndarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rbf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shapely.geometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">Point</span>
+
 
 <span class="c1"># https://www.journaldev.com/14893/python-property-decorator</span>
 <span class="c1"># https://www.codementor.io/sheena/advanced-use-python-decorators-class-function-du107nxsv</span>
@@ -129,14 +132,14 @@
 
 <div class="viewcode-block" id="bezier">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier">[docs]</a>
-<span class="k">class</span> <span class="nc">bezier</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">bezier</span><span class="p">:</span>
     <span class="n">n</span><span class="p">:</span><span class="nb">int</span>           <span class="c1"># Number of control points</span>
-    <span class="n">c</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    <span class="c1"># bezier coefficients</span>
-    <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    <span class="c1"># x-control points</span>
-    <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>    <span class="c1"># y-control points</span>
+    <span class="n">c</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>    <span class="c1"># bezier coefficients</span>
+    <span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>    <span class="c1"># x-control points</span>
+    <span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>    <span class="c1"># y-control points</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">y</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">y</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes a 2D bezier curve</span>
 
 <span class="sd">        Args:</span>
@@ -149,102 +152,71 @@
 
 <div class="viewcode-block" id="bezier.flip">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.flip">[docs]</a>
-    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverses the direction of the bezier curve</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            bezier: flipped bezier curve</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">bezier</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">bezier</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span> <span class="c1"># type: ignore</span></div>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">get_x_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_x_y</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span>
     
 <div class="viewcode-block" id="bezier.get_curve_length">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.get_curve_length">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_curve_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_curve_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the curve length</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            float: curve length</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">100</span><span class="p">))</span>
-        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),))</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
         
-        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># Linear approximation of curve length</span></div>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="c1"># Linear approximation of curve length</span></div>
 
 
-<div class="viewcode-block" id="bezier.__equal_space__">
-<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.__equal_space__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__equal_space__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            Equally space points along a bezier curve using arc length</span>
-<span class="sd">            Inputs </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">mean_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-        <span class="n">mean_err</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">mean_err</span><span class="o">&gt;</span><span class="mf">1.0E-3</span><span class="p">):</span>
-            <span class="n">target_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># we want equal length</span>
-            <span class="n">csum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">csum</span><span class="p">)</span>
-            <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   
-            <span class="n">t_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="n">f2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="n">target_len</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span><span class="n">t_end</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">))</span>
-                <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">x</span>
-                <span class="n">t_start</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-            <span class="n">mean_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">mean_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mean_old</span><span class="o">-</span><span class="n">mean_new</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean_new</span><span class="p">)</span>
-            <span class="n">mean_old</span> <span class="o">=</span> <span class="n">mean_new</span>
-        <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span></div>
-
+    
 
 <div class="viewcode-block" id="bezier.__call__">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equal_space</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equally_space_pts</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equally_space_pts</span><span class="p">)</span></div>
 
     
-    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">__B__</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">i</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">comb</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="n">t</span><span class="o">**</span><span class="n">i</span> <span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
     
 <div class="viewcode-block" id="bezier.get_point">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.get_point">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equal_space</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span><span class="n">equally_space_pts</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a point or points along a bezier curve</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            t (Union[float,npt.NDArray]): scalar, list, or numpy array </span>
-<span class="sd">            equal_space (bool, optional): True = space points equally. Defaults to False.</span>
+<span class="sd">            equally_space_pts (bool, optional): True = space points equally. Defaults to False.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple: containing x and y points</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>  
+        <span class="n">x</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span>  
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
-            <span class="n">x</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         
-        <span class="k">if</span> <span class="p">(</span><span class="n">equal_space</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__equal_space__</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">equally_space_pts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span> <span class="c1"># type: ignore</span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="n">equal_space</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+            <span class="k">return</span> <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">pts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span></div>
 
     
 <div class="viewcode-block" id="bezier.get_point_dt">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.get_point_dt">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the derivative dx,dy as a function of t </span>
 
 <span class="sd">        Args:</span>
@@ -260,25 +232,24 @@
         
         <span class="n">dx</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span><span class="p">;</span> <span class="n">dy</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
-            <span class="n">dx</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">dy</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dx</span> <span class="o">+=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dy</span> <span class="o">+=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="n">dx</span><span class="o">*=</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span>
         <span class="n">dy</span><span class="o">*=</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span>
         <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span></div>
 
 
-    <span class="k">def</span> <span class="nf">get_point_dt2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point_dt2</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        
         <span class="n">dx2</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span><span class="p">;</span> <span class="n">dy2</span> <span class="o">=</span> <span class="n">t</span><span class="o">*</span><span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">dx2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-            <span class="n">dy2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__B__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dx2</span> <span class="o">=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">dy2</span> <span class="o">=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">dx2</span><span class="p">,</span><span class="n">dy2</span>
     
 <div class="viewcode-block" id="bezier.rotate">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.rotate">[docs]</a>
-    <span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">angle</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rotate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">angle</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Rotate </span>
 
 <span class="sd">        Args:</span>
@@ -293,7 +264,7 @@
         
 <div class="viewcode-block" id="bezier.plot2D">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier.plot2D">[docs]</a>
-    <span class="k">def</span> <span class="nf">plot2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot2D</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a 2D Plot of a bezier curve </span>
 
 <span class="sd">        Args:            </span>
@@ -313,11 +284,10 @@
 </div>
 
 
-
 <div class="viewcode-block" id="bezier3">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier3">[docs]</a>
-<span class="k">class</span> <span class="nc">bezier3</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">bezier3</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -325,56 +295,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">c</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">comb</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># use floating point</span>
-    
-<div class="viewcode-block" id="bezier3.__equal_space__">
-<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier3.__equal_space__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__equal_space__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">z</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Equally space points along a bezier curve using arc length</span>
-<span class="sd">            </span>
-<span class="sd">        Args:</span>
-<span class="sd">            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)</span>
-<span class="sd">            x (np.ndarray): x-coordinate as numpy array</span>
-<span class="sd">            y (np.ndarray): y-coordinates as numpy array</span>
-<span class="sd">            z (np.ndarray): z-coordinates as numpy array</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            (Tuple): containing</span>
-<span class="sd">                - *x* (np.ndarray): new values of x that are equally spaced </span>
-<span class="sd">                - *y* (np.ndarray): new values of y that are equally spaced </span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
-        <span class="n">mean_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-        <span class="n">mean_err</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">mean_err</span><span class="o">&gt;</span><span class="mf">1.0E-3</span><span class="p">):</span>
-            <span class="n">target_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># we want equal length</span>
-            <span class="n">csum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">csum</span><span class="p">)</span>
-            <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   
-            <span class="n">t_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">f2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">t_start</span><span class="p">)</span><span class="o">-</span><span class="n">target_len</span><span class="p">)</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span><span class="n">t_end</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
-                <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">x</span>
-                <span class="n">t_start</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
-            <span class="n">mean_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">mean_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mean_old</span><span class="o">-</span><span class="n">mean_new</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean_new</span><span class="p">)</span>
-            <span class="n">mean_old</span> <span class="o">=</span> <span class="n">mean_new</span>
-        <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span></div>
-
-    
+     
 <div class="viewcode-block" id="bezier3.__call__">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier3.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equal_space</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="p">)</span></div>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equally_space_pts</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equally_space_pts</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="bezier3.get_point">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier3.get_point">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">equally_space_pts</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the point(s) at a certain percentage along the piecewise bezier curve</span>
 
 <span class="sd">        Args:</span>
@@ -401,64 +331,55 @@
             <span class="n">Bx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">By</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">Bz</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tempx</span><span class="p">,</span><span class="n">tempy</span><span class="p">,</span><span class="n">tempz</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">t</span> <span class="o">=</span> <span class="n">t</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">equal_space</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">Bx</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">Bx</span><span class="p">,</span><span class="n">By</span><span class="p">,</span><span class="n">Bz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__equal_space__</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">Bx</span><span class="p">,</span><span class="n">By</span><span class="p">,</span><span class="n">Bz</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">Bx</span><span class="p">,</span><span class="n">By</span><span class="p">,</span><span class="n">Bz</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">equally_space_pts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">Bx</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="n">equal_space</span><span class="p">(</span><span class="n">Bx</span><span class="p">,</span><span class="n">By</span><span class="p">,</span><span class="n">Bz</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">pts</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">pts</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="k">elif</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Bx</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">Bx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">By</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Bz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># if it&#39;s just one point return floats</span>
+            <span class="k">return</span> <span class="n">Bx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">By</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">Bz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># if it&#39;s just one point return floats</span>
         <span class="k">return</span> <span class="n">Bx</span><span class="p">,</span><span class="n">By</span><span class="p">,</span><span class="n">Bz</span></div>
 
     
 <div class="viewcode-block" id="bezier3.get_point_dt">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.bezier3.get_point_dt">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the derivative dx,dy as a function of t </span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            t (Union[np.ndarray]): Array or float from 0 to 1 </span>
+<span class="sd">            t (Union[float,npt.NDArray]): Array or float from 0 to 1 </span>
 <span class="sd">            </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            tuple: containing</span>
 
 <span class="sd">                **dx** (npt.NDArray): Derivative of x as a function of t </span>
 <span class="sd">                **dy** (npt.NDArray): Derivative of y as a function of t </span>
+<span class="sd">                **dz** (npt.NDArray): Derivative of z as a function of t </span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        
-        <span class="k">def</span> <span class="nf">B</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">i</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">B</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">i</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
             <span class="n">c</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">c</span><span class="o">*</span><span class="n">t</span><span class="o">**</span><span class="n">i</span> <span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">t</span><span class="p">)</span><span class="o">**</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="n">i</span><span class="p">)</span>
         
-        <span class="n">dx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">dy</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">t</span><span class="p">;</span> <span class="n">dy</span> <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">t</span><span class="p">;</span> <span class="n">dz</span> <span class="o">=</span> <span class="mi">0</span><span class="o">*</span><span class="n">t</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
             <span class="n">dx</span> <span class="o">+=</span> <span class="n">B</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">dy</span> <span class="o">+=</span> <span class="n">B</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
             <span class="n">dz</span> <span class="o">+=</span> <span class="n">B</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">,</span><span class="n">t</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span></div>
+        <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span></div>
 </div>
 
-
-
-<span class="k">def</span> <span class="nf">time_this</span><span class="p">(</span><span class="n">original_function</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">new_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="kn">import</span> <span class="nn">datetime</span>                 
-        <span class="n">before</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>                     
-        <span class="n">x</span> <span class="o">=</span> <span class="n">original_function</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>                
-        <span class="n">after</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>                      
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Elapsed Time = </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">after</span><span class="o">-</span><span class="n">before</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">x</span>                                             
-    <span class="k">return</span> <span class="n">new_function</span>                                   
-
-<span class="nd">@time_this</span>
-<span class="k">def</span> <span class="nf">func_a</span><span class="p">(</span><span class="n">stuff</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">time</span>
-    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-
+    
 <div class="viewcode-block" id="pw_bezier2D">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.pw_bezier2D">[docs]</a>
-<span class="k">class</span> <span class="nc">pw_bezier2D</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">array</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">bezier</span><span class="p">]):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">pw_bezier2D</span><span class="p">:</span>
+    
+    <span class="n">bezierArray</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">bezier</span><span class="p">]</span>
+    <span class="n">tArray</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">dist</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">dmax</span><span class="p">:</span> <span class="nb">float</span>
+    
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">array</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">bezier</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initializes the piecewise bezier curve from an array of bezier curves</span>
 
 <span class="sd">        Args:</span>
@@ -489,12 +410,12 @@
 
 <div class="viewcode-block" id="pw_bezier2D.get_point">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.pw_bezier2D.get_point">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="nb">float</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span><span class="n">equal_space</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="nb">float</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span><span class="n">equally_space_pts</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the point(s) at a certain percentage along the piecewise bezier curve</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            t (Union[List[float],float,np.ndarray]): percentage(s) along a bezier curve. You can specify a float, List[float], or a numpy array</span>
-<span class="sd">            equal_space (bool, optional): Equally space points using arc length. Defaults to False.</span>
+<span class="sd">            equally_space_pts (bool, optional): Equally space points using arc length. Defaults to False.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            (Tuple): containing</span>
@@ -525,60 +446,24 @@
             <span class="n">y</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">y</span><span class="p">)(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">lenT</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">equal_space</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span>
-            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__equal_space__</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">equally_space_pts</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">pts</span> <span class="o">=</span> <span class="n">equal_space</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">pts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span></div>
 
-
-<div class="viewcode-block" id="pw_bezier2D.__equal_space__">
-<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.bezier.pw_bezier2D.__equal_space__">[docs]</a>
-    <span class="k">def</span> <span class="nf">__equal_space__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Equally space points along a bezier curve using arc length</span>
-<span class="sd">            </span>
-<span class="sd">        Args:</span>
-<span class="sd">            t (np.ndarray): position along bezier curve. Example: t = np.linspace(0,1,100)</span>
-<span class="sd">            x (np.ndarray): x-coordinate as numpy array</span>
-<span class="sd">            y (np.ndarray): y-coordinates as numpy array</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            (Tuple): containing</span>
-<span class="sd">                - *x* (np.ndarray): new values of x that are equally spaced </span>
-<span class="sd">                - *y* (np.ndarray): new values of y that are equally spaced </span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-        <span class="n">mean_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-        <span class="n">mean_err</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="k">while</span> <span class="p">(</span><span class="n">mean_err</span><span class="o">&gt;</span><span class="mf">1.0E-3</span><span class="p">):</span>
-            <span class="n">target_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># we want equal length</span>
-            <span class="n">csum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">f</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">csum</span><span class="p">)</span>
-            <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   
-            <span class="n">t_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
-                <span class="n">f2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">t_start</span><span class="p">)</span><span class="o">-</span><span class="n">target_len</span><span class="p">)</span>
-                <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span><span class="n">t_end</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>
-                <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">x</span>
-                <span class="n">t_start</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
-
-            <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">equal_space</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-            <span class="n">mean_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
-            <span class="n">mean_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mean_old</span><span class="o">-</span><span class="n">mean_new</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean_new</span><span class="p">)</span>
-            <span class="n">mean_old</span> <span class="o">=</span> <span class="n">mean_new</span>
-        <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span></div>
 
     
-    <span class="k">def</span> <span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-        <span class="n">t</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">sort</span><span class="p">();</span> <span class="n">js</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">tadj</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">js</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">tadj</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
         <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">),</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">js</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tArray</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;=</span><span class="bp">self</span><span class="o">.</span><span class="n">tArray</span><span class="p">[</span><span class="n">j</span><span class="p">]):</span>
                     <span class="c1"># Scale t</span>
-                    <span class="n">ts</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">-</span><span class="n">tadj</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dmax</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                    <span class="n">ts</span> <span class="o">=</span> <span class="p">(</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-</span><span class="n">tadj</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dmax</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">dist</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
                     <span class="n">dx</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">dy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_point_dt</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -587,18 +472,147 @@
         <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span>
                     
         
-    <span class="k">def</span> <span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">x</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="n">y</span>
             
     
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">)):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bezierArray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">plot2D</span><span class="p">()</span></div>
 
 
+
+<span class="k">def</span><span class="w"> </span><span class="nf">equal_space</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">z</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([]))</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Equally space points based on arc length</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (npt.NDArray): x values</span>
+<span class="sd">        y (npt.NDArray): y values</span>
+<span class="sd">        z (npt.NDArray): z values. Defaults to []</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        npt.NDArray: containing t,x,y or t,x,y,z points </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">x_t</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">y_t</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="n">z_t</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">mean_old</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
+    <span class="n">mean_err</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">while</span> <span class="p">(</span><span class="n">mean_err</span><span class="o">&gt;</span><span class="mf">1.0E-3</span><span class="p">):</span>
+        <span class="n">target_len</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># we want equal length</span>
+        <span class="n">csum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">sp_intp</span><span class="o">.</span><span class="n">PchipInterpolator</span><span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">csum</span><span class="p">)</span> <span class="c1"># Arc length as a function of t </span>
+        <span class="n">t_start</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>   
+        <span class="n">t_end</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">f</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="o">-</span><span class="n">target_len</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">size</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">minimize_scalar</span><span class="p">(</span><span class="n">f2</span><span class="p">,</span><span class="n">bounds</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">,</span><span class="n">t_end</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;bounded&quot;</span><span class="p">,</span><span class="n">tol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">,</span><span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">t_start</span><span class="p">))</span>
+            <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="o">.</span><span class="n">x</span> <span class="c1"># type: ignore</span>
+            <span class="n">t_start</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">z_t</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+            <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">arcL</span> <span class="o">=</span> <span class="n">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">mean_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">arcL</span><span class="p">)</span>
+        <span class="n">mean_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">mean_old</span><span class="o">-</span><span class="n">mean_new</span><span class="p">)</span><span class="o">/</span><span class="nb">abs</span><span class="p">(</span><span class="n">mean_new</span><span class="p">)</span>
+        <span class="n">mean_old</span> <span class="o">=</span> <span class="n">mean_new</span>
+    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">])</span>
+    
+
+<span class="k">def</span><span class="w"> </span><span class="nf">bernstein_poly</span><span class="p">(</span><span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">i</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Compute Bernstein polynomial B_i^n at t.&quot;&quot;&quot;</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+    <span class="n">term1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="n">t</span> <span class="o">**</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">term2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">n</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">t</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">i</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">comb</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">*</span> <span class="n">term1</span> <span class="o">*</span> <span class="n">term2</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">BezierSurface</span><span class="p">:</span>
+    <span class="n">bounds</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">perimeter_pts</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">inside_pts</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">perimeter_pts</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span> <span class="n">inside_pts</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a Bézier surface from a grid of control points.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            control_points: 3D NumPy array of shape (m, n, 3). Optional</span>
+<span class="sd">            rbf: Number of samples per dimension</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            X, Y, Z grids of surface points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perimeter_pts</span> <span class="o">=</span> <span class="n">perimeter_pts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inside_pts</span> <span class="o">=</span> <span class="n">inside_pts</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">resolution</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_pts__</span><span class="p">()</span>
+        <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="n">control_points</span><span class="o">.</span><span class="n">shape</span>
+        
+        <span class="n">u_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="n">v_vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">resolution</span><span class="p">)</span>
+        <span class="n">surface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">resolution</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">u_vals</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">v_vals</span><span class="p">):</span>
+                <span class="n">point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                        <span class="n">bern_u</span> <span class="o">=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span><span class="n">r</span><span class="p">,</span> <span class="n">u</span><span class="p">)</span>
+                        <span class="n">bern_v</span> <span class="o">=</span> <span class="n">bernstein_poly</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span><span class="n">s</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                        <span class="n">point</span> <span class="o">+=</span> <span class="n">bern_u</span> <span class="o">*</span> <span class="n">bern_v</span> <span class="o">*</span> <span class="n">control_points</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">s</span><span class="p">]</span>
+                <span class="n">surface</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">point</span>
+        
+        <span class="n">X</span> <span class="o">=</span> <span class="n">surface</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">surface</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="n">surface</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__control_pts__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">perimeter_pts</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">inside_pts</span><span class="p">])</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">control_points</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">return_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="n">control_points</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">idx</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">control_points</span>
+    
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_bezier_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">resolution</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">):</span>
+        <span class="n">control_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__control_pts__</span><span class="p">()</span>
+
+        <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span> <span class="o">=</span> <span class="bp">self</span><span class="p">(</span><span class="n">resolution</span><span class="p">)</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+        <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="n">control_points</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Control Points&#39;</span><span class="p">)</span>
+
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Bézier Surface&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span> <span class="c1"># type: ignore</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 
            </div>

@@ -15,7 +15,9 @@ from .ellispe import ellispe
 from .exp_ratio import exp_ratio
 from .line2D import line2D
 from .min_max_check import check_replace_max, check_replace_min, create_cubic_bounding_box
-from .pspline import pspline, pspline_intersect, spline_type, order_points_by_spline_arc_length,order_points_nearest_neighbor,resample_by_curvature
+from .pspline import pspline, pspline_intersect, spline_type, order_points_by_spline_arc_length
+from .order_pts import order_points_nearest_neighbor,order_points_by_spline_arc_length, combine_and_sort
+from .resample import resample_by_curvature, resample_curve
 from .ray import ray2D, ray2D_intersection,ray3D
 from .rotate_array_values import rotate_array_vals
 from .stacking import StackType

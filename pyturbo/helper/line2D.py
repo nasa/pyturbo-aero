@@ -72,7 +72,7 @@ class line2D:
         [x2, y2] = r2.get_point(u)
 
         if (math.sqrt((x-x2)**2 + (y-y2)**2) > 0.001):
-            return False
+            return [-1],False
         
         if (t>1 or t<0): # if time is more than 1, the lines wont intersect 
             return t,False

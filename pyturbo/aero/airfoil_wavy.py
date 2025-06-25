@@ -43,7 +43,7 @@ class AirfoilWavy(Airfoil3D):
         LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
         TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
         
-        [nprofiles,npointsPerProfile] = self.shft_xss.shape
+        nprofiles,npointsPerProfile,_ = self.shft_ss.shape
 
         t = np.linspace(0,1,nprofiles)
         te_center_x = copy.deepcopy(self.te_center_x) #Create a copy showing the previous value
@@ -66,8 +66,8 @@ class AirfoilWavy(Airfoil3D):
         # Spline fit 
         for i in range(nprofiles):           # TE               # LE                   
             # camber line
-            xcam = (self.shft_xss[i,:]+self.shft_xps[i,:])/2.0
-            ycam = (self.shft_yss[i,:]+self.shft_yps[i,:])/2.0
+            xcam = (self.shft_ss[i,:,0]+self.shft_ps[i,:,0])/2.0
+            ycam = (self.shft_ss[i,:,1]+self.shft_ps[i,:,1])/2.0
             dydx = derivative_1(ycam,xcam)
             # Find where camber line changes signs
             vibrissaeIndx[i] = -1
@@ -102,15 +102,15 @@ class AirfoilWavy(Airfoil3D):
         centerPointX = np.zeros(nprofiles)
         centerPointY = np.zeros(nprofiles)
 
-        camberX = np.add(self.shft_xss,self.shft_xps)/2.0
-        camberY = np.add(self.shft_yss,self.shft_yps)/2.0
+        camberX = np.add(self.shft_ss[:,:,0],self.shft_ps[:,:,1])/2.0
+        camberY = np.add(self.shft_ss[:,:,0],self.shft_ps[:,:,1])/2.0
         t = np.linspace(0,1,npointsPerProfile)
 
         # Apply thickness chord ratio
         for i in range(nprofiles):
             ps = i/(nprofiles-1)# percent span 
 
-            chord[i] = np.sqrt((self.shft_yss[i,-1]-self.shft_yss[i,-1])**2+(self.shft_xss[i,-1]-self.shft_xss[i,-1])**2)  
+            chord[i] = np.sqrt((self.shft_ss[i,-1,1]-self.shft_ss[i,-1,1])**2+(self.shft_ss[i,-1,0]-self.shft_ss[i,-1,0])**2)  
             centerPointX[i] = camberX[i,vibrissaeIndx[i]] # Stretch will be based around self point
             centerPointY[i] = camberY[i,vibrissaeIndx[i]]
             
@@ -125,8 +125,8 @@ class AirfoilWavy(Airfoil3D):
             # Find thickness for each camber point
             for j in range(npointsPerProfile):                      
                 # Suction Side
-                dx = self.shft_xss[i,j]-centerPointX[i]
-                dy = self.shft_yss[i,j]-centerPointY[i]
+                dx = self.shft_ss[i,j,0]-centerPointX[i]
+                dy = self.shft_ss[i,j,1]-centerPointY[i]
                 # theta = 0 + rotation_vector[j] # Rotation angle 
                 # Scale dx and dy by thickness to chord
                 dx_scaled = dx*cxss[i]([j])[0] # dx from centerPoint
@@ -135,8 +135,8 @@ class AirfoilWavy(Airfoil3D):
                 xnew = centerPointX[i] + dx_scaled
                 ynew = centerPointY[i] + dy_scaled
                 
-                dx = xnew - self.shft_xss[i,j]
-                dy = ynew - self.shft_yss[i,j]
+                dx = xnew - self.shft_ss[i,j,0]
+                dy = ynew - self.shft_ss[i,j,1]
 
                 rot = np.array([ [cosd(rotation_vector[j]), -sind(rotation_vector[j])], [sind(rotation_vector[j]), cosd(rotation_vector[j])] ]) 
                 rot = np.matmul(rot, np.array([[dx],[dy]]))
@@ -144,12 +144,12 @@ class AirfoilWavy(Airfoil3D):
                 dx_rot = rot[0]
                 dy_rot = rot[1]
                 
-                self.shft_xss[i,j] = self.shft_xss[i,j] + dx_rot
-                self.shft_yss[i,j] = self.shft_yss[i,j] + dy_rot
+                self.shft_ss[i,j,0] = self.shft_ss[i,j,0] + dx_rot
+                self.shft_ss[i,j,1] = self.shft_ss[i,j,1] + dy_rot
                 
                 # Pressure Side
-                dx = self.shft_xps[i,j]-centerPointX[i]
-                dy = self.shft_yps[i,j]-centerPointY[i]
+                dx = self.shft_ps[i,j,0]-centerPointX[i]
+                dy = self.shft_ps[i,j,1]-centerPointY[i]
                 
                 # Scale dx and dy by thickness to chord
                 dx_scaled = dx*cxps[i]([j])[0]
@@ -157,16 +157,16 @@ class AirfoilWavy(Airfoil3D):
                 # obtain the shift relative to the point
                 xnew = centerPointX[i] + dx_scaled
                 ynew = centerPointY[i] + dy_scaled
-                dx = xnew - self.shft_xps[i,j]
-                dy = ynew - self.shft_yps[i,j]
+                dx = xnew - self.shft_ps[i,j,0]
+                dy = ynew - self.shft_ps[i,j,1]
                 
                 rot = np.array([[cosd(rotation_vector[j]), -sind(rotation_vector[j])], [sind(rotation_vector[j]), cosd(rotation_vector[j])]])
                 rot = np.matmul(rot, np.array([[dx],[dy]]))
 
                 dx_rot = rot[0]
                 dy_rot = rot[1]
-                self.shft_xps[i,j] = dx_rot + self.shft_xps[i,j] 
-                self.shft_yps[i,j] = dy_rot + self.shft_yps[i,j]
+                self.shft_ps[i,j,0] = dx_rot + self.shft_ps[i,j,0] 
+                self.shft_ps[i,j,1] = dy_rot + self.shft_ps[i,j,1]
                 
             
             # Shift the trailing edge center
@@ -216,7 +216,7 @@ class AirfoilWavy(Airfoil3D):
         LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
         TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
      
-        [nprofiles,npointsPerProfile] = self.shft_xss.shape
+        nprofiles,npointsPerProfile,_ = self.shft_ss.shape
 
         t = np.linspace(0,1,nprofiles)
         te_center_x = copy.deepcopy(self.te_center_x) #Create a copy showing the previous value
@@ -242,8 +242,8 @@ class AirfoilWavy(Airfoil3D):
         # Spline fit for each profile
         for i in range(nprofiles): #           % TE               % LE                   
             # Find the inflection point for each profile 
-            xcam = (self.shft_xss[i,:]+self.shft_xps[i,:])/2.0
-            ycam = (self.shft_yss[i,:]+self.shft_yps[i,:])/2.0
+            xcam = (self.shft_ss[i,:,0]+self.shft_ps[i,:,0])/2.0
+            ycam = (self.shft_ss[i,:,1]+self.shft_ps[i,:,1])/2.0
             dydx = derivative_1(ycam,xcam)
             # Find where camber line changes signs
             vibrissaeIndx[i] = -1
@@ -282,15 +282,15 @@ class AirfoilWavy(Airfoil3D):
         centerPointX = np.zeros(nprofiles)
         centerPointY = np.zeros(nprofiles)
 
-        camberX = np.add(self.shft_xss,self.shft_xps)/2.0
-        camberY = np.add(self.shft_yss,self.shft_yps)/2.0
+        camberX = np.add(self.shft_ss[:,:,0],self.shft_ps[:,:,0])/2.0
+        camberY = np.add(self.shft_ss[:,:,1],self.shft_ps[:,:,1])/2.0
         
         TE_Radius_ss = np.zeros(nprofiles)
         TE_Radius_ps = np.zeros(nprofiles)
         # Calculate the trailing edge radius for each profile
         for i in range(0,nprofiles):
-            TE_Radius_ss[i] = math.sqrt((self.te_center_x[i]-self.shft_xss[i,-1])**2 + (self.te_center_y[i]-self.shft_yss[i,-1])**2)
-            TE_Radius_ps[i] = math.sqrt((self.te_center_x[i]-self.shft_xps[i,-1])**2 + (self.te_center_y[i]-self.shft_yps[i,-1])**2)
+            TE_Radius_ss[i] = math.sqrt((self.te_center_x[i]-self.shft_ss[i,-1,0])**2 + (self.te_center_y[i]-self.shft_ss[i,-1,1])**2)
+            TE_Radius_ps[i] = math.sqrt((self.te_center_x[i]-self.shft_ps[i,-1,0])**2 + (self.te_center_y[i]-self.shft_ps[i,-1,1])**2)
         
         
         # Apply the thickness to chord ratio - Make the geometry wavy
@@ -298,7 +298,8 @@ class AirfoilWavy(Airfoil3D):
         t_no_te = np.linspace(0,1,npoints_no_TE) # points up until where TRAILING EDGE ENDS
         for i in range(nprofiles):                              # Apply thickness chord ratio
             ps = i/(nprofiles-1)# percent span 
-            chord[i] = np.sqrt((self.shft_yss[i,-1]-self.shft_yss[i,-1])**2+(self.shft_xss[i,-1]-self.shft_xss[i,-1])**2)  
+            #! not sure if this is right
+            chord[i] = np.sqrt((self.shft_ss[i,-1,1]-self.shft_ss[i,-1,1])**2+(self.shft_ss[i,-1,0]-self.shft_ss[i,-1,0])**2)  
             
             centerPointX[i] = camberX[i,vibrissaeIndx[i]] # Stretch will be based around self point
             centerPointY[i] = camberY[i,vibrissaeIndx[i]]
@@ -314,8 +315,8 @@ class AirfoilWavy(Airfoil3D):
         
             for j in range(npoints_no_TE):                       # Find thickness for each camber point              
                 # Suction Side
-                dx = self.shft_xss[i,j]-centerPointX[i]
-                dy = self.shft_yss[i,j]-centerPointY[i]
+                dx = self.shft_ss[i,j,0]-centerPointX[i]
+                dy = self.shft_ss[i,j,1]-centerPointY[i]
                 # theta = 0 + rotation_vector(j); % Rotation angle 
                 # Scale dx and dy by thickness to chord
                 dx_scaled = dx*cxss[i]([j])[0] # dx from centerPoint
@@ -324,8 +325,8 @@ class AirfoilWavy(Airfoil3D):
                 xnew = centerPointX[i] + dx_scaled
                 ynew = centerPointY[i] + dy_scaled
                 
-                dx = xnew - self.shft_xss[i,j]
-                dy = ynew - self.shft_yss[i,j]
+                dx = xnew - self.shft_ss[i,j,0]
+                dy = ynew - self.shft_ss[i,j,1]
 
                 rot = np.array([ [cosd(rotation_vector[j]), -sind(rotation_vector[j])], [sind(rotation_vector[j]), cosd(rotation_vector[j])] ]) 
                 rot = np.matmul(rot, np.array([[dx],[dy]]))
@@ -333,12 +334,12 @@ class AirfoilWavy(Airfoil3D):
                 dx_rot = rot[0]
                 dy_rot = rot[1]
                 
-                self.shft_xss[i,j] = self.shft_xss[i,j] + dx_rot
-                self.shft_yss[i,j] = self.shft_yss[i,j] + dy_rot 
+                self.shft_ss[i,j,0] = self.shft_ss[i,j,0] + dx_rot
+                self.shft_ss[i,j,1] = self.shft_ss[i,j,1] + dy_rot 
                 
                 # Pressure Side
-                dx = self.shft_xps[i,j]-centerPointX[i]
-                dy = self.shft_yps[i,j]-centerPointY[i]    
+                dx = self.shft_ps[i,j,0]-centerPointX[i]
+                dy = self.shft_ps[i,j,1]-centerPointY[i]    
                 
                 # Scale dx and dy by thickness to chord
                 dx_scaled = dx*cxps[i]([j])[0]
@@ -346,16 +347,16 @@ class AirfoilWavy(Airfoil3D):
                 # obtain the shift relative to the point
                 xnew = centerPointX[i] + dx_scaled
                 ynew = centerPointY[i] + dy_scaled
-                dx = xnew - self.shft_xps[i,j]
-                dy = ynew - self.shft_yps[i,j]
+                dx = xnew - self.shft_ps[i,j,0]
+                dy = ynew - self.shft_ps[i,j,1]
                 
                 rot = np.array([[cosd(rotation_vector[j]), -sind(rotation_vector[j])], [sind(rotation_vector[j]), cosd(rotation_vector[j])]])
                 rot = np.matmul(rot, np.array([[dx],[dy]]))
 
                 dx_rot = rot[0]
                 dy_rot = rot[1]
-                self.shft_xps[i,j] = dx_rot + self.shft_xps[i,j] 
-                self.shft_yps[i,j] = dy_rot + self.shft_yps[i,j]
+                self.shft_ps[i,j,0] = dx_rot + self.shft_ps[i,j,0] 
+                self.shft_ps[i,j,1] = dy_rot + self.shft_ps[i,j,1]
                 
                             
             # Shift the trailing edge center
@@ -389,34 +390,34 @@ class AirfoilWavy(Airfoil3D):
             
             # Shift the TE Points by common dx and dy
             te_start = npoints_no_TE
-            self.shft_xss[i,te_start:] = self.shft_xss[i,te_start:]+dx # self is to maintain the same Trailing edge diameter
-            self.shft_yss[i,te_start:] = self.shft_yss[i,te_start:]+dy
-            self.shft_xps[i,te_start:] = self.shft_xps[i,te_start:]+dx
-            self.shft_yps[i,te_start:] = self.shft_yps[i,te_start:]+dy
+            self.shft_ss[i,te_start:,0] = self.shft_ss[i,te_start:,0]+dx # self is to maintain the same Trailing edge diameter
+            self.shft_ss[i,te_start:,1] = self.shft_ss[i,te_start:,1]+dy
+            self.shft_ps[i,te_start:,0] = self.shft_ps[i,te_start:,0]+dx
+            self.shft_ps[i,te_start:,1] = self.shft_ps[i,te_start:,1]+dy
             
-            TE_Radius_ss[i] = np.sqrt((te_center_x[i]-self.shft_xss[i,-1])**2+ (te_center_y[i]-self.shft_yss[i,-1])**2)
-            TE_Radius_ps[i] = np.sqrt((te_center_x[i]-self.shft_xps[i,-1])**2+ (te_center_y[i]-self.shft_yps[i,-1])**2)
+            TE_Radius_ss[i] = np.sqrt((te_center_x[i]-self.shft_ss[i,-1,0])**2+ (te_center_y[i]-self.shft_ss[i,-1,1])**2)
+            TE_Radius_ps[i] = np.sqrt((te_center_x[i]-self.shft_ps[i,-1,0])**2+ (te_center_y[i]-self.shft_ps[i,-1,1])**2)
         
 
         self.te_center_x = te_center_x
         self.te_center_y = te_center_y
         # Fix the start and end points 
         # Make sure LE and TE start and end at the same point. 
-        startPointX = (self.shft_xss[:,0] + self.shft_xps[:,0])/2.0 # First X coordinate of all the profiles
-        startPointY = (self.shft_yss[:,0] + self.shft_yps[:,0])/2.0 # First Y coordinate of all the profiles 
+        startPointX = (self.shft_ss[:,0,0] + self.shft_ps[:,0,0])/2.0 # First X coordinate of all the profiles
+        startPointY = (self.shft_ss[:,0,1] + self.shft_ps[:,0,1])/2.0 # First Y coordinate of all the profiles 
 
-        endPointX = (self.shft_xss[:,-1] + self.shft_xps[:,-1])/2.0 # last x-coordinate of all the profiles
-        endPointY = (self.shft_yss[:,-1] + self.shft_yps[:,-1])/2.0 # last y-coordinate of all the profiles
+        endPointX = (self.shft_ss[:,-1,0] + self.shft_ps[:,-1,0])/2.0 # last x-coordinate of all the profiles
+        endPointY = (self.shft_ss[:,-1,1] + self.shft_ps[:,-1,1])/2.0 # last y-coordinate of all the profiles
         
-        self.shft_xss[:,0] = startPointX
-        self.shft_yss[:,0] = startPointY
-        self.shft_xps[:,0] = startPointX
-        self.shft_yps[:,0] = startPointY
+        self.shft_ss[:,0,0] = startPointX
+        self.shft_ss[:,0,1] = startPointY
+        self.shft_ps[:,0,0] = startPointX
+        self.shft_ps[:,0,1] = startPointY
 
-        self.shft_xss[:,-1] = endPointX
-        self.shft_yss[:,-1] = endPointY
-        self.shft_xps[:,-1] = endPointX
-        self.shft_yps[:,-1] = endPointY
+        self.shft_ss[:,-1,0] = endPointX
+        self.shft_ss[:,-1,1] = endPointY
+        self.shft_ps[:,-1,0] = endPointX
+        self.shft_ps[:,-1,1] = endPointY
 
         # self.shft_xss = np.array([startPointX, self.shft_xss[:,1:-2], endPointX])
         # self.shft_xps = [startPointX, self.shft_xps[:,1:-2], endPointX]
@@ -448,7 +449,7 @@ class AirfoilWavy(Airfoil3D):
         LE_wave_angle = np.radians(convert_to_ndarray(LE_wave_angle))
         TE_wave_angle = np.radians(convert_to_ndarray(TE_wave_angle))
 
-        [nprofiles,npointsPerProfile] = self.shft_xss.shape
+        nprofiles,npointsPerProfile,_= self.shft_ss.shape
 
         # Create a spline that represents the SSRatio, PSRatio, LERatio, TERatio
         # Check to see if variable exists and if there are differences between the inputs
@@ -472,8 +473,8 @@ class AirfoilWavy(Airfoil3D):
         te_center_x = copy.deepcopy(self.te_center_x)
         te_center_y = copy.deepcopy(self.te_center_y)
 
-        camberX = np.add(self.shft_xss,self.shft_xps)/2.0
-        camberY = np.add(self.shft_yss,self.shft_yps)/2.0
+        camberX = np.add(self.shft_ss[:,:,0],self.shft_ps[:,:,0])/2.0
+        camberY = np.add(self.shft_ss[:,:,1],self.shft_ps[:,:,1])/2.0
 
         # Grab the center point
         profileArea= np.zeros(nprofiles)
@@ -489,12 +490,12 @@ class AirfoilWavy(Airfoil3D):
             t = [0,vibrissaeIndx[profile_indx],math.floor((npoints_no_TE-2)*TE_smooth),npoints_no_TE-2]
 
             profile_scale = convert_to_ndarray([self.spanw_leratio_fn(percentSpan),SSRatio,
-                self.spanw_teratio_fn(percentSpan),self.spanw_teratio_fn(percentSpan)])
+                self.spanw_teratio_fn(percentSpan),self.spanw_teratio_fn(percentSpan)]) # type: ignore
             cxss = PchipInterpolator(t,1+profile_scale)
             cyss = PchipInterpolator(t,1+profile_scale) # Y is axial     
 
             profile_scale = convert_to_ndarray([self.spanw_leratio_fn(percentSpan),self.spanw_psratio_fn(percentSpan),
-                self.spanw_teratio_fn(percentSpan),self.spanw_teratio_fn(percentSpan)])
+                self.spanw_teratio_fn(percentSpan),self.spanw_teratio_fn(percentSpan)]) # type: ignore
 
             cxps = PchipInterpolator(t,1+profile_scale)
             cyps = PchipInterpolator(t,1+profile_scale) # Y is axial
@@ -606,8 +607,8 @@ class AirfoilWavy(Airfoil3D):
             yps[npoints_no_TE:] = yps[npoints_no_TE:]+dy
             
             
-            area_ss = np.trapz(yss,xss)
-            area_ps = np.trapz(yps,xps)
+            area_ss = np.trapezoid(yss,xss)
+            area_ps = np.trapezoid(yps,xps)
             area = (area_ps-area_ss)  
             err = (area-profileArea)/profileArea
             if bMinimize:
@@ -618,12 +619,12 @@ class AirfoilWavy(Airfoil3D):
 
         for i in range(nprofiles):
             print("Evaluating Profile " + str(i+1) + " out of " + str(nprofiles))
-            TE_Radius_ss[i] = math.sqrt((self.te_center_x[i]-self.shft_xss[i,-1])**2 + (self.te_center_y[i]-self.shft_yss[i,-1])**2)
-            TE_Radius_ps[i] = math.sqrt((self.te_center_x[i]-self.shft_xps[i,-1])**2 + (self.te_center_y[i]-self.shft_yps[i,-1])**2)
+            TE_Radius_ss[i] = math.sqrt((self.te_center_x[i]-self.shft_ss[i,-1,0])**2 + (self.te_center_y[i]-self.shft_ss[i,-1,1])**2)
+            TE_Radius_ps[i] = math.sqrt((self.te_center_x[i]-self.shft_ps[i,-1,0])**2 + (self.te_center_y[i]-self.shft_ps[i,-1,1])**2)
             
             # camber line
-            xcam = (self.shft_xss[i,:]+self.shft_xps[i,:])/2.0
-            ycam = (self.shft_yss[i,:]+self.shft_yps[i,:])/2.0
+            xcam = (self.shft_ss[i,:,0]+self.shft_ps[i,:,0])/2.0
+            ycam = (self.shft_ss[i,:,1]+self.shft_ps[i,:,1])/2.0
             dydx = derivative_1(ycam,xcam)
             # Find where camber line changes signs
             vibrissaeIndx[i] = -1
@@ -637,58 +638,58 @@ class AirfoilWavy(Airfoil3D):
             if (vibrissaeIndx[i]==-1):
                 vibrissaeIndx[i] = math.ceil(0.2*npointsPerProfile)
 
-            chord[i]=math.sqrt((self.shft_yss[i,-1]-self.shft_yss[i,0])**2+(self.shft_xss[i,-1]-self.shft_xss[i,0])**2)
+            chord[i]=math.sqrt((self.shft_ss[i,-1,1]-self.shft_ss[i,0,1])**2+(self.shft_ss[i,-1,0]-self.shft_ss[i,0,0])**2)
             
             centerPointX[i] = camberX[i,int(vibrissaeIndx[i])] # Stretch will be based around self point
             centerPointY[i] = camberY[i,int(vibrissaeIndx[i])]
             # Find thickness for each camber point  
             
             # Compute Area of the blade
-            area_ss = np.trapz(self.shft_yss[i,:],self.shft_xss[i,:])
-            area_ps = np.trapz(self.shft_yps[i,:],self.shft_xps[i,:])
+            area_ss = np.trapezoid(self.shft_ss[i,:,1],self.shft_ss[i,:,0])
+            area_ps = np.trapezoid(self.shft_ps[i,:,1],self.shft_ps[i,:,0])
             profileArea[i] = abs(area_ps-area_ss)  
             # Get the SS ratio that maintains the area
-            xss = self.shft_xss[i,:]
-            yss = self.shft_yss[i,:]
-            xps = self.shft_xps[i,:]
-            yps = self.shft_yps[i,:]
+            xss = self.shft_ss[i,:,0]
+            yss = self.shft_ss[i,:,1]
+            xps = self.shft_ps[i,:,0]
+            yps = self.shft_ps[i,:,1]
             
             # Find the SS Ratio that maintains the same area as
             # original profile 
             bnds = ((-1,5),)
             res = minimize(ApplyWave,x0=(0),bounds=bnds,tol=1E-4,args=dict({"profile_indx":i,"xss":xss,"yss":yss,"xps":xps,"yps":yps,"profileArea":profileArea[i],"bMinimize":True}))
             SSRatio = res.x[0]
-            [xss,yss,xps,yps,te_center_x_temp,te_center_y_temp] = ApplyWave([0],dict({"profile_indx":i,"xss":xss,"yss":yss,"xps":xps,"yps":yps,"profileArea":profileArea[i],"bMinimize":False}))
-            self.shft_xss[i,:] = xss
-            self.shft_yss[i,:] = yss
-            self.shft_xps[i,:] = xps
-            self.shft_yps[i,:] = yps
+            [xss,yss,xps,yps,te_center_x_temp,te_center_y_temp] = ApplyWave([0],dict({"profile_indx":i,"xss":xss,"yss":yss,"xps":xps,"yps":yps,"profileArea":profileArea[i],"bMinimize":False})) # type: ignore
+            self.shft_ss[i,:,0] = xss
+            self.shft_ss[i,:,1] = yss
+            self.shft_ps[i,:,0] = xps
+            self.shft_ps[i,:,1] = yps
             # self.te_center_x[i] = te_center_x_temp
             # self.te_center_y[i] = te_center_y_temp
             
-            area_ss = np.trapz(self.shft_yss[i,:],self.shft_xss[i,:])
-            area_ps = np.trapz(self.shft_yps[i,:],self.shft_xps[i,:])
+            area_ss = np.trapezoid(self.shft_ss[i,:,1],self.shft_ss[i,:,0])
+            area_ps = np.trapezoid(self.shft_ps[i,:,1],self.shft_ps[i,:,0])
             profileAreaNew[i] = abs(area_ps-area_ss)
                             
-            TE_Radius_ss[i] = math.sqrt((te_center_x[i]-self.shft_xss[i,-1])**2+ (te_center_y[i]-self.shft_yss[i,-1])**2)
-            TE_Radius_ps[i] = math.sqrt((te_center_x[i]-self.shft_xps[i,-1])**2+ (te_center_y[i]-self.shft_yps[i,-1])**2)
+            TE_Radius_ss[i] = math.sqrt((te_center_x[i]-self.shft_ss[i,-1,0])**2+ (te_center_y[i]-self.shft_ss[i,-1,1])**2)
+            TE_Radius_ps[i] = math.sqrt((te_center_x[i]-self.shft_ps[i,-1,0])**2+ (te_center_y[i]-self.shft_ps[i,-1,1])**2)
         
 
         # Fix the start and end points 
         # Make sure LE and TE start and end at the same point. 
-        startPointX = (self.shft_xss[:,0] + self.shft_xps[:,0])/2.0 # First X coordinate of all the profiles
-        startPointY = (self.shft_yss[:,0] + self.shft_yps[:,0])/2.0 # First Y coordinate of all the profiles 
+        startPointX = (self.shft_ss[:,0,0] + self.shft_ps[:,0,0])/2.0 # First X coordinate of all the profiles
+        startPointY = (self.shft_ss[:,0,1] + self.shft_ps[:,0,1])/2.0 # First Y coordinate of all the profiles 
 
-        endPointX = (self.shft_xss[:,-1] + self.shft_xps[:,-1])/2.0 # last x-coordinate of all the profiles
-        endPointY = (self.shft_yss[:,-1] + self.shft_yps[:,-1])/2.0 # last y-coordinate of all the profiles
+        endPointX = (self.shft_ss[:,-1,0] + self.shft_ps[:,-1,0])/2.0 # last x-coordinate of all the profiles
+        endPointY = (self.shft_ss[:,-1,1] + self.shft_ps[:,-1,1])/2.0 # last y-coordinate of all the profiles
         
-        self.shft_xss[:,0] = startPointX
-        self.shft_yss[:,0] = startPointY
-        self.shft_xps[:,0] = startPointX
-        self.shft_yps[:,0] = startPointY
+        self.shft_ss[:,0,0] = startPointX
+        self.shft_ss[:,0,1] = startPointY
+        self.shft_ps[:,0,0] = startPointX
+        self.shft_ps[:,0,1] = startPointY
 
-        self.shft_xss[:,-1] = endPointX
-        self.shft_yss[:,-1] = endPointY
-        self.shft_xps[:,-1] = endPointX
-        self.shft_yps[:,-1] = endPointY
+        self.shft_ss[:,-1,0] = endPointX
+        self.shft_ss[:,-1,1] = endPointY
+        self.shft_ps[:,-1,0] = endPointX
+        self.shft_ps[:,-1,1] = endPointY
 

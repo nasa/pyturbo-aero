@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.pspline &mdash; pyturbo-aero 1.0.12 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -110,21 +110,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.pspline</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">PchipInterpolator</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">CubicSpline</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">PPoly</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">integrate</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">enum</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> 
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">PchipInterpolator</span><span class="p">,</span> <span class="n">CubicSpline</span><span class="p">,</span> <span class="n">PPoly</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.interpolate</span><span class="w"> </span><span class="kn">import</span> <span class="n">splprep</span><span class="p">,</span> <span class="n">splev</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">integrate</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">enum</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.order_pts</span><span class="w"> </span><span class="kn">import</span> <span class="n">order_points_by_spline_arc_length</span>
 
 <div class="viewcode-block" id="convert_to_ndarray">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        converts a scalar or list to numpy array </span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -137,16 +137,15 @@
 
 
 
-
 <div class="viewcode-block" id="spline_type">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type">[docs]</a>
-<span class="k">class</span> <span class="nc">spline_type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">spline_type</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="n">pchip</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">spline</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># Cubic spline </span></div>
 
 
-<span class="k">def</span> <span class="nf">spline_intersect</span><span class="p">(</span><span class="n">spline1</span><span class="p">,</span><span class="n">spline2</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">intersect_test</span><span class="p">(</span><span class="n">x0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">spline_intersect</span><span class="p">(</span><span class="n">spline1</span><span class="p">,</span><span class="n">spline2</span><span class="p">,</span><span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intersect_test</span><span class="p">(</span><span class="n">x0</span><span class="p">):</span>
         <span class="n">y1</span> <span class="o">=</span> <span class="n">spline1</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
         <span class="n">y2</span> <span class="o">=</span> <span class="n">spline2</span><span class="p">(</span><span class="n">x0</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">y1</span><span class="o">-</span><span class="n">y2</span><span class="p">)</span>
@@ -158,8 +157,8 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
-<span class="k">def</span> <span class="nf">pspline_intersect</span><span class="p">(</span><span class="n">pspline1</span><span class="p">,</span><span class="n">pspline2</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">intersect_test</span><span class="p">(</span><span class="n">t0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pspline_intersect</span><span class="p">(</span><span class="n">pspline1</span><span class="p">,</span><span class="n">pspline2</span><span class="p">,</span><span class="n">tmin</span><span class="p">,</span><span class="n">tmax</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">intersect_test</span><span class="p">(</span><span class="n">t0</span><span class="p">):</span>
         <span class="n">pt1</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">pspline1</span><span class="p">(</span><span class="n">t0</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">pt2</span><span class="p">,</span><span class="n">_</span> <span class="o">=</span> <span class="n">pspline2</span><span class="p">(</span><span class="n">t0</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="n">pt2</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">pt1</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
@@ -173,17 +172,25 @@
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">x</span><span class="o">*</span><span class="mi">0</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># return -1 for no intersect</span>
-        
+
+
+ 
 <div class="viewcode-block" id="pspline">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.pspline.pspline">[docs]</a>
-<span class="k">class</span> <span class="nc">pspline</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;fits a spline on a curve and allows you to extract points with a percentage as input</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        _type_: _description_</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-   
-    <span class="k">def</span> <span class="nf">__segkernel__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">pspline</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;fits a spline on a curve and allows you to extract points with a percentage as input&quot;&quot;&quot;</span>
+    <span class="n">pxy</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">ndim</span><span class="p">:</span><span class="nb">int</span>
+    <span class="n">chordlen</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">cumarclen</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">spl</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">PchipInterpolator</span><span class="p">,</span><span class="n">CubicSpline</span><span class="p">]]</span>
+    <span class="n">spld</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span>
+    <span class="n">polyarray</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    <span class="n">totalsplinelength</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">seglen</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span>
+    
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__segkernel__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
@@ -191,33 +198,31 @@
         <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">val</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">px</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">py</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">pz</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span><span class="o">=</span><span class="p">[],</span><span class="n">method</span><span class="o">=</span><span class="n">spline_type</span><span class="o">.</span><span class="n">pchip</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">px</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span><span class="n">py</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span><span class="n">pz</span><span class="p">:</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]]]</span><span class="o">=</span><span class="p">[],</span><span class="n">method</span><span class="o">=</span><span class="n">spline_type</span><span class="o">.</span><span class="n">pchip</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Creates a percentage spline</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            px (List[float]): list of x values</span>
-<span class="sd">            py (List[float]): list of y values </span>
-<span class="sd">            pz (List[float], optional): Optional, list of z vlaues. Defaults to [].</span>
+<span class="sd">            px (Union[npt.NDArray,List[float]]): list of x values</span>
+<span class="sd">            py (Union[npt.NDArray,List[float]]): list of y values </span>
+<span class="sd">            pz (Union[npt.NDArray,List[float]], optional): Optional, list of z vlaues. Defaults to [].</span>
 <span class="sd">            method (spline_type, optional): Type of spline to define. Defaults to spline_type.pchip.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">px</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">px</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">py</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">py</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">px</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="n">px</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">px</span><span class="p">)</span>
+        <span class="n">py</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">py</span><span class="p">)</span>
+                
         <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pz</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1"># there&#39;s only x and y</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">px</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span><span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span><span class="mi">2</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ndim</span> <span class="o">=</span> <span class="mi">3</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pz</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">pz</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">px</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">pz</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> 
-            <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> 
-                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">px</span><span class="p">),</span><span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">py</span><span class="p">),</span><span class="mi">2</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
-                <span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">((</span><span class="n">px</span><span class="p">,</span><span class="n">py</span><span class="p">,</span><span class="n">pz</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span><span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span><span class="mi">2</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]),</span><span class="mi">2</span><span class="p">)),</span><span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pxy</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">cumarclen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span><span class="p">))</span>
 
         <span class="c1"># compute parametric splines</span>
@@ -276,7 +281,7 @@
 <span class="sd">                would not have been perfectly (numerically)</span>
 <span class="sd">                consistent with the next operation in self tool.</span>
 <span class="sd">            &#39;&#39;&#39;</span>
-            <span class="n">temp</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__segkernel__</span><span class="p">,</span><span class="n">y0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span><span class="n">rtol</span><span class="o">=</span><span class="mf">1E-5</span><span class="p">)</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="n">integrate</span><span class="o">.</span><span class="n">odeint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__segkernel__</span><span class="p">,</span><span class="n">y0</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">t</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">chordlen</span><span class="p">[</span><span class="n">i</span><span class="p">]],</span><span class="n">rtol</span><span class="o">=</span><span class="mf">1E-5</span><span class="p">)</span> <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">seglen</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">temp</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="c1"># r = integrate.ode(self.__segkernel__).set_integrator(&#39;vode&#39;,method=&#39;bdf&#39;) </span>
             <span class="c1"># r.set_initial_value(0,0)    </span>
@@ -289,17 +294,17 @@
 
 <div class="viewcode-block" id="pspline.__call__">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.pspline.pspline.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;:no-index:&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">get_curve_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_curve_len</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">totalsplinelength</span><span class="o">*</span><span class="n">t</span>
     
 <div class="viewcode-block" id="pspline.get_point">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.pspline.pspline.get_point">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets the points anywhere along the spline </span>
 
 <span class="sd">        Args:</span>
@@ -322,7 +327,7 @@
 <span class="sd">        Find out which bins we need</span>
 
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">tbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">totalsplinelength</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cumseglen</span><span class="p">)</span>     
+        <span class="n">tbins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">digitize</span><span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">totalsplinelength</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cumseglen</span><span class="p">)</span>      <span class="c1"># type: ignore</span>
 
         <span class="c1"># Catch problems at the end             </span>
           
@@ -340,7 +345,7 @@
 <span class="sd">        the arclength traveled along the spline.</span>
 <span class="sd">        s = self.totalsplinelength*t;</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">totalsplinelength</span><span class="o">*</span><span class="n">t</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">totalsplinelength</span><span class="o">*</span><span class="n">t</span> <span class="c1"># type: ignore</span>
 
         <span class="n">ti</span> <span class="o">=</span> <span class="n">t</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nt</span><span class="p">):</span>
@@ -391,17 +396,22 @@
         <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
             <span class="n">pp</span> <span class="o">=</span> <span class="n">PPoly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spl</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spl</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="c1"># ppval(self.spl{L},ti)</span>
             <span class="n">pt</span><span class="p">[:,</span><span class="n">L</span><span class="p">]</span> <span class="o">=</span> <span class="n">pp</span><span class="p">(</span><span class="n">ti</span><span class="p">)</span>
-        <span class="n">pt</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+        <span class="n">ind</span> <span class="o">=</span> <span class="n">order_points_by_spline_arc_length</span><span class="p">(</span><span class="n">pt</span><span class="p">)</span>
+        <span class="n">pt</span> <span class="o">=</span> <span class="n">pt</span><span class="p">[</span><span class="n">ind</span><span class="p">,:]</span>
         
         <span class="c1"># do we need to compute first derivatives here at each point?</span>
         <span class="n">dudt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nt</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">L</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ndim</span><span class="p">):</span>
-            <span class="n">pp</span> <span class="o">=</span> <span class="n">PPoly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spld</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spld</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="c1"># ppval(ti,self.spld{L})</span>
+            <span class="n">pp</span> <span class="o">=</span> <span class="n">PPoly</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spld</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spld</span><span class="p">[</span><span class="n">L</span><span class="p">]</span><span class="o">.</span><span class="n">x</span><span class="p">)</span> <span class="c1"># type: ignore # ppval(ti,self.spld{L})</span>
             <span class="n">dudt</span><span class="p">[:,</span><span class="n">L</span><span class="p">]</span> <span class="o">=</span> <span class="n">pp</span><span class="p">(</span><span class="n">ti</span><span class="p">)</span>
-        <span class="n">dudt</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">dudt</span><span class="p">)</span>
+        <span class="n">dudt</span> <span class="o">=</span> <span class="n">dudt</span><span class="p">[</span><span class="n">ind</span><span class="p">,:]</span>
 
-        <span class="k">return</span> <span class="n">pt</span><span class="p">,</span><span class="n">dudt</span></div>
+        <span class="k">return</span> <span class="n">pt</span><span class="p">,</span><span class="n">dudt</span> <span class="c1"># type: ignore</span></div>
 </div>
+
+
+
+
 
 </pre></div>
 

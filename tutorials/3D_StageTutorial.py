@@ -17,7 +17,7 @@ stator_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_hub.match_le_thickness()
 stator_hub.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_hub.flow_guidance2(10)
+stator_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_hub.plot2D()
 
 stator_mid = Airfoil2D(alpha1=0,alpha2=70,axial_chord=stator_hub_axial_chord*0.96,stagger=52)
@@ -31,7 +31,7 @@ stator_mid.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_mid.match_le_thickness()
 stator_mid.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_mid.flow_guidance2(10)
+stator_mid.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_mid.plot2D()
 
 stator_tip = Airfoil2D(alpha1=0,alpha2=68,axial_chord=stator_hub_axial_chord*0.95,stagger=53)
@@ -45,15 +45,15 @@ stator_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion
 
 stator_tip.match_le_thickness()
 stator_tip.te_create(radius=0.001,wedge_ss=2.5,wedge_ps=2.4)
-stator_tip.flow_guidance2(10)
+stator_tip.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # stator_tip.plot2D()
 
 stator3D = Airfoil3D(profileArray=[stator_hub,stator_mid,stator_tip], profile_loc=[0.0,0.5,1.0], height = 0.04)
-stator3D.stack(StackType.leading_edge) # stators are typically stacked with leading edge; stators with centroid or trailing edge
-stator3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
-stator3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
+stator3D.stack(StackType.centroid) # stators are typically stacked with leading edge; stators with centroid or trailing edge
+stator3D.add_sweep(sweep_y=[0,-0.05,0.01], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
+stator3D.add_lean(leanX=[0,0.1,0.05], leanZ=[0,0.5,1])
 stator3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
-
+# stator3D.plot3D()
 # Rotor 
 ### Hub Profile
 rotor_axial_chord = 0.030
@@ -68,7 +68,7 @@ rotor_hub.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_hub.match_le_thickness()
 rotor_hub.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_hub.flow_guidance2(10)
+rotor_hub.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # rotor_hub.plot2D()
 
 rotor_mid = Airfoil2D(alpha1=30,alpha2=67,axial_chord=0.038,stagger=35)
@@ -82,7 +82,7 @@ rotor_mid.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_mid.match_le_thickness()
 rotor_mid.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_mid.flow_guidance2(10)
+rotor_mid.add_ss_flow_guidance_2(s_c=0.75,n=10)
 # rotor_mid.plot2D()
 
 rotor_tip = Airfoil2D(alpha1=30,alpha2=65,axial_chord=0.037,stagger=32)
@@ -96,16 +96,16 @@ rotor_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_
 
 rotor_tip.match_le_thickness()
 rotor_tip.te_create(radius=0.001,wedge_ss=3.5,wedge_ps=2.4)
-rotor_tip.flow_guidance2(10)
-rotor_tip.plot2D()
+rotor_tip.add_ss_flow_guidance_2(s_c=0.7,n=10)
+# rotor_tip.plot2D()
 
 #%% Rotor 3D
 rotor3D = Airfoil3D(profileArray=[rotor_hub,rotor_mid,rotor_tip],profile_loc=[0.0,0.5,1.0], height = 0.04)
 rotor3D.stack(StackType.trailing_edge) # stators are typically stacked with leading edge; stators with centroid or trailing edge
-rotor3D.add_sweep(sweep_y=[0,-0.05,0.05], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
-rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
-rotor3D.build(nProfiles=20,num_points=160,trailing_edge_points=20)
-rotor3D.plot3D()
+# rotor3D.add_sweep(sweep_y=[0,-0.02,0.02], sweep_z=[0.0, 0.5, 1]) # Z =1 is blade tip, Z = 0 is blade hub. The units are in percentage
+# rotor3D.add_lean(leanX=[0,0.01,-0.02],leanZ=[0,0.5,1])
+rotor3D.build(nProfiles=20,num_points=60,trailing_edge_points=20)
+# rotor3D.plot3D()
 
 def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
     """Creates another bezier curve that matches the slope at the end of bezier 1
@@ -149,7 +149,7 @@ def match_end_slope(bezier1:bezier, x:List[float],y:List[float]):
 rtip = 0.25 # meters
 hub_tip_ratio = 0.8
 rhub = rtip*hub_tip_ratio
-stator_rotor_gap = 0.010
+stator_rotor_gap = 0.025
 
 rhub_expansion_coeff1 = [1.0,0.98,0.97] # Stator
 zhub_expansion_coeff1 = [0.25,0.75]
@@ -163,13 +163,13 @@ hub_bezier1 = bezier(zhub_points1,rhub_points1)
 rhub_points2 = [rhub]
 zhub_points2 = [0]
 rhub_points2.append(rhub*rhub_expansion_coeff1[0])                      # Mid bezier control point
-zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[0])
+zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[0]) # type: ignore
 
 rhub_points2.append(rhub*rhub_expansion_coeff1[1])                      # End bezier control point
-zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[1])
+zhub_points2.append(stator_hub_axial_chord*zhub_expansion_coeff1[1]) # type: ignore
 
 rhub_points2.append(rhub*rhub_expansion_coeff1[2])                      # End bezier point
-zhub_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
+zhub_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5) # type: ignore
 
 rhub_points2 = np.array(rhub_points2)
 zhub_points2 = np.array(zhub_points2)
@@ -215,13 +215,13 @@ shroud_bezier1 = bezier(zshroud_points1,rshroud_points1)
 rshroud_points2 = [rtip]
 zshroud_points2 = [0]
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[0])                      # Mid bezier control point
-zshroud_points2.append(stator_hub_axial_chord*0.5)
+zshroud_points2.append(stator_hub_axial_chord*0.5) # type: ignore
 
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[1])                      # End bezier control point
-zshroud_points2.append(stator_hub_axial_chord*0.5+stator_hub_axial_chord*0.5*zshroud_expansion_coeff1[0])
+zshroud_points2.append(stator_hub_axial_chord*0.5+stator_hub_axial_chord*0.5*zshroud_expansion_coeff1[0]) # type: ignore
 
 rshroud_points2.append(rtip*rshroud_expansion_coeff1[2])                      # End bezier point
-zshroud_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5)
+zshroud_points2.append(stator_hub_axial_chord+stator_rotor_gap*0.5) # type: ignore
 
 rshroud_points2 = np.array(rshroud_points2)
 zshroud_points2 = np.array(zshroud_points2)
@@ -263,11 +263,14 @@ stator_adjusted = copy.deepcopy(stator3D)
 rotor_adjusted = copy.deepcopy(rotor3D)
 
 stator_adjusted.center_le()
-stator_adjusted.flip_cw()
+stator_adjusted.flip_x()
 stator_adjusted.rotate(cx=0,cy=0,angle=90)
+# stator_adjusted.plot3D()
 
 rotor_adjusted.center_le()
-rotor_adjusted.flip()
+rotor_adjusted.flip_x()
+rotor_adjusted.rotate(cx=0,cy=0,angle=90)
+
 # rotor_adjusted.rotate(cx=0,cy=0,angle=90)
 
 passage = Passage2D([stator_adjusted,rotor_adjusted],[stator_rotor_gap])

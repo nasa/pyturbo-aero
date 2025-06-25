@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.wave &mdash; pyturbo-aero 1.0.12 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -110,25 +110,25 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.wave</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> 
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span> 
 
 <div class="viewcode-block" id="wave_control">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.wave.wave_control">[docs]</a>
-<span class="k">class</span> <span class="nc">wave_control</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">wave_control</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This is used to control a wave&#39;s starting ending location as well as invert the wave</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wave_array</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>            
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">wave_array</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>            
         <span class="bp">self</span><span class="o">.</span><span class="n">wave_vector</span><span class="o">=</span><span class="n">wave_array</span>
         
 <div class="viewcode-block" id="wave_control.get_wave">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.wave.wave_control.get_wave">[docs]</a>
-    <span class="k">def</span> <span class="nf">get_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">percent_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">bInverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_wave</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">percent_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">bInverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the normalized value of the waves </span>
 
 <span class="sd">        Args:</span>
@@ -158,7 +158,7 @@
         <span class="k">return</span> <span class="n">wave_vector_mod</span></div>
 
     
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">percent_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">bInverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>        
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">percent_start</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">percent_end</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">bInverse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>        
         <span class="n">wave_vector_mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_wave</span><span class="p">(</span><span class="n">percent_start</span><span class="p">,</span><span class="n">percent_end</span><span class="p">,</span><span class="n">bInverse</span><span class="p">)</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="nb">len</span><span class="p">(</span><span class="n">wave_vector_mod</span><span class="p">))</span>
         
@@ -172,10 +172,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Overload multiplication operator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__mul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave_vector</span><span class="o">*</span><span class="n">other</span>
         
-    <span class="k">def</span> <span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__rmul__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wave_vector</span><span class="o">*</span><span class="n">other</span></div>
 
 </pre></div>

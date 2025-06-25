@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.ray &mdash; pyturbo-aero 1.0.12 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -110,29 +110,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.ray</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> 
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span> 
 
 <div class="viewcode-block" id="ray2D">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D">[docs]</a>
-<span class="k">class</span> <span class="nc">ray2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ray2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">=</span> <span class="n">dx</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span>
 
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span>
 
 <div class="viewcode-block" id="ray2D.perpendicular">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D.perpendicular">[docs]</a>
-    <span class="k">def</span> <span class="nf">perpendicular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">y</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">perpendicular</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">],</span><span class="n">y</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;this function finds the t where the ray is perpendicular to a point given a point in space </span>
 <span class="sd">        </span>
 
@@ -145,10 +145,10 @@
 
         
         
-    <span class="k">def</span> <span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray_length</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray_length</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">ray_length</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
@@ -158,8 +158,8 @@
 
 <div class="viewcode-block" id="ray3D">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D">[docs]</a>
-<span class="k">class</span> <span class="nc">ray3D</span><span class="p">(</span><span class="n">ray2D</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ray3D</span><span class="p">(</span><span class="n">ray2D</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">z</span>
@@ -167,17 +167,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">=</span> <span class="n">dy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">=</span> <span class="n">dz</span>
 
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span>
         <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span>
         <span class="n">z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="o">+</span><span class="n">t</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">dz</span>
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span>
 
 
-    <span class="k">def</span> <span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray_length</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">ray_length</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">ray_length</span><span class="o">/</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">dz</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
         <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
 
@@ -188,7 +188,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">ray2D_intersection</span><span class="p">(</span><span class="n">ray1</span><span class="p">,</span><span class="n">ray2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ray2D_intersection</span><span class="p">(</span><span class="n">ray1</span><span class="p">,</span><span class="n">ray2</span><span class="p">):</span>
     <span class="n">A</span> <span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">ray1</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="o">-</span><span class="n">ray2</span><span class="o">.</span><span class="n">dx</span><span class="p">],[</span><span class="n">ray1</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="o">-</span><span class="n">ray2</span><span class="o">.</span><span class="n">dy</span><span class="p">]])</span>
     <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">ray2</span><span class="o">.</span><span class="n">x</span><span class="o">-</span><span class="n">ray1</span><span class="o">.</span><span class="n">x</span><span class="p">],</span> <span class="p">[</span><span class="n">ray2</span><span class="o">.</span><span class="n">y</span><span class="o">-</span><span class="n">ray1</span><span class="o">.</span><span class="n">y</span><span class="p">]])</span>
 
