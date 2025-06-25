@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pyturbo.helper.arc &mdash; pyturbo-aero 1.0.12 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
@@ -72,7 +72,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.convert_to_ndarray"><code class="docutils literal notranslate"><span class="pre">convert_to_ndarray()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id0"><code class="docutils literal notranslate"><span class="pre">pspline</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.pspline.spline_type"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id3"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#id5"><code class="docutils literal notranslate"><span class="pre">spline_type</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray2D"><code class="docutils literal notranslate"><span class="pre">ray2D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.ray.ray3D"><code class="docutils literal notranslate"><span class="pre">ray3D</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../modules/helper.html#pyturbo.helper.rotate_array_values.rotate_array_vals"><code class="docutils literal notranslate"><span class="pre">rotate_array_vals()</span></code></a></li>
@@ -110,17 +110,25 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pyturbo.helper.arc</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
-<span class="kn">from</span> <span class="nn">.convert_to_ndarray</span> <span class="kn">import</span> <span class="n">convert_to_ndarray</span>
-<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span> 
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mpl</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.convert_to_ndarray</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_to_ndarray</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span> 
 
 <div class="viewcode-block" id="arc">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.arc.arc">[docs]</a>
-<span class="k">class</span> <span class="nc">arc</span><span class="p">():</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xc</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">yc</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">radius</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">alpha_start</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">alpha_stop</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">arc</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">y</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">radius</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">alpha_start</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">alpha_stop</span><span class="p">:</span><span class="nb">float</span>
+    <span class="n">sortY</span><span class="p">:</span><span class="nb">bool</span>
+    <span class="n">sortYasc</span><span class="p">:</span><span class="nb">bool</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">xc</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">yc</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">radius</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">alpha_start</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span><span class="n">alpha_stop</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize arc</span>
 
 <span class="sd">        Args:</span>
@@ -137,21 +145,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha_stop</span> <span class="o">=</span> <span class="n">alpha_stop</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sortY</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sortYasc</span> <span class="o">=</span> <span class="kc">True</span> 
+        
+<div class="viewcode-block" id="arc.flip">
+<a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.arc.arc.flip">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Reverses the direction of the bezier curve</span>
 
-    <span class="k">def</span> <span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            bezier: flipped bezier curve</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">arc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_stop</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_start</span><span class="p">)</span> <span class="c1"># type: ignore</span></div>
+
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_stop</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_start</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_start</span>
-        <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">)),</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+        <span class="c1"># x,y = np.zeros(len(t)),np.zeros(len(t))</span>
 
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">alpha</span><span class="p">)):</span>
-            <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
-            <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha</span><span class="p">))</span>
+        <span class="c1"># for i in range(len(alpha)):</span>
+        <span class="c1">#     x[i] = self.x + self.radius*cos(radians(alpha[i]))</span>
+        <span class="c1">#     y[i] = self.y + self.radius*sin(radians(alpha[i]))</span>
 
         <span class="c1"># Check sorting</span>
         <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sortY</span><span class="p">):</span>
             <span class="n">alpha_test</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_start</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha_stop</span><span class="p">)</span><span class="o">*</span><span class="n">t</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha_stop</span>
-            <span class="n">x_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha_test</span><span class="p">))</span>
-            <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha_test</span><span class="p">))</span>
+            <span class="n">x_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha_test</span><span class="p">))</span>
+            <span class="n">y_test</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">alpha_test</span><span class="p">))</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sortYasc</span><span class="o">==</span><span class="mi">1</span><span class="p">):</span> <span class="c1"># sort ascending</span>
                 <span class="c1"># check the start and end to see if y&lt;y_test</span>
                 <span class="k">if</span> <span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>
@@ -161,25 +182,26 @@
                     <span class="n">x</span> <span class="o">=</span> <span class="n">x_test</span><span class="p">;</span> <span class="n">y</span> <span class="o">=</span> <span class="n">y_test</span><span class="p">;</span> 
         <span class="k">return</span> <span class="n">x</span><span class="p">,</span><span class="n">y</span>
         
-    <span class="k">def</span> <span class="nf">get_deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_deriv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
         <span class="p">[</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">dx</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>     
         <span class="n">dy</span> <span class="o">=</span> <span class="n">x</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span>    
     
     
-    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">color</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">color</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">):</span>
         <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span>
         <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_point</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="n">fig1</span><span class="p">,</span> <span class="n">ax1</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     
         <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
         <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="arclen">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.arc.arclen">[docs]</a>
-<span class="k">def</span> <span class="nf">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">arclen</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculates the arc length</span>
 
 <span class="sd">    Args:</span>
@@ -203,7 +225,7 @@
 
 <div class="viewcode-block" id="arclen3">
 <a class="viewcode-back" href="../../../modules/helper.html#pyturbo.helper.arc.arclen3">[docs]</a>
-<span class="k">def</span> <span class="nf">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">z</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">arclen3</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">y</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">,</span><span class="n">z</span><span class="p">:</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the arc length in 3D</span>
 
 <span class="sd">    Args:</span>
@@ -212,7 +234,7 @@
 <span class="sd">        z (npt.NDArray): array of z values</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        float: arc length</span>
+<span class="sd">        Union[float,npt.NDArray]: arc length</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">convert_to_ndarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>

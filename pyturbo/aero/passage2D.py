@@ -290,7 +290,7 @@ class Passage2D:
                 sections.append({'suction':suction,'pressure':pressure})
 
             data['blades'][-1]['sections'] = sections
-
+        import json 
         with open('aero_geometry.json','w') as f:
             json.dump(data,f,indent=4, sort_keys=True)
 
