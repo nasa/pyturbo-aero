@@ -475,6 +475,7 @@ class Airfoil3D:
         ax.set_xlabel("x")
         ax.set_ylabel("y")
         ax.set_zlabel("z") # type: ignore
+        plt.axis('equal')
         plt.show()
 
     def nblades(self,pitchChord:float,rhub:float):

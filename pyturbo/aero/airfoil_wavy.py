@@ -7,6 +7,7 @@ from ..helper import derivative_1,cosd,sind, convert_to_ndarray
 import math
 import copy
 import numpy as np 
+import numpy.typing as npt 
 
 class AirfoilWavy(Airfoil3D):
     """Makes the surface of the airfoil: LE, TE, SS, PS wavy
@@ -22,19 +23,19 @@ class AirfoilWavy(Airfoil3D):
         super(AirfoilWavy, self).__init__(profileArray,profile_loc,height)
    
 
-    def stretch_thickness_chord(self,SSRatio,PSRatio,LERatio,TERatio,LE_wave_angle,TE_wave_angle,TE_smooth=0.85):
+    def stretch_thickness_chord(self,SSRatio:npt.NDArray,PSRatio:npt.NDArray,LERatio:npt.NDArray,TERatio:npt.NDArray,LE_wave_angle:npt.NDArray,TE_wave_angle:npt.NDArray,TE_smooth=0.85):
         """Changes the thickness to chord ratio along the span of the blade 
 
         Args:
-            SSRatio (List[float]): list of float values for example sin(x)+1 where the 1 means no scaling
-            PSRatio (List[float]): list of float values for example sin(x)+1 where the 1 means no scaling
-            LERatio (List[float]): list of float values for example sin(x)+1 where the 1 means no scaling
-            TERatio (List[float]): list of float values for example sin(x)+1 where the 1 means no scaling
+            SSRatio (List[float]): list of float values for example sin(x) where the 0 means no scaling
+            PSRatio (List[float]): list of float values for example sin(x) where the 0 means no scaling
+            LERatio (List[float]): list of float values for example sin(x) where the 0 means no scaling
+            TERatio (List[float]): list of float values for example sin(x) where the 0 means no scaling
             LE_wave_angle (List[float]): 0 to 90, 90 means perpendicular to metal angle.
             TE_wave_angle (List[float]): 0 to 90, 90 means perpendicular to metal angle.
-            TE_smooth (float, optional): This is the percntage along the surface of the blade to start smoothing the trailing edge. Defaults to 0.85.
+            TE_smooth (float, optional): what percentage along to chord to start applying smoothing to the side walls near the trailing edge. Defaults to 0.85.
         """
-        
+        # Make sure everything is a numpy array
         LERatio = convert_to_ndarray(LERatio)
         SSRatio = convert_to_ndarray(SSRatio)
         PSRatio = convert_to_ndarray(PSRatio)
@@ -46,8 +47,8 @@ class AirfoilWavy(Airfoil3D):
         nprofiles,npointsPerProfile,_ = self.shft_ss.shape
 
         t = np.linspace(0,1,nprofiles)
-        te_center_x = copy.deepcopy(self.te_center_x) #Create a copy showing the previous value
-        te_center_y = copy.deepcopy(self.te_center_y)
+        te_center_x = copy.deepcopy(self.te_center[:,0]) #Create a copy showing the previous value
+        te_center_y = copy.deepcopy(self.te_center[:,1])
         self.spanw_leratio_fn = PchipInterpolator(np.linspace(0,1,len(LERatio)),LERatio)
         self.spanw_ssratio_fn = PchipInterpolator(np.linspace(0,1,len(SSRatio)),SSRatio)
         self.spanw_psratio_fn = PchipInterpolator(np.linspace(0,1,len(PSRatio)),PSRatio)
@@ -96,7 +97,7 @@ class AirfoilWavy(Airfoil3D):
             cyps.append(PchipInterpolator(t,1+profile_scale)) # Y is axial
         
         # Convert to int
-        vibrissaeIndx = vibrissaeIndx.astype(np.integer)
+        vibrissaeIndx = vibrissaeIndx.astype(np.int32)
 
         chord = np.zeros(nprofiles)
         centerPointX = np.zeros(nprofiles)
@@ -427,19 +428,19 @@ class AirfoilWavy(Airfoil3D):
         self.te_radius_ss = TE_Radius_ss
         self.te_radius_ps = TE_Radius_ps
     
-    def whisker_blade(self,LERatio,TERatio,PSRatio,LE_wave_angle,TE_wave_angle,TE_smooth=0.9):
+    def whisker_blade(self,LERatio:npt.NDArray,TERatio:npt.NDArray,PSRatio:npt.NDArray,LE_wave_angle:npt.NDArray,TE_wave_angle:npt.NDArray,TE_smooth:float=0.9):
         """Stretches blade but keeps the trailing edge constant. This code maintains the same cross sectional profile area. 
             The way it does this is by contracting or stretching the suction side
 
             The following inputs are functions ranging from 0% span to 100% span, it can be any function
 
         Args:
-            LERatio ([type]): list of float values for example sin(x)+1 where the 1 means no scaling
-            TERatio ([type]): list of float values for example sin(x)+1 where the 1 means no scaling
-            PSRatio ([type]): list of float values for example sin(x)+1 where the 1 means no scaling
-            LE_wave_angle (List[float]): 0 to 90, 90 means perpendicular to metal angle.
-            TE_wave_angle (List[float]): 0 to 90, 90 means perpendicular to metal angle.
-            TE_smooth (float, optional): [description]. Defaults to 0.9.
+            LERatio (npt.NDArray): list of float values for example sin(x)+1 where the 1 means no scaling
+            TERatio (npt.NDArray): list of float values for example sin(x)+1 where the 1 means no scaling
+            PSRatio (npt.NDArray): list of float values for example sin(x)+1 where the 1 means no scaling
+            LE_wave_angle (npt.NDArray): 0 to 90, 90 means perpendicular to metal angle.
+            TE_wave_angle (npt.NDArray): 0 to 90, 90 means perpendicular to metal angle.
+            TE_smooth (float, optional): what percentage along to chord to start applying smoothing to the side walls near the trailing edge. Defaults to 0.9.
         """
 
         LERatio = convert_to_ndarray(LERatio)
