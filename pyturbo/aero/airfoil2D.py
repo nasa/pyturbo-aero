@@ -119,6 +119,114 @@ class Airfoil2D:
         b = bezier(psBezierX,psBezierY)
         self.psBezier = b
     
+    def match_thickness(self, location: str = 'LE'):
+        """
+        Matches the second derivative curvature at the leading or trailing edge
+        by adjusting the opposite side thickness.
+
+        Args:
+            location (str): 'LE' to match leading edge (default),
+                            'TE' to match trailing edge.
+
+        Returns:
+            None
+        """
+        location = location.upper()
+        assert location in ['LE', 'TE'], "Location must be 'LE' or 'TE'"
+
+        if location == 'LE':
+            # --- Original LE matching logic ---
+            x = np.zeros(3); y = np.zeros(3)
+            xx = np.zeros(3); yy = np.zeros(3)
+            t1 = 0.001; t2 = 0.002
+            x[0] = self.cambBezierX[0]; y[0] = self.cambBezierY[0]
+            [x[1], y[1]] = self.ssBezier.get_point(t1)
+            [x[2], y[2]] = self.ssBezier.get_point(t2)
+            dydx1 = derivative.derivative_2(x, y)
+            theta = -self.alpha1
+
+            def nest_ps(h):
+                self.psBezierX[1] = self.psBezierX[0] + cos(radians(theta)) * h
+                self.psBezierY[1] = self.psBezierY[0] + sin(radians(theta)) * h
+                self.psBezier = bezier(self.psBezierX, self.psBezierY)
+                xx[0], yy[0] = x[0], y[0]
+                [xx[1], yy[1]] = self.psBezier.get_point(t1)
+                [xx[2], yy[2]] = self.psBezier.get_point(t2)
+                dydx2 = derivative.derivative_2(xx, yy)
+                return abs(dydx2[1] - dydx1[1])
+
+            def nest_ss(h):
+                self.ssBezierX[1] = self.ssBezierX[0] + cos(radians(theta)) * h
+                self.ssBezierY[1] = self.ssBezierY[0] + sin(radians(theta)) * h
+                self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
+                xx[0], yy[0] = x[0], y[0]
+                [xx[1], yy[1]] = self.ssBezier.get_point(t1)
+                [xx[2], yy[2]] = self.ssBezier.get_point(t2)
+                dydx2 = derivative.derivative_2(xx, yy)
+                return abs(dydx2[1] - dydx1[1])
+
+            if not self._counter_rotation:
+                h = minimize_scalar(nest_ps, bounds=(0, self.le_thickness * 30), method='bounded').x
+                if nest_ps(h) > 1:
+                    h = self.le_thickness
+                self.psBezierX[1] = self.psBezierX[0] + cos(radians(theta)) * h
+                self.psBezierY[1] = self.psBezierY[0] + sin(radians(theta)) * h
+                self.psBezier = bezier(self.psBezierX, self.psBezierY)
+            else:
+                h = minimize_scalar(nest_ss, bounds=(0, self.le_thickness * 30), method='bounded').x
+                if nest_ss(h) > 1:
+                    h = self.le_thickness
+                self.ssBezierX[1] = self.ssBezierX[0] + cos(radians(theta)) * h
+                self.ssBezierY[1] = self.ssBezierY[0] + sin(radians(theta)) * h
+                self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
+
+        elif location == 'TE':
+            # --- Symmetric TE logic (same structure, opposite end) ---
+            x = np.zeros(3); y = np.zeros(3)
+            xx = np.zeros(3); yy = np.zeros(3)
+            t1 = 0.998; t2 = 0.999
+            x[0] = self.cambBezierX[-1]; y[0] = self.cambBezierY[-1]
+            [x[1], y[1]] = self.ssBezier.get_point(t1)
+            [x[2], y[2]] = self.ssBezier.get_point(t2)
+            dydx1 = derivative.derivative_2(x, y)
+            theta = self.alpha2
+
+            def nest_ps(h):
+                self.psBezierX[-2] = self.psBezierX[-1] + cos(radians(theta)) * h
+                self.psBezierY[-2] = self.psBezierY[-1] + sin(radians(theta)) * h
+                self.psBezier = bezier(self.psBezierX, self.psBezierY)
+                xx[0], yy[0] = x[0], y[0]
+                [xx[1], yy[1]] = self.psBezier.get_point(t1)
+                [xx[2], yy[2]] = self.psBezier.get_point(t2)
+                dydx2 = derivative.derivative_2(xx, yy)
+                return abs(dydx2[1] - dydx1[1])
+
+            def nest_ss(h):
+                self.ssBezierX[-2] = self.ssBezierX[-1] + cos(radians(theta)) * h
+                self.ssBezierY[-2] = self.ssBezierY[-1] + sin(radians(theta)) * h
+                self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
+                xx[0], yy[0] = x[0], y[0]
+                [xx[1], yy[1]] = self.ssBezier.get_point(t1)
+                [xx[2], yy[2]] = self.ssBezier.get_point(t2)
+                dydx2 = derivative.derivative_2(xx, yy)
+                return abs(dydx2[1] - dydx1[1])
+
+            if not self._counter_rotation:
+                h = minimize_scalar(nest_ps, bounds=(0, self.le_thickness * 30), method='bounded').x
+                if nest_ps(h) > 1:
+                    h = self.le_thickness
+                self.psBezierX[-2] = self.psBezierX[-1] + cos(radians(theta)) * h
+                self.psBezierY[-2] = self.psBezierY[-1] + sin(radians(theta)) * h
+                self.psBezier = bezier(self.psBezierX, self.psBezierY)
+            else:
+                h = minimize_scalar(nest_ss, bounds=(0, self.le_thickness * 30), method='bounded').x
+                if nest_ss(h) > 1:
+                    h = self.le_thickness
+                self.ssBezierX[-2] = self.ssBezierX[-1] + cos(radians(theta)) * h
+                self.ssBezierY[-2] = self.ssBezierY[-1] + sin(radians(theta)) * h
+                self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
+
+
     def match_le_thickness(self):
         """Matches the second derivative by changing the thickness of the opposite side
 
@@ -185,6 +293,30 @@ class Airfoil2D:
             self.ssBezierY[1] = self.ssBezierY[0]+np.sin(radians(theta_ps))*h
             self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
     
+    def te_create_reversible(self,thickness:float):
+        te_thickness = thickness*self.chord
+
+        b = self.camberBezier
+        [x, y] = b.get_point(1) # Get the last point
+        [dx, dy] = b.get_point_dt(1)
+        theta = degrees(atan2(dy,dx))
+        
+        if (theta>0):
+            theta = theta-90
+        else:
+            theta = theta+90
+        # self.ssBezierX.pop(); self.ssBezierY.pop()
+        # self.psBezierX.pop(); self.psBezierY.pop()
+        self.ssBezierX[-2]=x-np.cos(radians(theta))*te_thickness
+        self.ssBezierY[-2]=y-np.sin(radians(theta))*te_thickness
+        
+        n = len(self.psBezierX)
+        self.psBezierX[-2] = x+np.cos(radians(theta))*te_thickness
+        self.psBezierY[-2] = y+np.sin(radians(theta))*te_thickness
+        self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
+        self.psBezier = bezier(self.psBezierX,self.psBezierY)
+        print('check')
+        
     def te_create(self,radius:float,wedge_ss:float,wedge_ps:float):
         """Creates the trailing edge using a semi-circle
 
@@ -201,12 +333,7 @@ class Airfoil2D:
         [x, y] = b.get_point(1) # Get the last point
         [dx, dy] = b.get_point_dt(1)
         theta = degrees(atan2(dy,dx))
-        
-        if (theta>0):
-            theta = theta-90
-        else:
-            theta = theta+90
-        
+    
         # Pressure side
         t = self.t_ps[-2]
         [xc,yc] = self.camberBezier.get_point([t-0.01, t, t+0.01])
@@ -214,14 +341,11 @@ class Airfoil2D:
         m2 = -1/m2[2]
         xc = xc[2]
         yc = yc[2]
-        x_wedge_ps = x+cos(radians(theta-wedge_ps))*radius
-        y_wedge_ps = y+sin(radians(theta-wedge_ps))*radius
+        x_wedge_ps = x+cos(radians(theta+90-wedge_ps))*radius
+        y_wedge_ps = y+sin(radians(theta+90-wedge_ps))*radius
         
-        alpha_start = theta-wedge_ps
-        angle =  alpha_start+360-(theta+180+wedge_ps)
-        alpha_stop = alpha_start -angle
-        alpha_mid = (alpha_start + alpha_stop)/2
-        self.TE_ps_arc = arc(x,y,radius,alpha_start,alpha_mid) # type: ignore
+        alpha_start = theta-wedge_ps+90
+        self.TE_ps_arc = arc(x,y,radius,alpha_start,theta) # type: ignore
         # Pressure Side - Match first derivative
         # Compute first derivative on the arc
         [xx,yy] = self.TE_ps_arc.get_point([0,0.01,0.02])
@@ -230,10 +354,6 @@ class Airfoil2D:
         xo = (y_wedge_ps-yc-m*x_wedge_ps+m2*xc)/(m2-m)
         yo = y_wedge_ps-m*(x_wedge_ps-xo)
         
-        
-        #yo = (y_wedge_ps-m*x_wedge_ps)/(1+m*yc/xc)
-        #xo = -yo*yc/xc
-        
         # mc = (yo-y_wedge_ps)/(xo-x_wedge_ps) # Check
         self.psBezierX[-2] = xo[0] # set the last bezier point on the pressure side such that it matches the slope of the TE Arc
         self.psBezierY[-2] = yo[0]
@@ -241,7 +361,7 @@ class Airfoil2D:
         self.psBezierY[-1] = y_wedge_ps[0]
         b = bezier(self.psBezierX,self.psBezierY) # Extends the bezier curve
         self.psBezier = b
-        
+        b.plot2D()
         # Suction side
         if (int(max(self.t_ss))<1): # in case a camber percent (i.e. 0.7) is set
             t = self.t_ss[-1]
@@ -253,14 +373,11 @@ class Airfoil2D:
         m2 = -1/m2[1] 
         xc = xc[1]
         yc = yc[1] # find the perpendicular line slope
-        x_wedge_ss = x+cos(radians(theta+180+wedge_ss))*radius
-        y_wedge_ss = y+sin(radians(theta+180+wedge_ss))*radius
+        x_wedge_ss = x+cos(radians(theta-90+wedge_ss))*radius
+        y_wedge_ss = y+sin(radians(theta-90+wedge_ss))*radius
         
-        alpha_start = theta-wedge_ss
-        angle =  alpha_start+360-(theta+180+wedge_ss)
-        alpha_stop = alpha_start-angle
-        alpha_mid = (alpha_start + alpha_stop)/2
-        self.TE_ss_arc = arc(x,y,radius,alpha_stop,alpha_mid) # type: ignore
+        alpha_start = theta-90+wedge_ss
+        self.TE_ss_arc = arc(x,y,radius,alpha_start,theta) # type: ignore
         # Suction side - Match first derivative
         # Compute first derivative on the arc
         [xx,yy] = self.TE_ss_arc.get_point([0,0.01,0.02])
@@ -274,70 +391,42 @@ class Airfoil2D:
         self.ssBezierX[-1] = x_wedge_ss[0]
         self.ssBezierY[-1] = y_wedge_ss[0]
         b = bezier(self.ssBezierX,self.ssBezierY)
-        self.ssBezier = b      
+        self.ssBezier = b
     
-    def add_ss_thickness(self,thicknessArray:List[float],camberPercent:float=1,thickness_loc:Optional[List[float]]=None,expansion_ratio:float=1.2):
+    def add_ss_thickness(self,thicknessArray:List[float],camberPercent:float=0.8,expansion_ratio:float=1.2):
         """Adds thickness to the suction side by specifying bezier control points 
 
         Args:
             thicknessArray (List[float]): thickness along the suction side. Example: [0.2400, 0.2000, 0.1600, 0.1400]
             camberPercent (float, optional): Percent camber where straightening of the suction side happens. Defaults to 1.
-            thickness_loc (List[float], optional): Location where thickness is applied. Defaults to None.
             expansion_ratio (float, optional): If thickness location is specified then this is not necessary otherwise thickness_loc is calculated by the expansion ratio. Defaults to 1.2.
         """
-        if (thickness_loc is None):
-            if expansion_ratio: # if expansion ratio is specified              
-                t = exp_ratio(expansion_ratio,len(thicknessArray)+3,camberPercent)[1:] # Allocate 2 extra points for continunity at the trailing edge and for flow guidance
-                # Define location of bezier control points from 0 to
-                # camberPercent
-            else:  
-                t = convert_to_ndarray(thickness_loc) # type: ignore
-        else:
-            t = convert_to_ndarray(thickness_loc) # Manual custom definition 
-
-        self.SS_thickness = np.array(thicknessArray)
+        t = exp_ratio(expansion_ratio,len(thicknessArray)+2,camberPercent)
+        t = np.insert(t,0,0)
+        t = convert_to_ndarray(np.append(t,[1]))
+        self.SS_thickness = convert_to_ndarray(thicknessArray)
         self.t_ss = t
-        self.ss_exp_ratio = expansion_ratio
-        thicknessArray = self.SS_thickness*self.chord # type: ignore
-        # t - array
-        # thicknessArray - distance from camber as an array
-        # Check if camber is defined
-        # Need to add leading and trailing edge points
-        if (self.ssBezierX is None):
-            self.ssBezierX = np.zeros(len(t)+2).tolist()  # type: ignore
-            self.ssBezierY = self.ssBezierX
-            self.ssBezierX[0] = self.cambBezierX[0]
-            self.ssBezierY[0] = self.cambBezierY[0]
-            self.ssBezierX[-1] = self.cambBezierX[-1]
-            self.ssBezierY[-1] = self.cambBezierY[-1]
-        
+        thicknessArray = (self.SS_thickness*self.chord).tolist()
         b = self.camberBezier
-        for i in range(0,len(t)):
-            ## Compute the angle perpendicular
+        for i in range(2,2+len(thicknessArray)):
             [x, y] = b.get_point(t[i])
-            if (t[i] == 0):
-                theta = 180-self.alpha1
-            elif (t[i]==1):
-                theta = self.alpha2-180
-            else:
-                [dx, dy] = b.get_point_dt(t[i])
-                theta = degrees(atan(-dx/dy))
+            ## Compute the angle perpendicular
+            [dx, dy] = b.get_point_dt(t[i])
+            theta = degrees(atan2(-dx,dy))
             
-            ## Compute the bezier thickness
-            if (i>=len(thicknessArray)):
-                self.ssBezierX.append(0)
-                self.ssBezierY.append(0)
-            else:
-                t_ray = thicknessArray[i]
-                xn = x-cos(radians(theta))*t_ray
-                yn = y-sin(radians(theta))*t_ray
-                self.ssBezierX.append(xn[0])
-                self.ssBezierY.append(yn[0])
-
+            xn = float(x+cos(radians(theta))*thicknessArray[i-2])
+            yn = float(y+sin(radians(theta))*thicknessArray[i-2])
+            self.ssBezierX.append(xn)
+            self.ssBezierY.append(yn)
+        xn,yn = self.camberBezier.get_point(1)
+        self.ssBezierX.append(0)
+        self.ssBezierY.append(0)
+        self.ssBezierX.append(float(xn))
+        self.ssBezierY.append(float(yn))
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
 
     # Adds thickness to pressure side
-    def add_ps_thickness(self,thicknessArray:List[float],expansion_ratio:float=1.2):
+    def add_ps_thickness(self,thicknessArray:List[float],expansion_ratio:float=1.2,camberPercent:float=0.95):
         """Add thickness to the pressure side 
 
         Args:
@@ -347,23 +436,17 @@ class Airfoil2D:
         """
         # 3 Extra points is added to account for the Leading Edge being
         # computed and last 2 are for the trailing edge
-        
-        ps_height_loc = exp_ratio(expansion_ratio,len(thicknessArray)+3,0.95)[1:]
-        ps_height_loc = np.append(ps_height_loc,[1])
-        t = convert_to_ndarray(ps_height_loc)
-
+       
+        t = exp_ratio(expansion_ratio,len(thicknessArray)+2,camberPercent)
+        t = np.insert(t,0,0)
+        t = convert_to_ndarray(np.append(t,[1]))
         self.PS_thickness = -1*np.array(thicknessArray)
         self.t_ps = t
         thicknessArray = (self.PS_thickness*self.chord).tolist()
-        # t - array
-        # thicknessArray - distance from camber as an array
-        # Check if camber is defined
-        
-        # Need to add leading and trailing edge points
-        # indx = len(self.psBezierX)
+        self.psBezierX.append(0)
+        self.psBezierY.append(0)
         b = self.camberBezier
-
-        for i in range(len(t)):
+        for i in range(2,2+len(thicknessArray)):
             [x, y] = b.get_point(t[i])
             ## Compute the angle perpendicular
             if (t[i] ==0):
@@ -373,26 +456,16 @@ class Airfoil2D:
             else:
                 [dx, dy] = b.get_point_dt(t[i])
                 theta = degrees(atan2(-dx,dy))
-                #if (theta>0)
-                #    theta = theta-90
-                #else
-                #    theta = theta+90
-                #end
             
-            ## Compute the bezier thickness
-            if (i==0):
-                self.psBezierX.append(0) # These two points are computed
-                self.psBezierY.append(0)
-            elif (i>len(thicknessArray)):
-                self.psBezierX.append(0) # These two points are computed
-                self.psBezierY.append(0)
-            else:
-                t_ray = thicknessArray[i-1]
-                xn = x+cos(radians(theta))*t_ray
-                yn = y+sin(radians(theta))*t_ray
-                self.psBezierX.append(xn[0])
-                self.psBezierY.append(yn[0])
-            
+            xn = float(x+cos(radians(theta))*thicknessArray[i-2])
+            yn = float(y+sin(radians(theta))*thicknessArray[i-2])
+            self.psBezierX.append(xn)
+            self.psBezierY.append(yn)
+        xn,yn = self.camberBezier.get_point(1)
+        self.psBezierX.append(0)
+        self.psBezierY.append(0)
+        self.psBezierX.append(float(xn))
+        self.psBezierY.append(float(yn))
         self.psBezier = bezier(self.psBezierX,self.psBezierY)
 
     def add_pitch(self,x_pitch:float):
@@ -707,25 +780,25 @@ class Airfoil2D:
         # Plot the line from camber to the control points
         # suction side
         for indx in range(0,len(self.ssBezierX)):
-            x = self.ssBezierX[indx]
-            y = self.ssBezierY[indx]
+            x = float(self.ssBezierX[indx])
+            y = float(self.ssBezierY[indx])
             d = dist(x,y,xcamber,ycamber)
             min_indx = np.where(d == np.amin(d))[0][0]
             plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed') # type: ignore
         # pressure side
         for indx in range(0,len(self.psBezierX)):
-            x = self.psBezierX[indx]
-            y = self.psBezierY[indx]
+            x = float(self.psBezierX[indx])
+            y = float(self.psBezierY[indx])
             d = dist(x,y,xcamber,ycamber)
             min_indx = np.where(d == np.amin(d))[0][0]
             plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed') # type: ignore
         # Plot the Trailing Edge
-        t = np.linspace(0,1,20)
-        [x, y] = self.TE_ps_arc.get_point(t)
-        plt.plot(x,y, color='blue', linestyle='solid')
-
-        [x, y] = self.TE_ss_arc.get_point(t)
-        plt.plot(x,y, color='red', linestyle='solid')
+        if hasattr(self, 'TE_ps_arc'):
+            t = np.linspace(0,1,20)
+            [x, y] = self.TE_ps_arc.get_point(t)
+            plt.plot(x,y, color='blue', linestyle='solid')
+            [x, y] = self.TE_ss_arc.get_point(t)
+            plt.plot(x,y, color='red', linestyle='solid')
         plt.gca().set_aspect('equal')
         plt.show()
 
