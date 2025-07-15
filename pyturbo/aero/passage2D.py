@@ -76,11 +76,10 @@ class Passage2D:
         [a.center_le() for a in self.airfoils] # type: ignore
         
         self.airfoils[0].shift(xBladeStart,0)
-        dx = 0
         # Space out the airfoils from each other
         for i in range(1,len(self.airfoils)):
             x_end = self.airfoils[i-1].shft_ss[0,-1,0]
-            dx += x_end + self.spacing[i-1]
+            dx = x_end + self.spacing[i-1]
             self.airfoils[i].shift(dx,0)
 
         # Scale the blade between the endwalls

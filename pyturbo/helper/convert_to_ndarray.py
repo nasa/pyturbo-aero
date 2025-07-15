@@ -10,6 +10,7 @@ def convert_to_ndarray(t:Union[float,npt.NDArray,List[float]]) -> npt.NDArray:
     if type(t) is not np.ndarray and type(t) is not list: # Scalar
         t = np.array([t],dtype=float)
     elif (type(t) is list):
+        t = [float(p) for p in t]
         t = np.array(t,dtype=float)
     return t # type: ignore
 
