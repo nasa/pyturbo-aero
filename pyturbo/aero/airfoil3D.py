@@ -32,7 +32,7 @@ class Airfoil3D:
     '''Bezier X,Y,Z are for the stacking line of the blade'''
     stack_bezier_ctrl_pts: npt.NDArray
 
-    te_center: npt.NDArray     # Center of trailing edge for each span profile
+    te_center: Optional[npt.NDArray]     # Center of trailing edge for each span profile
     
     stack_bezier: bezier3                 # 3D Bezier curve that defines the stacking
     bImportedBlade: bool
@@ -276,50 +276,59 @@ class Airfoil3D:
             self.ss[:,i,0] = csapi(spline_ss_temp[:,i,2],spline_ss_temp[:,i,0],self.zz) # Natural spline
             self.ss[:,i,1] = csapi(spline_ss_temp[:,i,2],spline_ss_temp[:,i,1],self.zz)
 
-        self.c_te_ps = np.zeros((self.nte,n_profiles,3))
-        self.c_te_ss = np.zeros((self.nte,n_profiles,3))
-        for j in range(n_profiles): # Trailing edge contains less points
-            # trailing edge
-            [self.c_te_ps[:,j,0],self.c_te_ps[:,j,1]] = self.profileArray[j].TE_ps_arc.get_point(t_te)
-            [self.c_te_ss[:,j,0],self.c_te_ss[:,j,1]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
-            self.c_te_ps[:,j,2] = self.profileSpan[j]*self.span
-            self.c_te_ss[:,j,2] = self.profileSpan[j]*self.span
-        
-        for i in range(self.nte):
-            # Trailing edge pressure side
-            self.te_ps[:,i,0] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,0],self.zz)
-            self.te_ps[:,i,1] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,1],self.zz)
-            self.te_ps[:,i,2] = self.zz
-            # Trailing edge suction side
-            self.te_ss[:,i,0] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,0],self.zz)
-            self.te_ss[:,i,1] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,1],self.zz)
-            self.te_ss[:,i,2] = self.zz
+        if hasattr(self.profileArray[0],'TE_ps_arc'):
+            self.c_te_ps = np.zeros((self.nte,n_profiles,3))
+            self.c_te_ss = np.zeros((self.nte,n_profiles,3))
+            for j in range(n_profiles): # Trailing edge contains less points
+                # trailing edge
+                [self.c_te_ps[:,j,0],self.c_te_ps[:,j,1]] = self.profileArray[j].TE_ps_arc.get_point(t_te)
+                [self.c_te_ss[:,j,0],self.c_te_ss[:,j,1]] = self.profileArray[j].TE_ss_arc.get_point(t_te)
+                self.c_te_ps[:,j,2] = self.profileSpan[j]*self.span
+                self.c_te_ss[:,j,2] = self.profileSpan[j]*self.span
             
-        te_center = np.zeros((nProfiles,3)) # Trailing edge center for each profile
-        te_center[:,0] = csapi(self.profileSpan*self.span,self.te_center[:,0],self.zz)
-        te_center[:,1] = csapi(self.profileSpan*self.span,self.te_center[:,1],self.zz)
-        te_center[:,2] = self.zz
-        
-        self.te_center = te_center
-        # Populate Control Points
-        self.control_ps = np.zeros((n_profiles,num_points+trailing_edge_points,3))
-        self.control_ss = np.zeros((n_profiles,num_points+trailing_edge_points,3))
-        for i in range(n_profiles):
-            ss, ps = self.profileArray[i].get_points(num_points+trailing_edge_points)
-            self.control_ps[i,:,0] = ps[:,0] 
-            self.control_ps[i,:,1] = ps[:,1]
-            self.control_ss[i,:,0] = ss[:,0] 
-            self.control_ss[i,:,1] = ss[:,1]
-
+            for i in range(self.nte):
+                # Trailing edge pressure side
+                self.te_ps[:,i,0] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,0],self.zz)
+                self.te_ps[:,i,1] = csapi(self.c_te_ps[i,:,2],self.c_te_ps[i,:,1],self.zz)
+                self.te_ps[:,i,2] = self.zz
+                # Trailing edge suction side
+                self.te_ss[:,i,0] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,0],self.zz)
+                self.te_ss[:,i,1] = csapi(self.c_te_ss[i,:,2],self.c_te_ss[i,:,1],self.zz)
+                self.te_ss[:,i,2] = self.zz
+                
+            te_center = np.zeros((nProfiles,3)) # Trailing edge center for each profile
+            te_center[:,0] = csapi(self.profileSpan*self.span,self.te_center[:,0],self.zz) # type: ignore
+            te_center[:,1] = csapi(self.profileSpan*self.span,self.te_center[:,1],self.zz) # type: ignore
+            te_center[:,2] = self.zz
+            
+            self.te_center = te_center
+            # Populate Control Points
+            self.control_ps = np.zeros((n_profiles,num_points+trailing_edge_points,3))
+            self.control_ss = np.zeros((n_profiles,num_points+trailing_edge_points,3))
+            for i in range(n_profiles):
+                ss, ps = self.profileArray[i].get_points(num_points+trailing_edge_points)
+                self.control_ps[i,:,0] = ps[:,0] 
+                self.control_ps[i,:,1] = ps[:,1]
+                self.control_ss[i,:,0] = ss[:,0] 
+                self.control_ss[i,:,1] = ss[:,1]
+        else:
+            # Populate Control Points
+            self.control_ps = np.zeros((n_profiles,num_points,3))
+            self.control_ss = np.zeros((n_profiles,num_points,3))
+            for i in range(n_profiles):
+                ss, ps = self.profileArray[i].get_points(num_points)
+                self.control_ps[i,:,0] = ps[:,0] 
+                self.control_ps[i,:,1] = ps[:,1]
+                self.control_ss[i,:,0] = ss[:,0] 
+                self.control_ss[i,:,1] = ss[:,1]
+            self.te_center = None
         # Lets stack the profiles 
         self.stack_bezier = bezier3(self.stack_bezier_ctrl_pts[:,0],self.stack_bezier_ctrl_pts[:,1],self.stack_bezier_ctrl_pts[:,2])
     
         # Combine suction and pressure side with trailing edge
         self.ps = np.hstack([self.ps,self.te_ps])
         self.ss = np.hstack([self.ss,self.te_ss])
-        
-        nprofiles,_,_ = self.ps.shape
-        
+                
         # Shift all points by bezier curve
         self.shft_ps = copy.deepcopy(self.ps)
         self.shft_ss = copy.deepcopy(self.ss)
@@ -353,6 +362,49 @@ class Airfoil3D:
             self.shft_ss[i,:,0] += x
             self.shft_ps[i,:,1] += y
             self.shft_ps[i,:,0] += x
+    
+    def flip_le_te(self):
+        """
+        Flip a stack of airfoils (suction and pressure sides) about their centroids,
+        and translate so the flipped trailing edge aligns with the original leading edge.
+        
+        Parameters:
+            ss_pts: (M, N1, 3) suction side points
+            ps_pts: (M, N2, 3) pressure side points
+
+        Returns:
+            flipped_ss: (M, N1, 3)
+            flipped_ps: (M, N2, 3)
+        """
+        M = self.shft_ss.shape[0]
+        flipped_ss = np.empty_like(self.shft_ss)
+        flipped_ps = np.empty_like(self.shft_ps)
+
+        for i in range(M):
+            ss = self.shft_ss[i]  # shape (N1, 3)
+            ps = self.shft_ps[i]  # shape (N2, 3)
+
+            # Original leading and trailing edge
+            leading_edge = ss[0]
+            trailing_edge = ss[-1]
+
+            # Centroid of entire airfoil section
+            n_total = len(ss) + len(ps)
+            centroid = (np.sum(ss, axis=0) + np.sum(ps, axis=0)) / n_total
+
+            # Reflect both sides through the centroid
+            flipped_ss_i = 2 * centroid - ss
+            flipped_ps_i = 2 * centroid - ps
+
+            # Translate so flipped trailing edge lands on original leading edge
+            flipped_trailing = flipped_ss_i[-1]
+            translation = leading_edge - flipped_trailing
+
+            flipped_ss[i] = flipped_ss_i + translation
+            flipped_ps[i] = flipped_ps_i + translation
+        
+        self.shft_ps = flipped_ps
+        self.shft_ss = flipped_ss
 
     def flip_x(self):
         """Mirrors the blade by multiplying -1*x direction. This is assuming axial chord is in the y direction and span is in z
@@ -448,7 +500,8 @@ class Airfoil3D:
                     ax.plot3D(self.control_ps[p,:,0], self.control_ps[p,:,1], self.control_ps[p,:,2],color='green') # type: ignore
                     ax.plot3D(self.control_ss[p,:,0], self.control_ss[p,:,1], self.control_ss[p,:,2],color='green') # type: ignore
                 # Plot trailing edge center
-                ax.plot3D(self.te_center[:,0],self.te_center[:,1],self.te_center[:,2],color='black') # type: ignore
+                if self.te_center is not None:
+                    ax.plot3D(self.te_center[:,0],self.te_center[:,1],self.te_center[:,2],color='black') # type: ignore
 
         # Plot the profiles
         nprofiles = self.shft_ss.shape[0]
@@ -1004,7 +1057,8 @@ class Airfoil3D:
         self.stack_bezier.y = self.stack_bezier.y - yc
         self.stack_bezier.z = self.stack_bezier.z - zc
 
-        self.te_center -= np.array([xc, yc, zc])
+        if self.te_center is not None:
+            self.te_center -= np.array([xc, yc, zc])
         self.zz = self.zz - zc
 
     def plot_shell_2D(self,percent_span:float,shell_thickness:float):

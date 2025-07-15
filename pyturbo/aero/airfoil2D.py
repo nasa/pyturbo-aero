@@ -361,7 +361,7 @@ class Airfoil2D:
         self.psBezierY[-1] = y_wedge_ps[0]
         b = bezier(self.psBezierX,self.psBezierY) # Extends the bezier curve
         self.psBezier = b
-        b.plot2D()
+        
         # Suction side
         if (int(max(self.t_ss))<1): # in case a camber percent (i.e. 0.7) is set
             t = self.t_ss[-1]
@@ -516,11 +516,11 @@ class Airfoil2D:
             self.ssBezier = self.ssBezier.shift(x,y) # type: ignore
         else:
             self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
-
-        self.TE_ps_arc.x = self.TE_ps_arc.x + x
-        self.TE_ps_arc.y = self.TE_ps_arc.y + y
-        self.TE_ss_arc.x = self.TE_ss_arc.x + x
-        self.TE_ss_arc.y = self.TE_ss_arc.y + y
+        if hasattr(self,'TE_ps_arc'):
+            self.TE_ps_arc.x = self.TE_ps_arc.x + x
+            self.TE_ps_arc.y = self.TE_ps_arc.y + y
+            self.TE_ss_arc.x = self.TE_ss_arc.x + x
+            self.TE_ss_arc.y = self.TE_ss_arc.y + y
 
     def get_points(self,n:int=100) -> Tuple[npt.NDArray,npt.NDArray]:
         """Get the airfoil points. This will you 100 poitns defining the suction side and pressure side
@@ -533,21 +533,23 @@ class Airfoil2D:
         """
         t = np.linspace(0,1,n)
         t_te = np.linspace(0,1,int(n*0.2))
-        
-        x_te,y_te = self.TE_ps_arc.get_point(t_te)
         [xPS, yPS] = self.psBezier.get_point(t)
-        ps = np.vstack((
-                np.hstack((xPS,x_te)),
-                np.hstack((yPS,y_te))
-            )).transpose()
-        
-        
-        x_te,y_te = self.TE_ss_arc.get_point(t_te)
         [xSS, ySS] = self.ssBezier.get_point(t)
-        ss = np.vstack((
+        
+        if hasattr(self,'TE_ps_arc'):
+            x_te,y_te = self.TE_ps_arc.get_point(t_te)
+            ps = np.vstack((
+                    np.hstack((xPS,x_te)),
+                    np.hstack((yPS,y_te))
+                )).transpose()
+            x_te,y_te = self.TE_ss_arc.get_point(t_te)
+            ss = np.vstack((
                 np.hstack((xSS,x_te)),
                 np.hstack((ySS,y_te))
-            )).transpose()
+            )).transpose()    
+        else:
+            ps = np.vstack((xPS,yPS)).transpose()
+            ss = np.vstack((xSS,ySS)).transpose()
         
         ss = resample_curve(ss,n)
         ps = resample_curve(ps,n)
