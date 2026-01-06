@@ -111,66 +111,65 @@ class Airfoil3D:
             # Stack the airfoils about LE
             if (stackType == StackType.leading_edge):
                 hub = self.profileArray[0]
-                [hx, hy] = hub.camberBezier.get_point(0)
-                stack_bezier_ctrl_pts[0,0] = hx[0]
-                stack_bezier_ctrl_pts[0,1] = hy[0]
+                hx, hy = hub.camberBezier.get_point(0)
+                stack_bezier_ctrl_pts[0,0] = float(hx)
+                stack_bezier_ctrl_pts[0,1] = float(hy)
                 stack_bezier_ctrl_pts[0,2] = 0
 
-                [hx_te, hy_te] = hub.camberBezier.get_point(1)
-                te_center[0] = hx_te[0]
-                te_center[1] = hy_te[0]
+                hx_te, hy_te = hub.camberBezier.get_point(1)
+                te_center[0,0] = float(hx_te)
+                te_center[0,1] = float(hy_te)
 
                 for i in range(1, len(self.profileArray)):
-                    [x, y] = self.profileArray[i].camberBezier.get_point(0)
-                    dx = hx[0]-x[0]
-                    dy = hy[0]-y[0]
+                    x, y = self.profileArray[i].camberBezier.get_point(0)
+                    dx = float(hx) - float(x)
+                    dy = float(hy) - float(y)
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    stack_bezier_ctrl_pts[i,0] = hx[0]
-                    stack_bezier_ctrl_pts[i,1] = hy[0]
+                    stack_bezier_ctrl_pts[i,0] = float(hx)
+                    stack_bezier_ctrl_pts[i,1] = float(hy)
                     stack_bezier_ctrl_pts[i,2] = self.profileSpan[i]*self.span
 
-                    [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(1)
-                    te_center[i,0] = hx_te[0]
-                    te_center[i,1] = hy_te[0]
+                    hx_te, hy_te = self.profileArray[i].camberBezier.get_point(1)
+                    te_center[i,0] = float(hx_te)
+                    te_center[i,1] = float(hy_te)
             # Stack the airfoils about TE
             elif (stackType == StackType.trailing_edge):
                 hub = self.profileArray[0]
-                [hx, hy] = hub.camberBezier.get_point(1)
-                stack_bezier_ctrl_pts[0,0] = hx[0]
-                stack_bezier_ctrl_pts[0,1] = hy[0]
+                hx, hy = hub.camberBezier.get_point(1)
+                stack_bezier_ctrl_pts[0,0] = float(hx)
+                stack_bezier_ctrl_pts[0,1] = float(hy)
                 stack_bezier_ctrl_pts[0,2] = 0
 
-                [hx_te, hy_te] = hub.camberBezier.get_point(1)
-                te_center[0,0] = hx_te[0]
-                te_center[0,1] = hy_te[0]
+                hx_te, hy_te = hub.camberBezier.get_point(1)
+                te_center[0,0] = float(hx_te)
+                te_center[0,1] = float(hy_te)
 
                 for i in range(1, len(self.profileArray)):
-                    [x, y] = self.profileArray[i].camberBezier.get_point(1)
+                    x, y = self.profileArray[i].camberBezier.get_point(1)
                     dx = 0
                     dy = 0
                     # Shift the points based on camber
                     self.profileArray[i].shift(dx, dy)
-                    stack_bezier_ctrl_pts[0,0] = hx[0]
-                    stack_bezier_ctrl_pts[0,1] = hy[0]
+                    stack_bezier_ctrl_pts[0,0] = float(hx)
+                    stack_bezier_ctrl_pts[0,1] = float(hy)
                     stack_bezier_ctrl_pts[0,2] = self.profileSpan[i]*self.span
 
-                    [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
-                        1)
-                    te_center[i,0] = hx_te[0]
-                    te_center[i,1] = hy_te[0]
+                    hx_te, hy_te = self.profileArray[i].camberBezier.get_point(1)
+                    te_center[i,0] = float(hx_te)
+                    te_center[i,1] = float(hy_te)
             elif (stackType == StackType.centroid):
-                [hx, hy] = self.profileArray[0].get_centroid()
+                hx, hy = self.profileArray[0].get_centroid()
                 stack_bezier_ctrl_pts[0,0] = hx
                 stack_bezier_ctrl_pts[0,1] = hy
                 stack_bezier_ctrl_pts[0,2] = 0
 
-                [hx_te, hy_te] = self.profileArray[0].camberBezier.get_point(1)
-                te_center[0,0] = hx_te[0]
-                te_center[0,1] = hy_te[0]
+                hx_te, hy_te = self.profileArray[0].camberBezier.get_point(1)
+                te_center[0,0] = float(hx_te)
+                te_center[0,1] = float(hy_te)
 
                 for i in range(1, len(self.profileArray)):
-                    [x, y] = self.profileArray[i].get_centroid()
+                    x, y = self.profileArray[i].get_centroid()
                     dx = hx-x
                     dy = hy-y
                     # Shift the points based on camber
@@ -179,10 +178,9 @@ class Airfoil3D:
                     stack_bezier_ctrl_pts[i,1] = hy
                     stack_bezier_ctrl_pts[i,2] = self.profileSpan[i]*self.span
 
-                    [hx_te, hy_te] = self.profileArray[i].camberBezier.get_point(
-                        1)
-                    te_center[i,0] = hx_te[0]
-                    te_center[i,1] = hy_te[0]
+                    hx_te, hy_te = self.profileArray[i].camberBezier.get_point(1)
+                    te_center[i,0] = float(hx_te)
+                    te_center[i,1] = float(hy_te)
                 
             self.stack_bezier_ctrl_pts = stack_bezier_ctrl_pts
             self.stack_bezier = bezier3(stack_bezier_ctrl_pts[:,0],stack_bezier_ctrl_pts[:,1],stack_bezier_ctrl_pts[:,2])

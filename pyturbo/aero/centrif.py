@@ -13,8 +13,8 @@ import scipy.interpolate as spi
 from itertools import combinations, combinations_with_replacement
 
 class WaveDirection(Enum):
-    x:int = 0
-    r:int = 1
+    x = 0
+    r = 1
 
 @dataclass 
 class TrailingEdgeProperties:
@@ -268,6 +268,192 @@ class Centrif:
             l = line2D(hub_pts_cyl[j,:],shroud_pts_cyl[j,:])
             xr[j,0],xr[j,1] = l.get_point(t_span)
         return xr
+
+    def __get_hub_shroud_xr__(self, t_hub: npt.NDArray) -> Tuple[npt.NDArray, npt.NDArray]:
+        t_hub = convert_to_ndarray(t_hub)
+        hub_xr = np.vstack([self.func_xhub(t_hub), self.func_rhub(t_hub)]).transpose()
+        shroud_xr = np.vstack([self.func_xshroud(t_hub), self.func_rshroud(t_hub)]).transpose()
+        return hub_xr, shroud_xr
+
+    def __tspan_from_span_offset__(self, offset: Union[float, npt.NDArray], t_hub: npt.NDArray, 
+                                   from_: str,respect_tip_clearance: bool, 
+                                   clip: bool) -> Tuple[npt.NDArray, npt.NDArray, npt.NDArray, npt.NDArray]:
+        """Convert a physical offset (distance) into the local `t_span` parameter.
+
+        `t_span` is defined along the straight line between hub and shroud at each `t_hub`.
+
+        Definitions:
+        - `hub_xr(t_hub)`: hub curve points in the meridional plane (x,r), shape (n,2)
+        - `shroud_xr(t_hub)`: shroud curve points in the meridional plane (x,r), shape (n,2)
+        - `t_max(t_hub)`: max valid `t_span` at each `t_hub`. Normally `t_max=1`. If
+          `respect_tip_clearance=True`, then `t_max=(L-tip_clearance)/L` where `L` is the local hub->shroud
+          cut length, so `t_span=t_max` lies `tip_clearance` away from the shroud.
+        - `t_target(offset,t_hub)`: computed `t_span` value(s) corresponding to requested physical offset(s),
+          shape (n_offsets,n). This varies with `t_hub` whenever the local passage height `L(t_hub)` varies.
+        """
+        if from_ not in {"hub", "shroud"}:
+            raise ValueError(f"from_ must be 'hub' or 'shroud', got {from_!r}")
+
+        offsets = convert_to_ndarray(offset).astype(float)
+        if offsets.ndim == 0:
+            offsets = offsets.reshape(1)
+        offsets = offsets.reshape(-1, 1)  # (n_offsets, 1)
+
+        t_hub = convert_to_ndarray(t_hub)
+        hub_xr, shroud_xr = self.__get_hub_shroud_xr__(t_hub)  # (n,2) each, columns are (x,r)
+        delta = shroud_xr - hub_xr  # (n,2)
+        cut_len = np.hypot(delta[:, 0], delta[:, 1])  # (n,)
+        if np.any(cut_len <= 0):
+            raise ValueError("Invalid hub/shroud definition: zero-length hub->shroud cut detected.")
+
+        available_len = cut_len.copy()
+        if respect_tip_clearance:
+            available_len = available_len - float(self.tip_clearance)
+            if np.any(available_len <= 0):
+                raise ValueError("Tip clearance exceeds local passage height for at least one t_hub.")
+
+        t_max = available_len / cut_len  # (n,) max permissible t_span at each t_hub
+        dt = offsets / cut_len.reshape(1, -1)  # (n_offsets,n) offset mapped to t_span increment
+
+        if from_ == "hub":
+            t_target = dt  # distance from hub: t_span = offset / L(t_hub)
+        else:
+            t_target = t_max.reshape(1, -1) - dt  # distance from shroud/tip: t_span = t_max - offset/L
+
+        if clip:
+            t_target = np.maximum(t_target, 0.0)
+            t_target = np.minimum(t_target, t_max.reshape(1, -1))
+        else:
+            if np.any(t_target < 0) or np.any(t_target > t_max.reshape(1, -1)):
+                raise ValueError(
+                    "Requested offset is outside the local passage height "
+                    f"(from_={from_!r}, respect_tip_clearance={respect_tip_clearance})."
+                )
+
+        return t_target, hub_xr, shroud_xr, t_max
+
+    def get_passage_xr_streamline_by_span_offset(
+        self,
+        offset: Union[float, npt.NDArray],
+        t_hub: Optional[npt.NDArray] = None,
+        *,
+        from_: str = "hub",
+        respect_tip_clearance: bool = False,
+        clip: bool = True,
+    ) -> Tuple[npt.NDArray, npt.NDArray, npt.NDArray, npt.NDArray]:
+        """Get a meridional streamline at a constant physical offset from hub/shroud.
+
+        Args:
+            offset: Physical distance away from the chosen boundary along the local hub->shroud cut line.
+                If an array is provided, returns one streamline per offset.
+            t_hub: Locations along the hub/shroud curves (0..1 in hub arc-length space). Defaults to `self.t_hub`.
+            from_: "hub" or "shroud".
+            respect_tip_clearance: If True, treats the "shroud" boundary as the blade tip surface
+                (i.e. shroud minus `tip_clearance`).
+            clip: If True, clip offsets outside the local passage height; otherwise raise.
+
+        Returns:
+            Tuple containing:
+            - `xr`: (n,2) or (n_offsets,n,2) streamline x,r points
+            - `hub_xr`: (n,2) hub curve points at `t_hub` in the meridional plane (x,r)
+            - `shroud_xr`: (n,2) shroud curve points at `t_hub` in the meridional plane (x,r)
+              (always the true shroud; tip clearance is only applied to the computed `t_span`)
+            - `t_span`: (n,) or (n_offsets,n) the local span parameter used at each `t_hub`
+        """
+        if t_hub is None:
+            t_hub = self.t_hub
+
+        t_target, hub_xr, shroud_xr, _ = self.__tspan_from_span_offset__(
+            offset, t_hub, from_=from_, respect_tip_clearance=respect_tip_clearance, clip=clip
+        )
+        delta = shroud_xr - hub_xr
+        xr = hub_xr.reshape(1, -1, 2) + t_target[:, :, None] * delta.reshape(1, -1, 2)
+
+        if np.asarray(offset).ndim == 0:
+            return xr[0], hub_xr, shroud_xr, t_target[0]
+        return xr, hub_xr, shroud_xr, t_target
+
+    def get_blade_cyl_streamline_by_span_offset(
+        self,
+        offset: Union[float, npt.NDArray],
+        t_hub: Optional[npt.NDArray] = None,
+        *,
+        from_: str = "hub",
+        blade: str = "main",
+        clip: bool = True,
+    ) -> Tuple[npt.NDArray, npt.NDArray, npt.NDArray]:
+        """Get blade SS/PS cylindrical streamline(s) at a constant physical offset from hub/shroud.
+
+        This is the "blade" equivalent of `get_passage_xr_streamline_by_span_offset`, using the
+        already-built blade surfaces and interpolating spanwise at each chord station.
+
+        Args:
+            offset: Physical distance away from the chosen boundary along the local hub->shroud cut line.
+                If an array is provided, returns one streamline per offset.
+            t_hub: Optional new chordwise distribution (0..1). If provided, the result is re-interpolated
+                along chord to these locations.
+            from_: "hub" or "shroud". For "shroud", the reference is the blade tip (tip-cleared) surface.
+            blade: "main" or "splitter".
+            clip: If True, clip offsets outside the local blade span; otherwise raise.
+
+        Returns:
+            Tuple containing:
+            - `ss_cyl`: (n,3) or (n_offsets,n,3) suction side x,r,theta
+            - `ps_cyl`: (n,3) or (n_offsets,n,3) pressure side x,r,theta
+            - `t_span`: (n,) or (n_offsets,n) the local span parameter used at each chord station
+              (same parameterization as `self.mainblade.tspan` / `self.splitterblade.tspan`)
+        """
+        if self.mainblade is None:
+            raise ValueError("Blade has not been built yet. Call `build()` first.")
+
+        blade_key = blade.lower().strip()
+        if blade_key == "main":
+            blade_obj = self.mainblade
+        elif blade_key == "splitter":
+            if self.splitterblade is None:
+                raise ValueError("Splitter blade not built. Add splitter profiles and rebuild.")
+            blade_obj = self.splitterblade
+        else:
+            raise ValueError(f"blade must be 'main' or 'splitter', got {blade!r}")
+
+        t_target, _, _, _ = self.__tspan_from_span_offset__(
+            offset,
+            self.t_hub,
+            from_=from_,
+            respect_tip_clearance=True,
+            clip=clip,
+        )  # (n_offsets,n_chord)
+
+        n_offsets = t_target.shape[0]
+        n_chord = self.npts_chord
+        ss_out = np.zeros((n_offsets, n_chord, 3))
+        ps_out = np.zeros((n_offsets, n_chord, 3))
+
+        for j in range(n_chord):
+            t_known = blade_obj.tspan[:, j]
+            for m in range(n_offsets):
+                t_val = float(t_target[m, j])
+                for k in range(3):
+                    ss_out[m, j, k] = csapi(t_known, blade_obj.ss_cyl_pts[:, j, k], np.array([t_val]))[0]
+                    ps_out[m, j, k] = csapi(t_known, blade_obj.ps_cyl_pts[:, j, k], np.array([t_val]))[0]
+
+        if t_hub is not None:
+            t_hub = convert_to_ndarray(t_hub)
+            ss_interp = np.zeros((n_offsets, len(t_hub), 3))
+            ps_interp = np.zeros((n_offsets, len(t_hub), 3))
+            t_interp = np.zeros((n_offsets, len(t_hub)))
+            for m in range(n_offsets):
+                for k in range(3):
+                    ss_interp[m, :, k] = PchipInterpolator(self.t_hub, ss_out[m, :, k])(t_hub)
+                    ps_interp[m, :, k] = PchipInterpolator(self.t_hub, ps_out[m, :, k])(t_hub)
+                t_interp[m, :] = PchipInterpolator(self.t_hub, t_target[m, :])(t_hub)
+            ss_out = ss_interp
+            ps_out = ps_interp
+            t_target = t_interp
+
+        if np.asarray(offset).ndim == 0:
+            return ss_out[0], ps_out[0], t_target[0]
+        return ss_out, ps_out, t_target
     
     def get_camber_points(self,i:int,t_hub:npt.NDArray,t_camber:npt.NDArray):
         """Get the camber in cylindrical coordinates x,r,th
