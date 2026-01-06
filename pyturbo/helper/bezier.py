@@ -77,6 +77,7 @@ class bezier:
         Returns:
             Tuple: containing x and y points
         """
+        scalar_input = np.isscalar(t) and not isinstance(t, (list, np.ndarray))
         t = convert_to_ndarray(t)
         x = t*0; y = t*0  
         for i in range(self.n):
@@ -86,6 +87,8 @@ class bezier:
         if (equally_space_pts and len(x)>2): # type: ignore
             pts = equal_space(x,y) # type: ignore
             return pts[1],pts[2]
+        if scalar_input:
+            return float(x[0]), float(y[0])  # type: ignore[return-value]
         return x,y
     
     def get_point_dt(self,t:Union[float,npt.NDArray]):
@@ -100,6 +103,7 @@ class bezier:
                 **dx** (npt.NDArray): Derivative of x as a function of t 
                 **dy** (npt.NDArray): Derivative of y as a function of t 
         """
+        scalar_input = np.isscalar(t) and not isinstance(t, (list, np.ndarray))
         t = convert_to_ndarray(t)
         
         dx = t*0; dy = t*0
@@ -108,14 +112,19 @@ class bezier:
             dy += bernstein_poly(self.n-2,i,t)*(self.y[i+1]-self.y[i])
         dx*=self.n
         dy*=self.n
+        if scalar_input:
+            return float(dx[0]), float(dy[0])
         return dx,dy
 
     def get_point_dt2(self,t:Union[float,npt.NDArray]):
+        scalar_input = np.isscalar(t) and not isinstance(t, (list, np.ndarray))
         t = convert_to_ndarray(t)
         dx2 = t*0; dy2 = t*0
         for i in range(self.n-2):
             dx2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.x[i+2]-2*self.x[i+1]+self.x[i])
             dy2 = bernstein_poly(self.n-2,i,t)*(self.n-1)*self.n*(self.y[i+2]-2*self.y[i+1]+self.y[i])
+        if scalar_input:
+            return float(dx2[0]), float(dy2[0])
         return dx2,dy2
     
     def rotate(self,angle:float):

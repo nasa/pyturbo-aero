@@ -16,8 +16,10 @@ class Passage2D:
     
     hub_spline:PchipInterpolator
     shroud_spline:PchipInterpolator
-    zhub_control:npt.NDArray
-    zhub_control:npt.NDArray
+    zhub_control: Optional[npt.NDArray]
+    rhub_control: Optional[npt.NDArray]
+    zshroud_control: Optional[npt.NDArray]
+    rshroud_control: Optional[npt.NDArray]
     
     airfoils: List[Airfoil3D]
     spacing: List[float]
@@ -34,16 +36,20 @@ class Passage2D:
         '''
         self.airfoils=airfoil_array
         self.spacing=spacing_array
+        self.zhub_control = None
+        self.rhub_control = None
+        self.zshroud_control = None
+        self.rshroud_control = None
 
 
     def add_endwalls(self,zhub:Union[List[float],npt.NDArray],
                      rhub:Union[List[float],npt.NDArray],
                      zshroud:Union[List[float],npt.NDArray],
                      rshroud:Union[List[float],npt.NDArray],
-                     zhub_control:Union[List[float],npt.NDArray]=[],
-                     rhub_control:Union[List[float],npt.NDArray]=[],
-                     zshroud_control:Union[List[float],npt.NDArray]=[],
-                     rshroud_control:Union[List[float],npt.NDArray]=[]):
+                     zhub_control:Optional[Union[List[float],npt.NDArray]]=None,
+                     rhub_control:Optional[Union[List[float],npt.NDArray]]=None,
+                     zshroud_control:Optional[Union[List[float],npt.NDArray]]=None,
+                     rshroud_control:Optional[Union[List[float],npt.NDArray]]=None):
         """Adds the endwalls
 
         Args:
@@ -51,10 +57,10 @@ class Passage2D:
             rhub (Union[List[float],npt.NDArray]): points defining the hub radial coordinate
             zshroud (Union[List[float],npt.NDArray]): points defining the shroud axial coordinate
             rshroud (Union[List[float],npt.NDArray]): points defining the shroud radial coordinate
-            zhub_control (Union[List[float],npt.NDArray], optional): bezier axial control points for the hub. Defaults to [].
-            rhub_control (Union[List[float],npt.NDArray], optional): bezier radial control points for the hub. Defaults to [].
-            zshroud_control (Union[List[float],npt.NDArray], optional):  bezier axial control points for the shroud. Defaults to [].
-            rshroud_control (Union[List[float],npt.NDArray], optional): bezier radial control points for the shroud. Defaults to [].
+            zhub_control (Optional[Union[List[float],npt.NDArray]], optional): bezier axial control points for the hub. Defaults to None.
+            rhub_control (Optional[Union[List[float],npt.NDArray]], optional): bezier radial control points for the hub. Defaults to None.
+            zshroud_control (Optional[Union[List[float],npt.NDArray]], optional):  bezier axial control points for the shroud. Defaults to None.
+            rshroud_control (Optional[Union[List[float],npt.NDArray]], optional): bezier radial control points for the shroud. Defaults to None.
         """
         self.hub_spline = PchipInterpolator(zhub,rhub)
         self.shroud_spline = PchipInterpolator(zshroud,rshroud)
@@ -62,10 +68,17 @@ class Passage2D:
         self.rhub = convert_to_ndarray(rhub)
         self.zshroud = convert_to_ndarray(zshroud)
         self.rshroud = convert_to_ndarray(rshroud)
-        self.zhub_control = convert_to_ndarray(zhub_control)
-        self.rhub_control = convert_to_ndarray(rhub_control)
-        self.zshroud_control = convert_to_ndarray(zshroud_control)
-        self.rshroud_control = convert_to_ndarray(rshroud_control)
+
+        def normalize_control_points(control: Optional[Union[List[float], npt.NDArray]]) -> Optional[npt.NDArray]:
+            if control is None:
+                return None
+            control_array = convert_to_ndarray(control)
+            return None if control_array.size == 0 else control_array
+
+        self.zhub_control = normalize_control_points(zhub_control)
+        self.rhub_control = normalize_control_points(rhub_control)
+        self.zshroud_control = normalize_control_points(zshroud_control)
+        self.rshroud_control = normalize_control_points(rshroud_control)
 
     def blade_fit(self,xBladeStart:float):
         """Fits the blade within the channel
@@ -100,13 +113,14 @@ class Passage2D:
         
         fig = go.Figure(data=go.Scatter3d(x=zhub, y=rhub, z=zhub*0,  marker=marker,line=dict(color='black',width=2)))
         fig.add_trace(go.Scatter3d(x=zshroud, y=rshroud, z=zshroud*0,  marker=marker,line=dict(color='black',width=2)))
+        fig.add_trace(go.Scatter3d(x=zhub, y=zhub*0, z=zhub*0, marker=marker, line=dict(color='gray', width=2, dash='dash')))
         # Plot the control points
         marker=dict(size=0.1, color="red", colorscale='Viridis')
 
-        if (not self.zhub_control):
+        if self.zhub_control is not None and self.rhub_control is not None and len(self.zhub_control) > 0:
             fig.add_trace(go.Scatter3d(x=self.zhub_control, y=self.rhub_control, z=self.zhub_control*0,  marker=marker,line=dict(color='red',width=2)))
 
-        if (not self.rshroud_control):
+        if self.zshroud_control is not None and self.rshroud_control is not None and len(self.zshroud_control) > 0:
             fig.add_trace(go.Scatter3d(x=self.zshroud_control, y=self.rshroud_control, z=self.zshroud_control*0,  marker=marker,line=dict(color='red',width=2)))
 
         
@@ -152,6 +166,7 @@ class Passage2D:
         zshroud = zhub
         fig.add_trace(go.Scatter3d(x=zhub, y=zhub*0, z=rhub,  marker=marker,line=dict(color='black',width=2)))
         fig.add_trace(go.Scatter3d(x=zshroud, y=zshroud*0, z=rshroud,  marker=marker,line=dict(color='black',width=2)))
+        fig.add_trace(go.Scatter3d(x=zhub, y=zhub*0, z=zhub*0, marker=marker, line=dict(color='gray', width=2, dash='dash')))
         
         rmax = self.check_replace_max(rmax,np.max(np.append(rhub,rshroud)))
         rmin = self.check_replace_min(rmin,np.min(np.append(rhub,rshroud)))
@@ -190,6 +205,7 @@ class Passage2D:
         zshroud = zhub
         ax.plot3D(zhub, zhub*0,rhub, color='black') # type: ignore
         ax.plot3D(zshroud, zshroud*0,rshroud, color='black') # type: ignore
+        ax.plot3D(zhub, zhub*0, zhub*0, color='0.5', linestyle='--', linewidth=1) # type: ignore
 
         rmax = self.check_replace_max(rmax,np.max(np.append(rhub,rshroud)))
         rmin = self.check_replace_min(rmin,np.min(np.append(rhub,rshroud)))
@@ -237,22 +253,24 @@ class Passage2D:
         zshroud = zhub
         ax.plot(zhub, rhub,color='black')
         ax.plot(zshroud, rshroud,color='black')
+        ax.axhline(0, color='0.5', linestyle='--', linewidth=1)
 
         # Plot the control points
-        if (len(self.zhub_control)>0):
+        if self.zhub_control is not None and self.rhub_control is not None and len(self.zhub_control) > 0:
             ax.scatter(self.zhub_control, self.rhub_control,s=10,marker='o',c='red')
 
-        if len(self.rshroud_control)>0:
+        if self.zshroud_control is not None and self.rshroud_control is not None and len(self.rshroud_control) > 0:
             ax.scatter(self.zshroud_control, self.rshroud_control,s=10,marker='o',c='red')
 
         
         ax.set_aspect('equal')
         return fig
     
-    def export_json(self,nChannelPoints:int=200,xmin:Optional[float]=None,xmax:Optional[float]=None, scale:float=1):
+    def export_json(self, filename: str = 'aero_geometry.json', nChannelPoints:int=200,xmin:Optional[float]=None,xmax:Optional[float]=None, scale:float=1):
         """Exports the design to a json file
 
         Args:
+            filename (str, optional): output json filename. Defaults to 'aero_geometry.json'.
             nChannelPoints (int, optional): Number of channel points. Defaults to 200.
             xmin (float, optional): minimum axial value before scale is applied. Defaults to None.
             xmax (float, optional): max axial value before scale is applied. Defaults to None.
@@ -290,7 +308,7 @@ class Passage2D:
 
             data['blades'][-1]['sections'] = sections
         import json 
-        with open('aero_geometry.json','w') as f:
+        with open(filename,'w') as f:
             json.dump(data,f,indent=4, sort_keys=True)
 
 

@@ -1,6 +1,5 @@
 import numpy as np
 from typing import List, Optional, Tuple
-from math import cos,sin,radians,degrees,atan2,sqrt,atan
 from scipy.optimize import minimize_scalar
 from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,resample_curve
 from scipy.interpolate import CubicSpline
@@ -44,7 +43,7 @@ class Airfoil2D:
         self.alpha1 = alpha1
         self.alpha2 = alpha2
         self.stagger = stagger
-        self.chord = axial_chord/cos(radians(self.stagger))
+        self.chord = axial_chord/np.cos(np.radians(self.stagger))
         self.__create_camber()
     
     def __create_camber(self):
@@ -55,10 +54,10 @@ class Airfoil2D:
         x2 = 0
         y2 = 0
         # Assumes CCW, call flip to convert to CW
-        x1 = -self.chord*sin(radians(self.stagger))
-        y1 = self.chord*cos(radians(self.stagger))
-        r1 = ray2D(x1,y1,-sin(radians(self.alpha1)),-cos(radians(self.alpha1)))
-        r2 = ray2D(x2,y2,-sin(radians(self.alpha2)),cos(radians(self.alpha2)))
+        x1 = -self.chord*np.sin(np.radians(self.stagger))
+        y1 = self.chord*np.cos(np.radians(self.stagger))
+        r1 = ray2D(x1,y1,-np.sin(np.radians(self.alpha1)),-np.cos(np.radians(self.alpha1)))
+        r2 = ray2D(x2,y2,-np.sin(np.radians(self.alpha2)),np.cos(np.radians(self.alpha2)))
 
         # Find intersection Point
         [x,y,_,_] = ray2D_intersection(r1,r2)
@@ -76,8 +75,8 @@ class Airfoil2D:
             x (float): arbitrary x coordinate
             y (float): arbitrary y coordinate
         """
-        x1 = -self.chord * sin(self.stagger)
-        y1 = self.chord * cos(self.stagger)
+        x1 = -self.chord * np.sin(self.stagger)
+        y1 = self.chord * np.cos(self.stagger)
         x2 = 0
         y2 = 0
         self.cambBezierX = [x1,x,x2]
@@ -104,12 +103,12 @@ class Airfoil2D:
         # Add Thickness to the suction side 
         if (not counter_rotation):
             theta_ss = 180-self.alpha1
-            ssBezierX.append(ssBezierX[0]+cos(radians(theta_ss))*self.le_thickness)
-            ssBezierY.append(ssBezierY[0]+sin(radians(theta_ss))*self.le_thickness)
+            ssBezierX.append(ssBezierX[0]+np.cos(np.radians(theta_ss))*self.le_thickness)
+            ssBezierY.append(ssBezierY[0]+np.sin(np.radians(theta_ss))*self.le_thickness)
         else:
             theta_ps = -self.alpha1
-            psBezierX.append(psBezierX[0]+cos(radians(theta_ps))*self.le_thickness)
-            psBezierY.append(psBezierY[0]+sin(radians(theta_ps))*self.le_thickness)
+            psBezierX.append(psBezierX[0]+np.cos(np.radians(theta_ps))*self.le_thickness)
+            psBezierY.append(psBezierY[0]+np.sin(np.radians(theta_ps))*self.le_thickness)
 
         self.ssBezierX = ssBezierX; self.ssBezierY = ssBezierY
         self.psBezierX = psBezierX; self.psBezierY = psBezierY
@@ -146,8 +145,8 @@ class Airfoil2D:
             theta = -self.alpha1
 
             def nest_ps(h):
-                self.psBezierX[1] = self.psBezierX[0] + cos(radians(theta)) * h
-                self.psBezierY[1] = self.psBezierY[0] + sin(radians(theta)) * h
+                self.psBezierX[1] = self.psBezierX[0] + np.cos(np.radians(theta)) * h
+                self.psBezierY[1] = self.psBezierY[0] + np.sin(np.radians(theta)) * h
                 self.psBezier = bezier(self.psBezierX, self.psBezierY)
                 xx[0], yy[0] = x[0], y[0]
                 [xx[1], yy[1]] = self.psBezier.get_point(t1)
@@ -156,8 +155,8 @@ class Airfoil2D:
                 return abs(dydx2[1] - dydx1[1])
 
             def nest_ss(h):
-                self.ssBezierX[1] = self.ssBezierX[0] + cos(radians(theta)) * h
-                self.ssBezierY[1] = self.ssBezierY[0] + sin(radians(theta)) * h
+                self.ssBezierX[1] = self.ssBezierX[0] + np.cos(np.radians(theta)) * h
+                self.ssBezierY[1] = self.ssBezierY[0] + np.sin(np.radians(theta)) * h
                 self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
                 xx[0], yy[0] = x[0], y[0]
                 [xx[1], yy[1]] = self.ssBezier.get_point(t1)
@@ -169,15 +168,15 @@ class Airfoil2D:
                 h = minimize_scalar(nest_ps, bounds=(0, self.le_thickness * 30), method='bounded').x
                 if nest_ps(h) > 1:
                     h = self.le_thickness
-                self.psBezierX[1] = self.psBezierX[0] + cos(radians(theta)) * h
-                self.psBezierY[1] = self.psBezierY[0] + sin(radians(theta)) * h
+                self.psBezierX[1] = self.psBezierX[0] + np.cos(np.radians(theta)) * h
+                self.psBezierY[1] = self.psBezierY[0] + np.sin(np.radians(theta)) * h
                 self.psBezier = bezier(self.psBezierX, self.psBezierY)
             else:
                 h = minimize_scalar(nest_ss, bounds=(0, self.le_thickness * 30), method='bounded').x
                 if nest_ss(h) > 1:
                     h = self.le_thickness
-                self.ssBezierX[1] = self.ssBezierX[0] + cos(radians(theta)) * h
-                self.ssBezierY[1] = self.ssBezierY[0] + sin(radians(theta)) * h
+                self.ssBezierX[1] = self.ssBezierX[0] + np.cos(np.radians(theta)) * h
+                self.ssBezierY[1] = self.ssBezierY[0] + np.sin(np.radians(theta)) * h
                 self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
 
         elif location == 'TE':
@@ -192,8 +191,8 @@ class Airfoil2D:
             theta = self.alpha2
 
             def nest_ps(h):
-                self.psBezierX[-2] = self.psBezierX[-1] + cos(radians(theta)) * h
-                self.psBezierY[-2] = self.psBezierY[-1] + sin(radians(theta)) * h
+                self.psBezierX[-2] = self.psBezierX[-1] + np.cos(np.radians(theta)) * h
+                self.psBezierY[-2] = self.psBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.psBezier = bezier(self.psBezierX, self.psBezierY)
                 xx[0], yy[0] = x[0], y[0]
                 [xx[1], yy[1]] = self.psBezier.get_point(t1)
@@ -202,8 +201,8 @@ class Airfoil2D:
                 return abs(dydx2[1] - dydx1[1])
 
             def nest_ss(h):
-                self.ssBezierX[-2] = self.ssBezierX[-1] + cos(radians(theta)) * h
-                self.ssBezierY[-2] = self.ssBezierY[-1] + sin(radians(theta)) * h
+                self.ssBezierX[-2] = self.ssBezierX[-1] + np.cos(np.radians(theta)) * h
+                self.ssBezierY[-2] = self.ssBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
                 xx[0], yy[0] = x[0], y[0]
                 [xx[1], yy[1]] = self.ssBezier.get_point(t1)
@@ -215,15 +214,15 @@ class Airfoil2D:
                 h = minimize_scalar(nest_ps, bounds=(0, self.le_thickness * 30), method='bounded').x
                 if nest_ps(h) > 1:
                     h = self.le_thickness
-                self.psBezierX[-2] = self.psBezierX[-1] + cos(radians(theta)) * h
-                self.psBezierY[-2] = self.psBezierY[-1] + sin(radians(theta)) * h
+                self.psBezierX[-2] = self.psBezierX[-1] + np.cos(np.radians(theta)) * h
+                self.psBezierY[-2] = self.psBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.psBezier = bezier(self.psBezierX, self.psBezierY)
             else:
                 h = minimize_scalar(nest_ss, bounds=(0, self.le_thickness * 30), method='bounded').x
                 if nest_ss(h) > 1:
                     h = self.le_thickness
-                self.ssBezierX[-2] = self.ssBezierX[-1] + cos(radians(theta)) * h
-                self.ssBezierY[-2] = self.ssBezierY[-1] + sin(radians(theta)) * h
+                self.ssBezierX[-2] = self.ssBezierX[-1] + np.cos(np.radians(theta)) * h
+                self.ssBezierY[-2] = self.ssBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
 
 
@@ -252,8 +251,8 @@ class Airfoil2D:
         theta_ps = -self.alpha1
         
         def nest_ps_derivative2(h):
-            self.psBezierX[1] = self.psBezierX[0]+cos(radians(theta_ps))*h
-            self.psBezierY[1] = self.psBezierY[0]+sin(radians(theta_ps))*h
+            self.psBezierX[1] = self.psBezierX[0]+np.cos(np.radians(theta_ps))*h
+            self.psBezierY[1] = self.psBezierY[0]+np.sin(np.radians(theta_ps))*h
             self.psBezier = bezier(self.psBezierX,self.psBezierY)
             xx[0] = x[0]
             yy[0] = y[0]
@@ -264,8 +263,8 @@ class Airfoil2D:
             return err
 
         def nest_ss_derivative2(h:float) -> float:
-            self.ssBezierX[1] = self.ssBezierX[0]+cos(radians(theta_ps))*h
-            self.ssBezierY[1] = self.ssBezierY[0]+sin(radians(theta_ps))*h
+            self.ssBezierX[1] = self.ssBezierX[0]+np.cos(np.radians(theta_ps))*h
+            self.ssBezierY[1] = self.ssBezierY[0]+np.sin(np.radians(theta_ps))*h
             self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
             xx[0] = x[0]
             yy[0] = y[0]
@@ -281,16 +280,16 @@ class Airfoil2D:
             if (nest_ps_derivative2(h) > 1):
                 h = self.le_thickness
 
-            self.psBezierX[1] = self.psBezierX[0]+cos(radians(theta_ps))*h  # Changes the second point to match the second derivative at the leading edge 
-            self.psBezierY[1] = self.psBezierY[0]+sin(radians(theta_ps))*h
+            self.psBezierX[1] = self.psBezierX[0]+np.cos(np.radians(theta_ps))*h  # Changes the second point to match the second derivative at the leading edge 
+            self.psBezierY[1] = self.psBezierY[0]+np.sin(np.radians(theta_ps))*h
             self.psBezier = bezier(self.psBezierX,self.psBezierY)
         else:
             h = minimize_scalar(nest_ss_derivative2,bounds=(0,self.le_thickness*30),method="bounded")
             if (nest_ss_derivative2(h.x)>1): # type: ignore 
                 h = self.le_thickness
 
-            self.ssBezierX[1] = self.ssBezierX[0]+np.cos(radians(theta_ps))*h
-            self.ssBezierY[1] = self.ssBezierY[0]+np.sin(radians(theta_ps))*h
+            self.ssBezierX[1] = self.ssBezierX[0]+np.cos(np.radians(theta_ps))*h
+            self.ssBezierY[1] = self.ssBezierY[0]+np.sin(np.radians(theta_ps))*h
             self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
     
     def te_create_reversible(self,thickness:float):
@@ -299,7 +298,7 @@ class Airfoil2D:
         b = self.camberBezier
         [x, y] = b.get_point(1) # Get the last point
         [dx, dy] = b.get_point_dt(1)
-        theta = degrees(atan2(dy,dx))
+        theta = np.degrees(np.atan2(dy,dx))
         
         if (theta>0):
             theta = theta-90
@@ -307,12 +306,12 @@ class Airfoil2D:
             theta = theta+90
         # self.ssBezierX.pop(); self.ssBezierY.pop()
         # self.psBezierX.pop(); self.psBezierY.pop()
-        self.ssBezierX[-2]=x-np.cos(radians(theta))*te_thickness
-        self.ssBezierY[-2]=y-np.sin(radians(theta))*te_thickness
+        self.ssBezierX[-2]=x-np.cos(np.radians(theta))*te_thickness
+        self.ssBezierY[-2]=y-np.sin(np.radians(theta))*te_thickness
         
         n = len(self.psBezierX)
-        self.psBezierX[-2] = x+np.cos(radians(theta))*te_thickness
-        self.psBezierY[-2] = y+np.sin(radians(theta))*te_thickness
+        self.psBezierX[-2] = x+np.cos(np.radians(theta))*te_thickness
+        self.psBezierY[-2] = y+np.sin(np.radians(theta))*te_thickness
         self.ssBezier = bezier(self.ssBezierX,self.ssBezierY)
         self.psBezier = bezier(self.psBezierX,self.psBezierY)
         print('check')
@@ -332,7 +331,7 @@ class Airfoil2D:
         b = self.camberBezier
         [x, y] = b.get_point(1) # Get the last point
         [dx, dy] = b.get_point_dt(1)
-        theta = degrees(atan2(dy,dx))
+        theta = np.degrees(np.atan2(dy,dx))
     
         # Pressure side
         t = self.t_ps[-2]
@@ -341,8 +340,8 @@ class Airfoil2D:
         m2 = -1/m2[2]
         xc = xc[2]
         yc = yc[2]
-        x_wedge_ps = x+cos(radians(theta+90-wedge_ps))*radius
-        y_wedge_ps = y+sin(radians(theta+90-wedge_ps))*radius
+        x_wedge_ps = x+np.cos(np.radians(theta+90-wedge_ps))*radius
+        y_wedge_ps = y+np.sin(np.radians(theta+90-wedge_ps))*radius
         
         alpha_start = theta-wedge_ps+90
         self.TE_ps_arc = arc(x,y,radius,alpha_start,theta) # type: ignore
@@ -355,10 +354,10 @@ class Airfoil2D:
         yo = y_wedge_ps-m*(x_wedge_ps-xo)
         
         # mc = (yo-y_wedge_ps)/(xo-x_wedge_ps) # Check
-        self.psBezierX[-2] = xo[0] # set the last bezier point on the pressure side such that it matches the slope of the TE Arc
-        self.psBezierY[-2] = yo[0]
-        self.psBezierX[-1] = x_wedge_ps[0]
-        self.psBezierY[-1] = y_wedge_ps[0]
+        self.psBezierX[-2] = xo # set the last bezier point on the pressure side such that it matches the slope of the TE Arc
+        self.psBezierY[-2] = yo
+        self.psBezierX[-1] = x_wedge_ps
+        self.psBezierY[-1] = y_wedge_ps
         b = bezier(self.psBezierX,self.psBezierY) # Extends the bezier curve
         self.psBezier = b
         
@@ -373,8 +372,8 @@ class Airfoil2D:
         m2 = -1/m2[1] 
         xc = xc[1]
         yc = yc[1] # find the perpendicular line slope
-        x_wedge_ss = x+cos(radians(theta-90+wedge_ss))*radius
-        y_wedge_ss = y+sin(radians(theta-90+wedge_ss))*radius
+        x_wedge_ss = x+np.cos(np.radians(theta-90+wedge_ss))*radius
+        y_wedge_ss = y+np.sin(np.radians(theta-90+wedge_ss))*radius
         
         alpha_start = theta-90+wedge_ss
         self.TE_ss_arc = arc(x,y,radius,alpha_start,theta) # type: ignore
@@ -386,10 +385,10 @@ class Airfoil2D:
         xo = (y_wedge_ss-yc-m*x_wedge_ss+m2*xc)/(m2-m) # interception of the 2nd to last point
         yo = y_wedge_ss-m*(x_wedge_ss-xo)
         # mc = (yo-y_wedge_ss)/(xo-x_wedge_ss) # Check
-        self.ssBezierX[-2] = xo[0]
-        self.ssBezierY[-2] = yo[0]
-        self.ssBezierX[-1] = x_wedge_ss[0]
-        self.ssBezierY[-1] = y_wedge_ss[0]
+        self.ssBezierX[-2] = float(xo)
+        self.ssBezierY[-2] = float(yo)
+        self.ssBezierX[-1] = float(x_wedge_ss)
+        self.ssBezierY[-1] = float(y_wedge_ss)
         b = bezier(self.ssBezierX,self.ssBezierY)
         self.ssBezier = b
     
@@ -412,10 +411,10 @@ class Airfoil2D:
             [x, y] = b.get_point(t[i])
             ## Compute the angle perpendicular
             [dx, dy] = b.get_point_dt(t[i])
-            theta = degrees(atan2(-dx,dy))
+            theta = np.degrees(np.atan2(-dx,dy))
             
-            xn = float(x+cos(radians(theta))*thicknessArray[i-2])
-            yn = float(y+sin(radians(theta))*thicknessArray[i-2])
+            xn = float(x+np.cos(np.radians(theta))*thicknessArray[i-2])
+            yn = float(y+np.sin(np.radians(theta))*thicknessArray[i-2])
             self.ssBezierX.append(xn)
             self.ssBezierY.append(yn)
         xn,yn = self.camberBezier.get_point(1)
@@ -455,10 +454,10 @@ class Airfoil2D:
                 theta = self.alpha2
             else:
                 [dx, dy] = b.get_point_dt(t[i])
-                theta = degrees(atan2(-dx,dy))
+                theta = np.degrees(np.atan2(-dx,dy))
             
-            xn = float(x+cos(radians(theta))*thicknessArray[i-2])
-            yn = float(y+sin(radians(theta))*thicknessArray[i-2])
+            xn = float(x+np.cos(np.radians(theta))*thicknessArray[i-2])
+            yn = float(y+np.sin(np.radians(theta))*thicknessArray[i-2])
             self.psBezierX.append(xn)
             self.psBezierY.append(yn)
         xn,yn = self.camberBezier.get_point(1)
@@ -677,7 +676,7 @@ class Airfoil2D:
         Returns:
             float: axial_chord
         """
-        return self.chord*cos(radians(self.stagger))
+        return self.chord*np.cos(np.radians(self.stagger))
 
     def add_ss_flow_guidance(self,n:int=8):
         """This function straightens out the suction side by specifying n bezier control points instead of a straight line. 
@@ -899,8 +898,8 @@ class Airfoil2D:
         alens = np.zeros(len(xs)-1)   # len along the ss and ps side
         alenp = np.zeros(len(xs)-1) 
         for i in range(1,len(xs)-1): 
-            alens[i] = sqrt((ys[i]-ys[i-1])**2+(xs[i]-xs[i-1])**2)+alens[i-1]
-            alenp[i] = sqrt((yp[i]-yp[i-1])**2+(xp[i]-xp[i-1])**2)+alenp[i-1]
+            alens[i] = np.sqrt((ys[i]-ys[i-1])**2+(xs[i]-xs[i-1])**2)+alens[i-1]
+            alenp[i] = np.sqrt((yp[i]-yp[i-1])**2+(xp[i]-xp[i-1])**2)+alenp[i-1]
 
             #dx^2 / dy^2
             ds2[i]=2*xs[i-1]/((ys[i]-ys[i-1])*(ys[i+1]-ys[i-1]))   \
@@ -947,7 +946,7 @@ class Airfoil2D:
         yy_ps=xss
         for i in range(1,len(xss)):
             for j in range(i,len(xps)):
-                temp=sqrt((xss[i]-xps[j])**2+(yss[i]-yps[j])**2)
+                temp=np.sqrt((xss[i]-xps[j])**2+(yss[i]-yps[j])**2)
                 if (temp<d[i]):
                     d[i]=temp
                     min_ps_point[i] = j
