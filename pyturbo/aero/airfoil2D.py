@@ -1,18 +1,49 @@
 import numpy as np
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Union
 from scipy.optimize import minimize_scalar
 from ..helper import bezier,line2D,ray2D,arc,ray2D_intersection,exp_ratio,convert_to_ndarray,derivative,dist,pw_bezier2D,resample_curve
 import matplotlib.pyplot as plt
 import copy
 import numpy.typing as npt
 
-class Airfoil2D:
-    """Design a 2D Airfoil using bezier curves 
+# Plot-scale aliases: native geometry unit is INCHES (see Airfoil2D.units).
+# Factors below convert from inches to the requested display unit.
+_UNIT_FACTORS = {
+    'in': (1.0, 'in'),  'inch': (1.0, 'in'),  'inches': (1.0, 'in'),
+    'mm': (25.4, 'mm'),
+    'cm': (2.54, 'cm'),
+    'm': (0.0254, 'm'),  'meters': (0.0254, 'm'),
+    'ft': (1.0/12.0, 'ft'),  'feet': (1.0/12.0, 'ft'),
+}
+
+def resolve_plot_scale(scale: Union[float, str]) -> Tuple[float, str]:
+    """Map a numeric multiplier or unit alias to (factor, label).
+
+    String input is treated as a display unit and converts from the native
+    inches base (see :attr:`Airfoil2D.units`). Numeric input is passed through
+    unchanged with no label hint.
     """
+    if isinstance(scale, str):
+        key = scale.lower()
+        if key not in _UNIT_FACTORS:
+            raise ValueError(f"unknown scale unit {scale!r}; valid: {sorted(_UNIT_FACTORS)}")
+        return _UNIT_FACTORS[key]
+    return float(scale), ''
+
+class Airfoil2D:
+    """Design a 2D Airfoil using bezier curves.
+
+    Native coordinate unit is **inches** (see :attr:`units`). Constructor
+    inputs such as ``axial_chord``, plus all stored bezier control points,
+    are interpreted in inches. Downstream consumers (mesh generation, CFD
+    config writers) should read ``Airfoil2D.units`` to know the unit
+    convention to honor.
+    """
+    units: str = 'in'           # native coordinate unit (declarative)
     '''Initial values'''
     alpha1:float                # Leading edge metal angle
     alpha2:float                # Trailing edge metal angle
-    stagger:float               # Angle from Leading Edge to Trailing edge 
+    stagger:float               # Angle from Leading Edge to Trailing edge
     chord:float                 # Length from leading edge to trailing edge
 
     camberBezier: bezier        # Bezier curve descrbing the camberline
@@ -51,13 +82,12 @@ class Airfoil2D:
         """Create the camberline of the blade
             Called by the constructor to automatically build the camberline
         """
-        # Creates the airfoil camberline
-        x2 = 0
-        y2 = 0
         if self.left_to_right:
-            # LR: LE at negative X, TE at origin, angles from +X axis
-            x1 = -self.chord*np.cos(np.radians(self.stagger))
-            y1 = -self.chord*np.sin(np.radians(self.stagger))
+            # LR: LE at origin, TE at +chord, angles from +X axis
+            x1 = 0.0
+            y1 = 0.0
+            x2 = self.chord*np.cos(np.radians(self.stagger))
+            y2 = self.chord*np.sin(np.radians(self.stagger))
             r1 = ray2D(x1,y1,np.cos(np.radians(self.alpha1)),np.sin(np.radians(self.alpha1)))
             r2 = ray2D(x2,y2,-np.cos(np.radians(self.alpha2)),-np.sin(np.radians(self.alpha2)))
         else:
@@ -65,6 +95,8 @@ class Airfoil2D:
             # Assumes CCW, call flip to convert to CW
             x1 = -self.chord*np.sin(np.radians(self.stagger))
             y1 = self.chord*np.cos(np.radians(self.stagger))
+            x2 = 0.0
+            y2 = 0.0
             r1 = ray2D(x1,y1,-np.sin(np.radians(self.alpha1)),-np.cos(np.radians(self.alpha1)))
             r2 = ray2D(x2,y2,-np.sin(np.radians(self.alpha2)),np.cos(np.radians(self.alpha2)))
 
@@ -85,13 +117,15 @@ class Airfoil2D:
             y (float): arbitrary y coordinate
         """
         if self.left_to_right:
-            x1 = -self.chord * np.cos(np.radians(self.stagger))
-            y1 = -self.chord * np.sin(np.radians(self.stagger))
+            x1 = 0.0
+            y1 = 0.0
+            x2 = self.chord * np.cos(np.radians(self.stagger))
+            y2 = self.chord * np.sin(np.radians(self.stagger))
         else:
             x1 = -self.chord * np.sin(np.radians(self.stagger))
             y1 = self.chord * np.cos(np.radians(self.stagger))
-        x2 = 0
-        y2 = 0
+            x2 = 0.0
+            y2 = 0.0
         self.cambBezierX = [x1,x,x2]
         self.cambBezierY = [y1,y,y2]
         self.camberBezier = bezier(self.cambBezierX,self.cambBezierY)
@@ -762,49 +796,70 @@ class Airfoil2D:
         plt.gca().set_aspect('equal')
         return fig
 
-    def plot2D(self):
+    def plot2D(self, scale: float | str = 1.0):
         """Plots the airfoil.
+
+        Args:
+            scale: Multiplier applied to all plotted coordinates. Accepts a
+                numeric factor, or one of the named unit aliases
+                {'m','meters','mm','cm','in','inch','inches','ft','feet'}.
+                Defaults to 1.0 (raw geometry units, typically meters). For
+                example, ``scale='inches'`` displays a metric-meter blade in
+                inches; ``scale=1000`` displays in millimeters.
 
         Returns:
             matplotlib.figure.Figure: The figure object. Caller can ``fig.show()``,
                 ``fig.savefig(...)``, or pass it to ``plt.close(fig)`` when done.
         """
+        s, unit_label = resolve_plot_scale(scale)
+        if not unit_label:
+            unit_label = self.units  # numeric scale -> fall back to native unit
         t = np.linspace(0,1,200)
         [xcamber, ycamber] = self.camberBezier.get_point(t)
         [xPS, yPS] = self.psBezier.get_point(t)
         [xSS, ySS] = self.ssBezier.get_point(t)
 
         fig = plt.figure(num=1,clear=True)
-        plt.plot(xcamber,ycamber, color='black', linestyle='solid', 
+        # Camberline faded — design reference, not the surface itself.
+        plt.plot(np.asarray(xcamber)*s,np.asarray(ycamber)*s, color='black', linestyle='solid',
+            linewidth=2, alpha=0.4)
+        plt.plot(np.asarray(xPS)*s,np.asarray(yPS)*s, color='blue', linestyle='solid',
             linewidth=2)
-        plt.plot(xPS,yPS, color='blue', linestyle='solid', 
+        plt.plot(np.asarray(xSS)*s,np.asarray(ySS)*s, color='red', linestyle='solid',
             linewidth=2)
-        plt.plot(xSS,ySS, color='red', linestyle='solid', 
-            linewidth=2)
-        plt.plot(self.psBezier.x,self.psBezier.y, color='blue', marker='o',markerfacecolor="None",markersize=8)
-        plt.plot(self.ssBezier.x,self.ssBezier.y, color='red', marker='o',markerfacecolor="None",markersize=8)
-        # Plot the line from camber to the control points
+        # Control polygons faded so the SS/PS curves read clearly. Markers
+        # drawn separately at full alpha so each CP location is still
+        # obvious.
+        _CP_ALPHA = 0.3
+        plt.plot(np.asarray(self.psBezier.x)*s,np.asarray(self.psBezier.y)*s, color='blue', linestyle='solid', alpha=_CP_ALPHA)
+        plt.plot(np.asarray(self.ssBezier.x)*s,np.asarray(self.ssBezier.y)*s, color='red',  linestyle='solid', alpha=_CP_ALPHA)
+        plt.plot(np.asarray(self.psBezier.x)*s,np.asarray(self.psBezier.y)*s, color='blue', marker='o',linestyle='None',markerfacecolor="None",markersize=8)
+        plt.plot(np.asarray(self.ssBezier.x)*s,np.asarray(self.ssBezier.y)*s, color='red',  marker='o',linestyle='None',markerfacecolor="None",markersize=8)
+        # Plot the line from camber to the control points (faded)
         # suction side
         for indx in range(0,len(self.ssBezierX)):
             x = float(self.ssBezierX[indx])
             y = float(self.ssBezierY[indx])
             d = dist(x,y,xcamber,ycamber)
             min_indx = np.where(d == np.amin(d))[0][0]
-            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed') # type: ignore
+            plt.plot([x*s,xcamber[min_indx]*s],[y*s,ycamber[min_indx]*s], color='black', linestyle='dashed', alpha=_CP_ALPHA) # type: ignore
         # pressure side
         for indx in range(0,len(self.psBezierX)):
             x = float(self.psBezierX[indx])
             y = float(self.psBezierY[indx])
             d = dist(x,y,xcamber,ycamber)
             min_indx = np.where(d == np.amin(d))[0][0]
-            plt.plot([x,xcamber[min_indx]],[y,ycamber[min_indx]], color='black', linestyle='dashed') # type: ignore
+            plt.plot([x*s,xcamber[min_indx]*s],[y*s,ycamber[min_indx]*s], color='black', linestyle='dashed', alpha=_CP_ALPHA) # type: ignore
         # Plot the Trailing Edge
         if hasattr(self, 'TE_ps_arc'):
             t = np.linspace(0,1,20)
             [x, y] = self.TE_ps_arc.get_point(t)
-            plt.plot(x,y, color='blue', linestyle='solid')
+            plt.plot(np.asarray(x)*s,np.asarray(y)*s, color='blue', linestyle='solid')
             [x, y] = self.TE_ss_arc.get_point(t)
-            plt.plot(x,y, color='red', linestyle='solid')
+            plt.plot(np.asarray(x)*s,np.asarray(y)*s, color='red', linestyle='solid')
+        if unit_label:
+            plt.xlabel(f'x [{unit_label}]')
+            plt.ylabel(f'y [{unit_label}]')
         plt.gca().set_aspect('equal')
         return fig
 
