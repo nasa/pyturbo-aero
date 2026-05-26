@@ -164,7 +164,58 @@ class Airfoil2D:
         self.ssBezier = b
         b = bezier(psBezierX,psBezierY)
         self.psBezier = b
-    
+
+    def add_te_thickness(self, thickness: float, counter_rotation: bool | None = None):
+        """Adds thickness to the trailing edge — the TE mirror of add_le_thickness.
+
+        Offsets the suction-side second-to-last bezier control point
+        (``ssBezier[-2]``) away from the camber by ``thickness * chord``,
+        leaving the pressure-side ``[-2]`` control point for
+        :func:`match_te_thickness` to derive (so the 2nd-derivative curvature
+        is continuous across the TE). When ``counter_rotation`` is True the
+        roles swap — the pressure side is offset and the suction side is
+        matched.
+
+        Call AFTER ``add_ss_thickness`` / ``add_ps_thickness`` (they create the
+        ``[-2]`` placeholder and the ``[-1]`` TE point), and follow with
+        :func:`match_te_thickness`. This is an alternative to ``te_create`` /
+        ``te_create_reversible``; it produces a curvature-continuous rounded TE
+        converging to a single point rather than a blunt arc TE.
+
+        Args:
+            thickness (float): trailing edge thickness as a fraction of chord.
+            counter_rotation (bool, optional): switches which side is offset.
+                Defaults to the value set by :func:`add_le_thickness` (the
+                suction side is the same physical side at the LE and TE).
+        """
+        if counter_rotation is None:
+            counter_rotation = getattr(self, "_counter_rotation", False)
+        self.te_thickness = thickness * self.chord
+        self._te_counter_rotation = counter_rotation
+
+        # TE point from the camberline; re-assert it on both surfaces (already
+        # set by add_ss/ps_thickness, done here defensively).
+        xte, yte = self.camberBezier.get_point(1)
+        xte, yte = float(xte), float(yte)
+        self.ssBezierX[-1] = xte; self.ssBezierY[-1] = yte
+        self.psBezierX[-1] = xte; self.psBezierY[-1] = yte
+
+        # Perpendicular offset directions at the TE. These are the
+        # match_thickness('TE') pressure-side direction (alpha2+90 LR /
+        # alpha2 TTB) rotated 180 deg — the same SS/PS relationship the LE
+        # branch uses.
+        if not counter_rotation:
+            theta_ss = (self.alpha2 - 90) if self.left_to_right else (self.alpha2 + 180)
+            self.ssBezierX[-2] = xte + np.cos(np.radians(theta_ss)) * self.te_thickness
+            self.ssBezierY[-2] = yte + np.sin(np.radians(theta_ss)) * self.te_thickness
+        else:
+            theta_ps = (self.alpha2 + 90) if self.left_to_right else self.alpha2
+            self.psBezierX[-2] = xte + np.cos(np.radians(theta_ps)) * self.te_thickness
+            self.psBezierY[-2] = yte + np.sin(np.radians(theta_ps)) * self.te_thickness
+
+        self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
+        self.psBezier = bezier(self.psBezierX, self.psBezierY)
+
     def match_thickness(self, location: str = 'LE'):
         """
         Matches the second derivative curvature at the leading or trailing edge
@@ -257,17 +308,22 @@ class Airfoil2D:
                 dydx2 = derivative.derivative_2(xx, yy)
                 return abs(dydx2[1] - dydx1[1])
 
-            if not self._counter_rotation:
-                h = minimize_scalar(nest_ps, bounds=(0, self.le_thickness * 30), method='bounded').x
+            # The TE side to match is independent of the LE side: read the
+            # TE-specific flag set by add_te_thickness / te_create_reversible,
+            # falling back to the LE flag for old call sites.
+            te_counter_rotation = getattr(self, '_te_counter_rotation', self._counter_rotation)
+            te_thickness = getattr(self, 'te_thickness', self.le_thickness)
+            if not te_counter_rotation:
+                h = minimize_scalar(nest_ps, bounds=(0, te_thickness * 30), method='bounded').x
                 if nest_ps(h) > 1:
-                    h = self.le_thickness
+                    h = te_thickness
                 self.psBezierX[-2] = self.psBezierX[-1] + np.cos(np.radians(theta)) * h
                 self.psBezierY[-2] = self.psBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.psBezier = bezier(self.psBezierX, self.psBezierY)
             else:
-                h = minimize_scalar(nest_ss, bounds=(0, self.le_thickness * 30), method='bounded').x
+                h = minimize_scalar(nest_ss, bounds=(0, te_thickness * 30), method='bounded').x
                 if nest_ss(h) > 1:
-                    h = self.le_thickness
+                    h = te_thickness
                 self.ssBezierX[-2] = self.ssBezierX[-1] + np.cos(np.radians(theta)) * h
                 self.ssBezierY[-2] = self.ssBezierY[-1] + np.sin(np.radians(theta)) * h
                 self.ssBezier = bezier(self.ssBezierX, self.ssBezierY)
@@ -276,6 +332,10 @@ class Airfoil2D:
     def match_le_thickness(self):
         """Matches the leading edge second derivative curvature. Convenience wrapper for match_thickness('LE')."""
         self.match_thickness('LE')
+
+    def match_te_thickness(self):
+        """Matches the trailing edge second derivative curvature. Convenience wrapper for match_thickness('TE')."""
+        self.match_thickness('TE')
     
     def te_create_reversible(self,thickness:float):
         """Creates a reversible (rounded/blunt) trailing edge.
@@ -284,6 +344,11 @@ class Airfoil2D:
             thickness (float): trailing edge thickness as a fraction of chord
         """
         te_thickness = thickness*self.chord
+        # Store for match_thickness('TE'), which sizes its optimizer bound by
+        # te_thickness. _te_counter_rotation: te_create_reversible sets both
+        # sides symmetrically, so the suction side is the un-rotated default.
+        self.te_thickness = te_thickness
+        self._te_counter_rotation = False
 
         b = self.camberBezier
         [x, y] = b.get_point(1) # Get the last point

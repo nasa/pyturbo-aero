@@ -242,13 +242,19 @@ class Airfoil3D:
         results = combine_and_sort(self.stack_bezier_ctrl_pts,b)
         self.stack_bezier_ctrl_pts = results
         
-    def build(self,nProfiles:int,num_points:int,trailing_edge_points:int):
-        """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later. 
+    def build(self,nProfiles:int,num_points:int,trailing_edge_points:int,resample:bool=True):
+        """Takes the control profiles specified in the construct and creates intermediate profiles filling the blade geometry. These profiles can be shifted or modified later.
 
         Args:
             nProfiles (int): number of intermeidate profiles to generate
             num_points (int): number of points per profile. Suction and Pressure side will have this number of points
             trailing_edge_points (int): Number of trailing edge points
+            resample (bool): When True (default) the suction/pressure sides are
+                re-spaced with ``resample_by_curvature``. That importance-samples
+                by curvature, which over-concentrates at the high-curvature
+                leading edge and can stack coincident points there. The bezier
+                sampling is already equal-arc-length high definition, so callers
+                meshing directly off ``shft_ss``/``shft_ps`` should pass False.
         """
         self.bImportedBlade = False
         
@@ -336,22 +342,29 @@ class Airfoil3D:
         # Lets stack the profiles 
         self.stack_bezier = bezier3(self.stack_bezier_ctrl_pts[:,0],self.stack_bezier_ctrl_pts[:,1],self.stack_bezier_ctrl_pts[:,2])
     
-        # Combine suction and pressure side with trailing edge
-        self.ps = np.hstack([self.ps,self.te_ps])
-        self.ss = np.hstack([self.ss,self.te_ss])
-                
+        # Combine suction and pressure side with the trailing edge. te_ss/te_ps
+        # are only populated for the arc TE built by te_create (TE_ps_arc
+        # present). When the TE comes from add_te_thickness it is
+        # curvature-continuous and already part of the main ss/ps beziers, so
+        # appending the still-zeroed te arrays would splice trailing_edge_points
+        # garbage points onto the blade.
+        if hasattr(self.profileArray[0],'TE_ps_arc'):
+            self.ps = np.hstack([self.ps,self.te_ps])
+            self.ss = np.hstack([self.ss,self.te_ss])
+
         # Shift all points by bezier curve
         self.shft_ps = copy.deepcopy(self.ps)
         self.shft_ss = copy.deepcopy(self.ss)
-        
+
         # Shift all the generated turbine profiles points based on the bezier curve
         self.__stack_profiles__(self.shft_ss,self.shft_ps,self.te_center)
         self.__stack_profiles__(self.control_ss,self.control_ps)
 
-        # Equal Space points
-        for i in trange(nProfiles,desc='Equal Spacing suction and pressure side'):
-            self.shft_ss[i,:,:] = resample_by_curvature(self.shft_ss[i,:,:],self.shft_ss.shape[1])
-            self.shft_ps[i,:,:] = resample_by_curvature(self.shft_ps[i,:,:],self.shft_ps.shape[1])
+        # Equal Space points (optional — see the resample argument).
+        if resample:
+            for i in trange(nProfiles,desc='Equal Spacing suction and pressure side'):
+                self.shft_ss[i,:,:] = resample_by_curvature(self.shft_ss[i,:,:],self.shft_ss.shape[1])
+                self.shft_ps[i,:,:] = resample_by_curvature(self.shft_ps[i,:,:],self.shft_ps.shape[1])
          
         for i in range(len(self.profileSpan)):
             self.control_ps[i,:,2] = self.profileSpan[i]*self.span
