@@ -12,6 +12,7 @@
 #
 import os
 import sys
+from importlib.metadata import version as _pkg_version
 sys.path.insert(0, os.path.abspath('_ext'))
 import sphinx_rtd_theme
 import pyturbo
@@ -25,8 +26,8 @@ copyright = '2021, Paht Juangphanich'
 author = 'Paht Juangphanich <paht.juangphanich@nasa.gov>'
 
 # The full version, including alpha/beta/rc tags
-version = '1.3.3'
-release = '1.3.3'
+release = _pkg_version('pyturbo-aero')
+version = release
 
 
 # -- General configuration ---------------------------------------------------
