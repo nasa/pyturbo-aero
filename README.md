@@ -8,10 +8,10 @@ Installation from pip:
 pip install pyturbo-aero
 ```
 
-Installation from source using Poetry:
+Installation from source using uv:
 ```bash
-pip install poetry
-poetry install
+pip install uv
+uv sync
 ```
 
 Installation from source using pip:
