@@ -997,9 +997,9 @@ class Airfoil3D:
 
             if (intersect1[0]!=-1.0): # near leading edge
                 pt1,_ = ss_spline.get_point(intersect1[0])
-                intersect1_yss = pt1[0,1]
+                intersect1_yss = pt1[0,0]
                 pt2,_ = ps_spline.get_point(intersect1[1])
-                intersect1_yps = pt2[0,1]
+                intersect1_yps = pt2[0,0]
                 ss_x_new = ss_x_new[ss_y_new<intersect1_yss]
                 ss_y_new = ss_y_new[ss_y_new<intersect1_yss]
                 ps_x_new = ps_x_new[ps_y_new<intersect1_yps]
@@ -1007,9 +1007,9 @@ class Airfoil3D:
 
             if (intersect2[0]!=-1.0): # trailing edge
                 pt1,_ = ss_spline.get_point(intersect2[0])
-                intersect2_yss = pt1[0,1]
+                intersect2_yss = pt1[0,0]
                 pt2,_ = ps_spline.get_point(intersect2[1])
-                intersect2_yps = pt2[0,1]
+                intersect2_yps = pt2[0,0]
                 ss_x_new = ss_x_new[ss_y_new>intersect2_yss]
                 ss_y_new = ss_y_new[ss_y_new>intersect2_yss]
                 ps_x_new = ps_x_new[ps_y_new>intersect2_yps]

@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from pyturbo.aero import Airfoil2D,Airfoil3D,AirfoilWavy, StackType, passage2D
+from pyturbo.aero import Airfoil2D,Airfoil3D,AirfoilWavy, StackType, Passage2D
 from pyturbo.helper import *
 import matplotlib.pyplot as plt
 import math 
@@ -65,9 +65,7 @@ class TestDesign(unittest.TestCase):
         stator_tip = Airfoil2D(alpha1=5,alpha2=72,axial_chord=0.036,stagger=56)
         stator_tip.add_le_thickness(0.04)
         ps_height = [0.0500,0.0200,-0.0100]
-        ps_height_loc = exp_ratio(1.2,len(ps_height)+2,0.95)
-        ps_height_loc = np.append(ps_height_loc,[1])
-        stator_tip.add_ps_thickness(thicknessArray=ps_height,camberPercent=ps_height_loc)
+        stator_tip.add_ps_thickness(thicknessArray=ps_height,expansion_ratio=1.2)
 
         ss_height=[0.2400, 0.2000, 0.1600, 0.1400]
         stator_tip.add_ss_thickness(thicknessArray=ss_height,camberPercent=0.8,expansion_ratio=1.2)
@@ -119,14 +117,12 @@ class TestDesign(unittest.TestCase):
 
         # Begin 3D design
         span = 0.05
-        stator3D = Airfoil3D([stator_hub,stator_tip],[0,1],0.05)
-        stator3D.stack(StackType.Trailing_Edge)
-        stator3D.add_lean([0, 0.05, 0], [0,0.5,1])
-        stator3D.build(100,100,20)
-        # stator3D.plot3D()
+        stator3D_wavy = AirfoilWavy([stator_hub,stator_tip],[0,1],span)
+        stator3D_wavy.stack(StackType.Trailing_Edge)
+        stator3D_wavy.add_lean([0, 0.05, 0], [0,0.5,1])
+        stator3D_wavy.build(100,100,20)
 
         # Wavy Geometry
-        stator3D_wavy = AirfoilWavy(stator3D)
         stator3D_wavy.spanwise_spline_fit()
         t = np.linspace(0,1,1000)
         ss_ratio = 2*span*np.cos(3*math.pi*t)
@@ -143,8 +139,8 @@ class TestDesign(unittest.TestCase):
 
         stator3D_wavy.stretch_thickness_chord_te(SSRatio=ssratio_wave.get_wave(0,1),PSRatio=psratio_wave.get_wave(0.2,0.8,True),
             LERatio=leratio_wave.get_wave(0,1),TERatio=teratio_wave.get_wave(0,1),LE_wave_angle=LE_wave_angle,TE_wave_angle=TE_wave_angle,TE_smooth=0.90)
-        
-        stator3D.plot3D_ly(only_blade=True)
+
+        stator3D_wavy.plot3D(only_blade=True)
         pass
 
 
@@ -267,7 +263,7 @@ class TestDesign(unittest.TestCase):
         stator3D_wavy.whisker_blade(PSRatio=psratio_wave.get_wave(0.2,0.8,True),
             LERatio=leratio_wave.get_wave(0,1),TERatio=teratio_wave.get_wave(0,1),LE_wave_angle=LE_wave_angle,TE_wave_angle=TE_wave_angle,TE_smooth=0.9)
         
-        stator3D_wavy.plot3D_ly(only_blade=True)
+        stator3D_wavy.plot3D(only_blade=True)
         pass
     
     def test_import_geometry(self):
@@ -318,7 +314,7 @@ class TestDesign(unittest.TestCase):
         stator3D = Airfoil3D([stator_hub,stator_tip],[0,1],0.05)
         stator3D.stack(StackType.Trailing_Edge)
         stator3D.add_lean([0, 0.05, 0], [0,0.5,1])
-        stator3D.create_blade(100,100,20)
+        stator3D.build(100,100,20)
         # stator3D.plot3D()
         # [ss_x_new,ss_y_new,ps_x_new,ps_y_new] = stator3D.get_shell_2D(percent_span=0.5,shell_thickness=-0.002)
         stator3D.plot_shell_2D(0.2,-0.002)
@@ -398,7 +394,7 @@ class TestDesign(unittest.TestCase):
         rotor3D_wavy.stack(StackType.Trailing_Edge)
         rotor3D_wavy.add_lean([0, 0.05, 0], [0,0.5,1])
         rotor3D_wavy.build(100,100,20)
-        rotor3D_wavy.flip_cw()
+        rotor3D_wavy.flip_x()
         # rotor3D.plot3D(only_blade=True)
 
 
@@ -474,7 +470,7 @@ class TestDesign(unittest.TestCase):
         [hz,hr] = hub_bezier.get_point(t)
         [sz,sr] = shroud_bezier.get_point(t)
 
-        channel = passage2D([stator3D,rotor3D_wavy],[cax_stator/3],[41,60])
+        channel = Passage2D([stator3D,rotor3D_wavy],[cax_stator/3])
         channel.add_endwalls(zhub=hz, rhub=hr,
                              zshroud=sz,rshroud=sr,
                              zhub_control=hub_control_z,rhub_control=hub_control_r,
@@ -485,7 +481,7 @@ class TestDesign(unittest.TestCase):
         # channel.plot3D_ly()
         channel.plot3D()
         # channel.plot2D()
-        channel.ExportToDatFile()
+        channel.export_dat()
 
         pass
 if __name__ == '__main__':

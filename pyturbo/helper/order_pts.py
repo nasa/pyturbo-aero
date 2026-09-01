@@ -78,6 +78,11 @@ def order_points_by_spline_arc_length(points: npt.NDArray, smoothing: float = 0.
     if points.ndim != 2 or points.shape[1] not in (2, 3):
         raise ValueError("points must be of shape (N, 2) or (N, 3)")
 
+    # Too few points to fit a spline (default degree 3 needs at least 4)
+    # so there's nothing meaningful to reorder; keep the input order.
+    if points.shape[0] < 4:
+        return np.arange(points.shape[0])
+
     # Fit spline
     tck, u = splprep(points.T, s=smoothing)
     

@@ -1,6 +1,6 @@
 [project]
 name = "pyturbo-aero"
-version = "1.3.5"
+version = "1.3.6"
 description = "PyTurbo_Aero is a Turbomachinery blade design library that lets you create a full 3D blades and passages."
 authors = [
     { name = "Paht Juangphanich", email = "paht.juangphanich@nasa.gov" }
@@ -11,12 +11,15 @@ dependencies = [
     "tqdm",
     "scipy",
     "pandas",
-    "numpy>=1.80",
+    "numpy",
     "matplotlib",
     "numpy-stl",
-    "plot3d",
     "shapely",
+    "requests"
 ]
+
+[dependency-groups]
+dev = ["pytest"]
 
 [build-system]
 requires = ["hatchling"]

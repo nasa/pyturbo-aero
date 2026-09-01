@@ -99,32 +99,49 @@ class Passage2D:
         for i in range(len(self.airfoils)):
             self.airfoils[i].scale_z(np.vstack([self.zhub,self.rhub*0.999]).transpose(),np.vstack([self.zshroud,self.rshroud*1.001]).transpose())
     
-    def plot2D_channel(self):     
+    def plot2D_channel(self):
         """Plot the blades within the channel
-            uses plotly 
-        """  
-        marker=dict(size=0.001, color="red", colorscale='Viridis')
+            uses plotly
+        """
         # Plot the channel
         zhub = np.linspace(min(self.zhub),max(self.zhub),500)
         rhub = self.hub_spline(zhub)
 
         rshroud = self.shroud_spline(zhub)
         zshroud = zhub
-        
-        fig = go.Figure(data=go.Scatter3d(x=zhub, y=rhub, z=zhub*0,  marker=marker,line=dict(color='black',width=2)))
-        fig.add_trace(go.Scatter3d(x=zshroud, y=rshroud, z=zshroud*0,  marker=marker,line=dict(color='black',width=2)))
-        fig.add_trace(go.Scatter3d(x=zhub, y=zhub*0, z=zhub*0, marker=marker, line=dict(color='gray', width=2, dash='dash')))
-        # Plot the control points
-        marker=dict(size=0.1, color="red", colorscale='Viridis')
 
+        hub_color = 'black'
+        shroud_color = '#1f77b4'  # blue, to visually pair with the flow-channel fill below
+
+        fig = go.Figure()
+
+        # Shade the flow passage between hub and shroud so the channel itself reads at a glance
+        fig.add_trace(go.Scatter(
+            x=np.concatenate([zhub, zshroud[::-1]]),
+            y=np.concatenate([rhub, rshroud[::-1]]),
+            mode='lines', line=dict(width=0), fill='toself',
+            fillcolor='rgba(31,119,180,0.12)', hoverinfo='skip', showlegend=False))
+
+        fig.add_trace(go.Scatter(x=zhub, y=rhub, mode='lines', line=dict(color=hub_color, width=2), name='Hub'))
+        fig.add_trace(go.Scatter(x=zshroud, y=rshroud, mode='lines', line=dict(color=shroud_color, width=2), name='Shroud'))
+        fig.add_trace(go.Scatter(x=zhub, y=zhub*0, mode='lines', line=dict(color='gray', width=1, dash='dash'), name='Centerline'))
+
+        # Plot the control points, distinguishing hub from shroud
         if self.zhub_control is not None and self.rhub_control is not None and len(self.zhub_control) > 0:
-            fig.add_trace(go.Scatter3d(x=self.zhub_control, y=self.rhub_control, z=self.zhub_control*0,  marker=marker,line=dict(color='red',width=2)))
+            fig.add_trace(go.Scatter(x=self.zhub_control, y=self.rhub_control, mode='markers+lines',
+                                      marker=dict(size=8, color=hub_color, symbol='circle'),
+                                      line=dict(color=hub_color, width=1, dash='dash'), name='Hub control points'))
 
         if self.zshroud_control is not None and self.rshroud_control is not None and len(self.zshroud_control) > 0:
-            fig.add_trace(go.Scatter3d(x=self.zshroud_control, y=self.rshroud_control, z=self.zshroud_control*0,  marker=marker,line=dict(color='red',width=2)))
+            fig.add_trace(go.Scatter(x=self.zshroud_control, y=self.rshroud_control, mode='markers+lines',
+                                      marker=dict(size=8, color=shroud_color, symbol='diamond'),
+                                      line=dict(color=shroud_color, width=1, dash='dash'), name='Shroud control points'))
 
-        
-        fig.update_layout(showlegend=False,scene= dict(aspectmode='manual',aspectratio=dict(x=1, y=1, z=1)))
+        fig.update_layout(
+            title='Passage Channel (Hub / Shroud)',
+            template='plotly_white', showlegend=True,
+            xaxis_title='Axial position, z', yaxis_title='Radius, r',
+            yaxis=dict(scaleanchor='x', scaleratio=1))
         fig.show()
 
     def check_replace_max(self,max_prev,max_new):
