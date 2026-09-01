@@ -17,6 +17,7 @@ numpy = ">=1.80"
 matplotlib = "*"
 numpy-stl = "*"
 plot3d = "*"
+shapely = "*"
 
 [build-system]
 requires = ["poetry>=1.1.2"]
